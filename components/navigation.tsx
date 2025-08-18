@@ -15,7 +15,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo.jpg"
+              src="/logo.png"
               alt="All Levels Athletics"
               width={180}
               height={50}

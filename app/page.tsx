@@ -919,7 +919,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-4 gap-8 mb-12">
               <div className="space-y-4">
                 <Image
-                  src="/logo.jpg"
+                  src="/logo.png"
                   alt="All Levels Athletics"
                   width={200}
                   height={60}
