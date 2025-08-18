@@ -127,6 +127,22 @@
     @apply bg-background text-foreground font-sans;
   }
 
+  /* Hide scroll bars for all elements */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  /* Hide scroll bars for WebKit browsers (Chrome, Safari, Edge) */
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Ensure scrolling still works */
+  html, body {
+    overflow-x: hidden;
+  }
+
   /* Added custom gradient utilities */
   .gradient-orange-yellow {
     background: linear-gradient(135deg, #ff8c00 0%, #ffd700 50%, #ffffff 100%, #ffd700 100%);

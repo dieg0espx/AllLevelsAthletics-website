@@ -26,141 +26,116 @@ export default function HomePage() {
       {/* Navigation */}
       <Navigation />
 
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background image space */}
-        <div className="absolute inset-0">
-          <img
-            src="/athletic-person-gym.png"
-            alt="Athletic training background"
-            className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80" />
-        </div>
+      <section className="relative h-screen flex items-center overflow-hidden bg-background">
+        <div className="container mx-auto px-4 relative z-10 h-full">
+          <div className="grid lg:grid-cols-2 gap-12 items-center h-full py-12">
+            {/* Left Column - Text & CTA */}
+            <div className="space-y-6">
+              {/* Elite badge */}
+              <div className="inline-flex items-center gap-3 bg-white text-black font-bold text-lg px-6 py-3 rounded-full shadow-lg">
+                <Trophy className="w-5 h-5" />
+                Elite Online Training Since 2020
+                <Star className="w-5 h-5" />
+              </div>
 
-        {/* Enhanced animated background elements */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-yellow-500/5" />
-          <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-yellow-500/8 to-orange-500/8 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-orange-500/3 via-yellow-500/3 to-orange-500/3 rounded-full blur-3xl animate-spin-slow" />
-          <div className="absolute top-10 right-20 w-32 h-32 bg-gradient-to-br from-orange-400/15 to-yellow-400/15 rounded-full blur-2xl animate-bounce" />
-          <div className="absolute bottom-32 left-20 w-48 h-48 bg-gradient-to-br from-yellow-400/12 to-orange-400/12 rounded-full blur-2xl animate-pulse delay-500" />
-        </div>
+              {/* Main headline */}
+              <div className="space-y-4">
+                <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-black leading-none tracking-tight">
+                  <span className="block text-foreground">ALL LEVELS</span>
+                  <span className="block text-orange-500">ATHLETICS</span>
+                </h1>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-1 bg-orange-500 rounded-full" />
+                  <Zap className="w-6 h-6 text-orange-500" />
+                  <div className="w-12 h-1 bg-orange-500 rounded-full" />
+                </div>
+              </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-7xl mx-auto">
-            {/* Enhanced elite badge */}
-            <div className="inline-flex items-center gap-3 gradient-orange-yellow text-black font-bold mb-8 text-lg px-10 py-4 rounded-full glow-orange animate-bounce-subtle shadow-2xl">
-              <Trophy className="w-5 h-5" />
-              Elite Online Training Since 2020
-              <Star className="w-5 h-5" />
+              {/* Description */}
+              <div className="space-y-4">
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  Transform your body with{" "}
+                  <span className="text-orange-500 font-semibold">premium online personal training</span>
+                </p>
+                <div className="grid grid-cols-1 gap-3 text-base text-muted-foreground">
+                  <div className="flex items-center gap-3">
+                    <Target className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <span>Revolutionary Tension Reset Techniques</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                    <span>Professional Recovery Tools & Methods</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <span>500+ Success Stories & 98% Success Rate</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA section */}
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button
+                    size="lg"
+                    className="bg-orange-500 text-white font-bold text-base px-6 py-3 rounded-full hover:bg-orange-600 transition-all duration-300 shadow-lg group"
+                  >
+                    <span className="flex items-center gap-3">
+                      <Play className="w-4 h-4" />
+                      Start Free 7-Day Trial
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white text-base px-6 py-3 rounded-full transition-all duration-300 group"
+                  >
+                    <span className="flex items-center gap-3">
+                      <Trophy className="w-4 h-4" />
+                      View Success Stories
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Button>
+                </div>
+
+                <p className="text-muted-foreground text-sm">
+                  ✨ No credit card required • Cancel anytime • Join 500+ satisfied clients
+                </p>
+              </div>
+
             </div>
 
-            {/* Enhanced main headline */}
-            <div className="space-y-6 mb-10">
-              <h1 className="font-heading text-6xl md:text-8xl lg:text-[10rem] font-black leading-none tracking-tight">
-                <span className="block text-white drop-shadow-2xl text-shadow-lg">ALL LEVELS</span>
-                <span className="block gradient-text glow-orange text-shadow-lg animate-pulse">ATHLETICS</span>
-              </h1>
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-20 h-1 gradient-orange-yellow rounded-full glow-orange" />
-                <Zap className="w-8 h-8 text-orange-500 animate-pulse" />
-                <div className="w-20 h-1 gradient-orange-yellow rounded-full glow-orange" />
-              </div>
-            </div>
-
-            {/* Enhanced description with key benefits */}
-            <div className="space-y-6 mb-12 max-w-5xl mx-auto">
-              <p className="text-2xl md:text-4xl lg:text-5xl text-white/95 leading-relaxed font-light">
-                Transform your body with{" "}
-                <span className="gradient-text font-semibold glow-orange">premium online personal training</span>
-              </p>
-              <div className="grid md:grid-cols-3 gap-6 text-lg md:text-xl text-white/80">
-                <div className="flex items-center gap-3 justify-center">
-                  <Target className="w-6 h-6 text-orange-500" />
-                  <span>Revolutionary Tension Reset</span>
-                </div>
-                <div className="flex items-center gap-3 justify-center">
-                  <Shield className="w-6 h-6 text-yellow-500" />
-                  <span>Professional Recovery Tools</span>
-                </div>
-                <div className="flex items-center gap-3 justify-center">
-                  <Users className="w-6 h-6 text-orange-400" />
-                  <span>500+ Success Stories</span>
+            {/* Right Column - Square Image */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-sm aspect-square">
+                <div className="absolute inset-0 bg-orange-500/20 rounded-2xl transform rotate-3"></div>
+                <div className="absolute inset-0 bg-yellow-500/10 rounded-2xl transform -rotate-2"></div>
+                <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+                  <img
+                    src="/athletic-person-gym.png"
+                    alt="Professional athletic training"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                  
+                  {/* Floating stats card */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-card/90 backdrop-blur-sm rounded-lg p-3 border border-orange-500/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-orange-500 font-bold text-base">Daniel Ledbetter</div>
+                        <div className="text-muted-foreground text-xs">Certified Personal Trainer</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-foreground font-bold text-lg">500+</div>
+                        <div className="text-muted-foreground text-xs">Clients</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Enhanced CTA section */}
-            <div className="space-y-8 mb-16">
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <Button
-                  size="lg"
-                  className="gradient-orange-yellow text-black font-bold text-xl px-16 py-8 rounded-full glow-orange hover:scale-110 transition-all duration-300 shadow-2xl group relative overflow-hidden"
-                >
-                  <span className="relative z-10 flex items-center gap-4">
-                    <Play className="w-6 h-6" />
-                    Start Free 7-Day Trial
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-3 border-orange-500 text-white hover:bg-orange-500/20 text-xl px-16 py-8 rounded-full bg-transparent backdrop-blur-sm hover:scale-105 transition-all duration-300 hover:glow-orange group"
-                >
-                  <span className="flex items-center gap-4">
-                    <Trophy className="w-6 h-6" />
-                    View Success Stories
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </Button>
-              </div>
-
-              <p className="text-white/60 text-lg">
-                ✨ No credit card required • Cancel anytime • Join 500+ satisfied clients
-              </p>
-            </div>
-
-            {/* Enhanced trust indicators */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              <div className="text-center space-y-3 group hover:scale-110 transition-transform duration-300 cursor-pointer">
-                <div className="text-4xl md:text-5xl font-black gradient-text group-hover:glow-orange transition-all">
-                  500+
-                </div>
-                <div className="text-white/70 text-base md:text-lg font-medium">Clients Transformed</div>
-                <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="text-center space-y-3 group hover:scale-110 transition-transform duration-300 cursor-pointer">
-                <div className="text-4xl md:text-5xl font-black gradient-text group-hover:glow-orange transition-all">
-                  98%
-                </div>
-                <div className="text-white/70 text-base md:text-lg font-medium">Success Rate</div>
-                <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="text-center space-y-3 group hover:scale-110 transition-transform duration-300 cursor-pointer">
-                <div className="text-4xl md:text-5xl font-black gradient-text group-hover:glow-orange transition-all">
-                  24/7
-                </div>
-                <div className="text-white/70 text-base md:text-lg font-medium">Support Available</div>
-                <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="text-center space-y-3 group hover:scale-110 transition-transform duration-300 cursor-pointer">
-                <div className="text-4xl md:text-5xl font-black gradient-text group-hover:glow-orange transition-all">
-                  5★
-                </div>
-                <div className="text-white/70 text-base md:text-lg font-medium">Average Rating</div>
-                <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 border-2 border-orange-500 rounded-full flex justify-center glow-orange">
-            <div className="w-2 h-4 bg-gradient-to-b from-orange-500 to-yellow-500 rounded-full mt-2 animate-pulse" />
           </div>
         </div>
       </section>
