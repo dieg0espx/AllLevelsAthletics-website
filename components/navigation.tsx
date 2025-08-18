@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 
@@ -12,8 +13,15 @@ export function Navigation() {
     <nav className="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-sm border-b border-orange-500/20">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="font-heading text-xl font-bold gradient-text">
-            ALL LEVELS ATHLETICS
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.jpg"
+              alt="All Levels Athletics"
+              width={180}
+              height={50}
+              className="h-12 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}

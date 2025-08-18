@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 import {
   CheckCircle,
   Clock,
@@ -917,7 +918,13 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-4 gap-8 mb-12">
               <div className="space-y-4">
-                <div className="font-heading text-2xl font-bold gradient-text">ALL LEVELS ATHLETICS</div>
+                <Image
+                  src="/logo.jpg"
+                  alt="All Levels Athletics"
+                  width={200}
+                  height={60}
+                  className="h-12 w-auto"
+                />
                 <p className="text-muted-foreground">
                   Transforming lives through personalized online training and revolutionary recovery techniques.
                 </p>
