@@ -2,6 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -29,7 +31,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} dark`}>
-      <body className="font-body antialiased">{children}</body>
+      <body className="font-body antialiased" suppressHydrationWarning>
+        <Navigation />
+        <main>{children}</main>
+        <Footer />
+        <script async src="https://www.tiktok.com/embed.js"></script>
+      </body>
     </html>
   )
 }
