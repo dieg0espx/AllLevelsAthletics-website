@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Target, Users, Award, Zap, Heart, Brain, ArrowRight, Instagram, MessageCircle, Play } from "lucide-react"
+import { Target, Users, Award, Zap, Heart, Brain, ArrowRight, Instagram, MessageCircle, Play, Trophy } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 
 // Extend Window interface for TikTok embed
@@ -264,77 +264,61 @@ export default function AboutPage() {
       </section>
 
       {/* Enhanced Mission & Vision */}
-      <section className="py-32 bg-black relative overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-orange-500/5"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(251,146,60,0.1),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(251,146,60,0.08),transparent_50%)]"></div>
-        
+      <section className="gradient-bg-variant-a py-20 overflow-hidden">
+        <div className="wave-pattern-a"></div>
         <div className="container mx-auto px-4 relative z-10">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
-              Our <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Purpose</span>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
+              Our <span className="gradient-text">Purpose</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Driving transformation through innovative coaching and unwavering commitment to excellence
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              The principles that guide everything we do
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-8">
-            {/* Mission Card */}
-            <Card className="group bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 ease-out hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 relative overflow-hidden h-96">
-              {/* Card background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <CardHeader className="text-center relative z-10">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-orange-500/30 transition-all duration-300">
-                  <Target className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <CardTitle className="font-heading text-3xl mb-4 text-white group-hover:text-orange-400 transition-colors duration-300">Our Mission</CardTitle>
-              </CardHeader>
-              <CardContent className="relative z-10">
-                <p className="text-lg text-muted-foreground leading-relaxed group-hover:text-white/90 transition-colors duration-300">
-                  To democratize elite athletic training by making world-class coaching accessible to everyone,
-                  everywhere. We believe that with the right guidance, tools, and mindset, anyone can achieve
-                  extraordinary results regardless of their starting point or location.
-                </p>
-                <div className="mt-6 flex items-center justify-center">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* Mission */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-96">
+                <CardHeader className="pb-4">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                    <Target className="w-10 h-10 text-white" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <CardTitle className="font-heading text-2xl text-white">Our Mission</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    To democratize elite athletic training by making world-class coaching accessible to everyone,
+                    everywhere. We believe that with the right guidance, tools, and mindset, anyone can achieve
+                    extraordinary results regardless of their starting point or location.
+                  </p>
 
-            {/* Vision Card */}
-            <Card className="group bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 ease-out hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20 relative overflow-hidden h-96">
-              {/* Card background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <CardHeader className="text-center relative z-10">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-yellow-500/30 transition-all duration-300">
-                  <Zap className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <CardTitle className="font-heading text-3xl mb-4 text-white group-hover:text-yellow-400 transition-colors duration-300">Our Vision</CardTitle>
-              </CardHeader>
-              <CardContent className="relative z-10">
-                <p className="text-lg text-muted-foreground leading-relaxed group-hover:text-white/90 transition-colors duration-300">
-                  To create a global community of empowered athletes who understand that true strength comes from
-                  within. We envision a world where physical limitations become stepping stones to greatness, and every
-                  individual has the tools to unlock their peak performance.
-                </p>
-                <div className="mt-6 flex items-center justify-center">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Vision */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-96">
+                <CardHeader className="pb-4">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                    <Zap className="w-10 h-10 text-white" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <CardTitle className="font-heading text-2xl text-white">Our Vision</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    To create a global community of empowered athletes who understand that true strength comes from
+                    within. We envision a world where physical limitations become stepping stones to greatness, and every
+                    individual has the tools to unlock their peak performance.
+                  </p>
+
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
@@ -392,89 +376,129 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Founder Story */}
-      <section className="py-20 bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-orange-500/5"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,146,60,0.1),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,146,60,0.08),transparent_50%)]"></div>
+                    {/* Founder Story */}
+              <section className="gradient-bg-variant-a py-20 overflow-hidden">
+                <div className="wave-pattern-a"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-                Meet <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Daniel Ledbetter</span>
+                Meet <span className="gradient-text">Daniel Ledbetter</span>
               </h2>
-              <p className="text-xl text-muted-foreground">Founder & Lead Performance Coach</p>
+              <p className="text-xl md:text-2xl text-muted-foreground">Founder & Lead Performance Coach</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+                                <div className="grid md:grid-cols-2 gap-12 items-stretch">
               <div className="space-y-6">
-                <div className="relative group">
-                  <div className="w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
-                    <img
-                      src="/gymTrainer.jpg"
-                      alt="Daniel Ledbetter - Founder & Lead Performance Coach"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-yellow-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  {/* Border glow */}
-                  <div className="absolute inset-0 rounded-2xl border-2 border-white/30 group-hover:border-white/60 transition-all duration-500"></div>
-                </div>
+                                      <div className="relative group h-full">
+                        <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+                          <img
+                            src="/gymTrainer.jpg"
+                            alt="Daniel Ledbetter - Founder & Lead Performance Coach"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-yellow-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        {/* Border glow */}
+                        <div className="absolute inset-0 rounded-2xl border-2 border-white/30 group-hover:border-white/60 transition-all duration-500"></div>
+                      </div>
               </div>
 
               <div className="space-y-8">
                 <div className="space-y-6">
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-white/90 leading-relaxed">
                     Daniel's journey into elite performance coaching began with his own transformation. After years of
                     struggling with traditional training methods that left him frustrated and plateaued, he discovered the
                     revolutionary power of tension-based training and myofascial release techniques.
                   </p>
 
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-white/90 leading-relaxed">
                     What started as a personal breakthrough quickly evolved into a mission to help others. Daniel spent
                     years studying under world-renowned coaches, mastering the science of human movement, and developing
                     his unique methodology that combines cutting-edge training principles with personalized coaching.
                   </p>
 
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-white/90 leading-relaxed">
                     Today, Daniel has helped over 500 athletes achieve their goals, from weekend warriors to elite
                     competitors. His innovative approach to online coaching has revolutionized how people think about
                     remote training, proving that distance is no barrier to exceptional results.
                   </p>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="font-heading text-2xl font-bold text-white mb-4">Expertise & Achievements</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/30 transition-colors">
-                      Certified Performance Coach
-                    </Badge>
-                    <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30 transition-colors">
-                      Myofascial Release Specialist
-                    </Badge>
-                    <Badge className="bg-orange-600/20 text-orange-300 border-orange-600/30 hover:bg-orange-600/30 transition-colors">
-                      500+ Clients Transformed
-                    </Badge>
-                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30 transition-colors">
-                      Elite Training Methods
-                    </Badge>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30 transition-colors">
-                      Online Coaching Pioneer
-                    </Badge>
-                  </div>
-                </div>
+                                        <div className="space-y-6">
+                          <h3 className="font-heading text-2xl font-bold text-white mb-6">Expertise & Achievements</h3>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-4 hover:from-orange-500/20 hover:to-orange-600/20 transition-all duration-300">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                                  <Award className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-orange-400">Certified Performance Coach</h4>
+                                </div>
+                              </div>
+                            </div>
 
-                <div className="pt-4">
-                  <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-8 py-3 rounded-full hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25">
-                    <span className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Work with Daniel
-                    </span>
-                  </Button>
-                </div>
+                            <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20 rounded-xl p-4 hover:from-yellow-500/20 hover:to-yellow-600/20 transition-all duration-300">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center">
+                                  <Heart className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-yellow-400">Myofascial Release Specialist</h4>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-orange-600/10 to-orange-700/10 border border-orange-600/20 rounded-xl p-4 hover:from-orange-600/20 hover:to-orange-700/20 transition-all duration-300">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-orange-600 to-orange-700 rounded-full flex items-center justify-center">
+                                  <Users className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-orange-300">500+ Clients Transformed</h4>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-yellow-600/10 to-yellow-700/10 border border-yellow-600/20 rounded-xl p-4 hover:from-yellow-600/20 hover:to-yellow-700/20 transition-all duration-300">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-full flex items-center justify-center">
+                                  <Zap className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-yellow-300">Elite Training Methods</h4>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20 rounded-xl p-4 hover:from-orange-500/20 hover:to-yellow-500/20 transition-all duration-300">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+                                <Target className="w-5 h-5 text-white" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-orange-400">Online Coaching Pioneer</h4>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pt-6">
+                          <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-8 py-4 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105">
+                            <span className="flex items-center gap-3 text-lg">
+                              <Users className="w-6 h-6" />
+                              Start Your Transformation
+                            </span>
+                          </Button>
+                          <p className="text-center text-sm text-muted-foreground mt-3">
+                            Join 500+ athletes who've already transformed their lives
+                          </p>
+                        </div>
               </div>
             </div>
           </div>
@@ -482,8 +506,8 @@ export default function AboutPage() {
       </section>
 
       {/* Core Values */}
-      <section className="py-20 bg-card/30">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-black relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
               Our <span className="gradient-text">Core Values</span>
@@ -494,75 +518,122 @@ export default function AboutPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="bg-card border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange text-center">
-              <CardHeader>
-                <Heart className="w-16 h-16 mx-auto mb-4 text-orange-500" />
-                <CardTitle className="font-heading text-2xl">Authenticity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  We believe in honest, transparent coaching that meets you where you are, not where you think you
-                  should be.
-                </p>
-              </CardContent>
-            </Card>
+            {/* Authenticity */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90">
+                <CardHeader className="pb-4">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                    <Heart className="w-10 h-10 text-white" />
+                  </div>
+                  <CardTitle className="font-heading text-2xl text-white">Authenticity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We believe in honest, transparent coaching that meets you where you are, not where you think you
+                    should be.
+                  </p>
+                  <div className="mt-6 pt-4 border-t border-orange-500/20">
+                    <div className="flex items-center justify-center gap-2 text-sm text-orange-400">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span>Transparent Communication</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card className="bg-card border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow text-center">
-              <CardHeader>
-                <Brain className="w-16 h-16 mx-auto mb-4 text-yellow-500" />
-                <CardTitle className="font-heading text-2xl">Innovation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  We constantly evolve our methods, incorporating the latest science and technology to deliver superior
-                  results.
-                </p>
-              </CardContent>
-            </Card>
+            {/* Innovation */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90">
+                <CardHeader className="pb-4">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                    <Brain className="w-10 h-10 text-white" />
+                  </div>
+                  <CardTitle className="font-heading text-2xl text-white">Innovation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We constantly evolve our methods, incorporating the latest science and technology to deliver superior
+                    results.
+                  </p>
+                  <div className="mt-6 pt-4 border-t border-yellow-500/20">
+                    <div className="flex items-center justify-center gap-2 text-sm text-yellow-400">
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                      <span>Cutting-Edge Methods</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card className="bg-card border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange text-center">
-              <CardHeader>
-                <Users className="w-16 h-16 mx-auto mb-4 text-orange-500" />
-                <CardTitle className="font-heading text-2xl">Community</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  We foster a supportive environment where every athlete feels valued, challenged, and empowered to
-                  succeed.
-                </p>
-              </CardContent>
-            </Card>
+            {/* Community */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90">
+                <CardHeader className="pb-4">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                    <Users className="w-10 h-10 text-white" />
+                  </div>
+                  <CardTitle className="font-heading text-2xl text-white">Community</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We foster a supportive environment where every athlete feels valued, challenged, and empowered to
+                    succeed.
+                  </p>
+                  <div className="mt-6 pt-4 border-t border-orange-500/20">
+                    <div className="flex items-center justify-center gap-2 text-sm text-orange-400">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span>Supportive Network</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-
-
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
+      <section className="gradient-bg-variant-a py-20 overflow-hidden">
+        <div className="wave-pattern-a"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
+            <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
               Ready to Start Your <span className="gradient-text">Transformation?</span>
             </h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
               Join the All Levels Athletics community and discover what you're truly capable of achieving.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            
+            {/* Enhanced buttons with better styling */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
               <Button
                 size="lg"
-                className="gradient-orange-yellow text-black font-bold text-lg px-8 py-4 glow-orange hover:scale-105 transition-all"
+                className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-10 py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
               >
-                Start Free 7-Day Trial
+                <span className="flex items-center gap-3">
+                  <Zap className="w-6 h-6" />
+                  Start Free 7-Day Trial
+                </span>
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="border-2 border-orange-500 text-white hover:bg-orange-500/10 text-lg px-8 py-4 bg-transparent"
+                className="border-2 border-orange-500 text-white hover:bg-yellow-500/10 hover:text-yellow-300 text-lg px-10 py-6 rounded-xl bg-transparent backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20"
               >
-                Schedule Consultation
+                <span className="flex items-center gap-3">
+                  <MessageCircle className="w-6 h-6" />
+                  Schedule Consultation
+                </span>
               </Button>
             </div>
+
+
+
+
           </div>
         </div>
       </section>
