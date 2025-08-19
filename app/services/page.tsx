@@ -2,12 +2,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award } from "lucide-react"
-import { Navigation } from "@/components/navigation"
 
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20">

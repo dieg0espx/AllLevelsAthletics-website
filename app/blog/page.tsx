@@ -3,12 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { BookOpen, Play, Download, Clock, User, ArrowRight, Search, Filter, Star } from "lucide-react"
-import { Navigation } from "@/components/navigation"
 
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20">

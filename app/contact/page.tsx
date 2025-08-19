@@ -5,12 +5,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap } from "lucide-react"
-import { Navigation } from "@/components/navigation"
 
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20">

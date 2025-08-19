@@ -492,3 +492,65 @@
   position: relative;
   z-index: 1;
 }
+
+/* Fade-in animations for hero sections */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+/* Slideshow animations */
+@keyframes fade-in-out {
+  0%, 33% { opacity: 1; }
+  34%, 66% { opacity: 0; }
+  67%, 100% { opacity: 0; }
+}
+
+@keyframes fade-in-out-delayed {
+  0%, 33% { opacity: 0; }
+  34%, 66% { opacity: 1; }
+  67%, 100% { opacity: 0; }
+}
+
+@keyframes fade-in-out-delayed-2 {
+  0%, 66% { opacity: 0; }
+  67%, 100% { opacity: 1; }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 9s infinite;
+}
+
+.animate-fade-in-out-delayed {
+  animation: fade-in-out-delayed 9s infinite;
+}
+
+.animate-fade-in-out-delayed-2 {
+  animation: fade-in-out-delayed-2 9s infinite;
+}
+
+/* Count up animation */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count-up {
+  animation: count-up 1s ease-out forwards;
+}

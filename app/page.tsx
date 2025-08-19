@@ -20,21 +20,19 @@ import {
   X,
   MessageCircle,
 } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+
 import Stars from "@/components/Stars"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <Navigation />
 
              <section className="relative min-h-screen flex items-center overflow-hidden bg-background pt-32 pb-20">
         <div className="container mx-auto px-4 relative z-10 h-full">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full py-20">
             {/* Left Column - Text & CTA */}
-              <div className="space-y-8 lg:space-y-10 order-2 lg:order-1">
+                            <div className="space-y-8 lg:space-y-10 order-2 lg:order-1">
               {/* Elite badge */}
                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-semibold px-6 py-3 rounded-full shadow-2xl border-2 border-white/20 backdrop-blur-sm">
                   <Trophy className="w-5 h-5 text-black" />
@@ -625,11 +623,15 @@ export default function HomePage() {
           </div>
 
           {/* Service Comparison Table */}
-          <div className="max-w-6xl mx-auto mt-20 mb-16">
+          <div className="max-w-7xl mx-auto mt-20 mb-16">
             <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
               <CardHeader className="text-center pb-8 pt-8">
-                <CardTitle className="font-heading text-3xl font-bold mb-4">Service Comparison</CardTitle>
-                <CardDescription className="text-lg text-muted-foreground">See what's included in each tier</CardDescription>
+                <CardTitle className="font-heading text-4xl md:text-5xl font-bold mb-6">
+                  Choose Your <span className="gradient-text">Perfect Plan</span>
+                </CardTitle>
+                <CardDescription className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                  Compare our training tiers and find the perfect match for your fitness journey
+                </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -903,9 +905,33 @@ export default function HomePage() {
                         <div className="text-sm text-muted-foreground"> No credit card required • Cancel anytime</div>
                         <div className="flex justify-center items-center gap-2">
                         <div className="flex -space-x-2">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 border-2 border-background" />
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 border-2 border-background" />
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 border-2 border-background" />
+                          <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden">
+                            <Image
+                              src="/person1.png"
+                              alt="Client 1"
+                              width={32}
+                              height={32}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden">
+                            <Image
+                              src="/person2.png"
+                              alt="Client 2"
+                              width={32}
+                              height={32}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden">
+                            <Image
+                              src="/person3.png"
+                              alt="Client 3"
+                              width={32}
+                              height={32}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                         </div>
                         <div className="text-sm text-white/70">
                           <span className="font-semibold text-white">500+</span> clients transformed
@@ -948,7 +974,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-transparent to-yellow-500/20 group-hover:from-orange-500/30 group-hover:to-yellow-500/30 transition-all duration-500"></div>
                   
                   {/* Interactive Floating Badge */}
-                  <div className="absolute top-6 right-6 transform group-hover:scale-110 transition-transform duration-300">
+                  <div className="absolute bottom-6 left-6 transform group-hover:scale-110 transition-transform duration-300">
                     <div className="bg-black/90 backdrop-blur-sm rounded-3xl p-5 border-2 border-white/30 shadow-2xl group-hover:shadow-orange-500/25">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -969,133 +995,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="py-16 bg-card/50 border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-8 mb-12">
-              <div className="space-y-4">
-                <Image
-                  src="/logo.png"
-                  alt="All Levels Athletics"
-                  width={200}
-                  height={60}
-                  className="h-12 w-auto"
-                />
-                <p className="text-muted-foreground">
-                  Transforming lives through personalized online training and revolutionary recovery techniques.
-                </p>
-                <div className="flex gap-2">
-                  <Badge variant="outline" className="border-orange-500/30 text-orange-400">
-                    500+ Clients
-                  </Badge>
-                  <Badge variant="outline" className="border-yellow-500/30 text-yellow-400">
-                    98% Success Rate
-                  </Badge>
-                </div>
-              </div>
 
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Services</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>
-                    <a href="/services" className="hover:text-orange-400 transition-colors">
-                      Foundation Training
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/services" className="hover:text-orange-400 transition-colors">
-                      Growth Program
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/services" className="hover:text-orange-400 transition-colors">
-                      Elite Coaching
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/programs" className="hover:text-orange-400 transition-colors">
-                      Specialized Programs
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Products</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>
-                    <a href="#products" className="hover:text-orange-400 transition-colors">
-                      Tension Reset Course
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#products" className="hover:text-orange-400 transition-colors">
-                      MFRoller
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#products" className="hover:text-orange-400 transition-colors">
-                      Complete Bundle
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/blog" className="hover:text-orange-400 transition-colors">
-                      Free Resources
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Company</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>
-                    <a href="/about" className="hover:text-orange-400 transition-colors">
-                      About Daniel
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/team" className="hover:text-orange-400 transition-colors">
-                      Our Team
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/contact" className="hover:text-orange-400 transition-colors">
-                      Contact Us
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/blog" className="hover:text-orange-400 transition-colors">
-                      Blog & Resources
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-border pt-8">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="text-center md:text-left">
-                  <div className="text-muted-foreground mb-2">
-                    © 2024 All Levels Athletics LLC. All rights reserved.
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Website: AllLevelsAthletics.com | Email: AllLevelsAthletics@gmail.com
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Badge variant="outline" className="border-orange-500/30 text-orange-400">
-                    TikTok: @AllLevelsAthletics
-                  </Badge>
-                  <Badge variant="outline" className="border-yellow-500/30 text-yellow-400">
-                    Instagram: @AllLevelsAthletics
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
