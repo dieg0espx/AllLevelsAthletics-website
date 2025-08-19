@@ -17,6 +17,8 @@ import {
   ArrowRight,
   Play,
   Quote,
+  X,
+  MessageCircle,
 } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import Stars from "@/components/Stars"
@@ -34,10 +36,10 @@ export default function HomePage() {
             {/* Left Column - Text & CTA */}
               <div className="space-y-8 lg:space-y-10 order-2 lg:order-1">
               {/* Elite badge */}
-                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-full shadow-2xl border-2 border-white/20 backdrop-blur-sm">
-                  <Trophy className="w-6 h-6 text-black" />
-                  <span className="text-xl">500+ Transformations Since 2020</span>
-                  <Star className="w-6 h-6 text-black" />
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-semibold px-6 py-3 rounded-full shadow-2xl border-2 border-white/20 backdrop-blur-sm">
+                  <Trophy className="w-5 h-5 text-black" />
+                  <span>500+ Transformations Since 2020</span>
+                  <Star className="w-5 h-5 text-black" />
               </div>
 
               {/* Main headline */}
@@ -128,7 +130,7 @@ export default function HomePage() {
 
               {/* Right Column - Large Prominent Image */}
               <div className="order-1 lg:order-2 flex justify-center lg:justify-end items-center">
-                <div className="relative w-full max-w-md lg:max-w-lg aspect-[4/5] lg:aspect-square">
+                <div className="relative w-full max-w-lg lg:max-w-xl aspect-[4/5] lg:aspect-square">
                   {/* Background decorative elements */}
                   <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-3xl transform rotate-1 scale-105"></div>
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 rounded-3xl transform -rotate-1 scale-105"></div>
@@ -491,12 +493,12 @@ export default function HomePage() {
                 </div>
                 <p className="text-white/80 text-lg">Perfect for beginners ready to start their fitness journey</p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-lg">1x/month personalized check-ins</span>
-                  </li>
+                                            <CardContent className="space-y-6 flex flex-col h-full">
+                <ul className="space-y-4 flex-grow">
+                    <li className="flex items-center gap-3">
+                      <CheckCircle className="w-6 h-6 text-orange-500 flex-shrink-0" />
+                      <span className="text-lg">1x/month personalized check-ins</span>
+                    </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="w-6 h-6 text-orange-500 flex-shrink-0" />
                     <span className="text-lg">Fully customized training program</span>
@@ -513,8 +515,12 @@ export default function HomePage() {
                     <CheckCircle className="w-6 h-6 text-orange-500 flex-shrink-0" />
                     <span className="text-lg">Nutrition guidelines</span>
                   </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="w-6 h-6 text-orange-500 flex-shrink-0" />
+                    <span className="text-lg">Basic recovery guidance</span>
+                  </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all group-hover:shadow-2xl">
+                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto">
                   Start Foundation Program
                 </Button>
               </CardContent>
@@ -538,8 +544,8 @@ export default function HomePage() {
                 </div>
                 <p className="text-white/80 text-lg">Ideal for committed individuals seeking faster results</p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <ul className="space-y-4">
+              <CardContent className="space-y-4">
+                <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="w-6 h-6 text-yellow-500 flex-shrink-0" />
                     <span className="text-lg">2x/month detailed check-ins</span>
@@ -584,8 +590,8 @@ export default function HomePage() {
                 </div>
                 <p className="text-white/80 text-lg">Maximum support for serious athletes and professionals</p>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <ul className="space-y-4">
+              <CardContent className="space-y-4 flex flex-col h-full">
+                <ul className="space-y-4 flex-grow">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="w-6 h-6 text-orange-500 flex-shrink-0" />
                     <span className="text-lg">Weekly personalized check-ins</span>
@@ -611,61 +617,124 @@ export default function HomePage() {
                     <span className="text-lg">Supplement recommendations</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all group-hover:shadow-2xl">
+                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto">
                   Go Elite Premium
                 </Button>
               </CardContent>
             </Card>
           </div>
 
-          {/* ... existing service comparison table ... */}
-          <div className="max-w-5xl mx-auto">
-            <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm">
-              <CardHeader className="text-center">
-                <CardTitle className="font-heading text-2xl">Service Comparison</CardTitle>
-                <CardDescription>See what's included in each tier</CardDescription>
+          {/* Service Comparison Table */}
+          <div className="max-w-6xl mx-auto mt-20 mb-16">
+            <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
+              <CardHeader className="text-center pb-8 pt-8">
+                <CardTitle className="font-heading text-3xl font-bold mb-4">Service Comparison</CardTitle>
+                <CardDescription className="text-lg text-muted-foreground">See what's included in each tier</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="py-4 px-4 text-lg font-semibold">Features</th>
-                        <th className="py-4 px-4 text-center text-lg font-semibold text-orange-400">Foundation</th>
-                        <th className="py-4 px-4 text-center text-lg font-semibold text-yellow-400">Growth</th>
-                        <th className="py-4 px-4 text-center text-lg font-semibold text-orange-300">Elite</th>
+                    <thead className="sticky top-0 bg-card/95 backdrop-blur-sm z-10">
+                      <tr className="border-b-2 border-orange-500/30">
+                        <th className="py-6 px-6 text-xl font-bold text-left">Features</th>
+                        <th className="py-6 px-6 text-center text-xl font-bold text-orange-400">Foundation</th>
+                        <th className="py-6 px-6 text-center text-xl font-bold text-yellow-400">Growth</th>
+                        <th className="py-6 px-6 text-center text-xl font-bold text-orange-300">Elite</th>
                       </tr>
                     </thead>
-                    <tbody className="text-base">
-                      <tr className="border-b border-border/50">
-                        <td className="py-3 px-4">Check-in Frequency</td>
-                        <td className="py-3 px-4 text-center">Monthly</td>
-                        <td className="py-3 px-4 text-center">Bi-weekly</td>
-                        <td className="py-3 px-4 text-center">Weekly</td>
+                    <tbody className="text-lg">
+                      <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                        <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                          <Clock className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          Check-in Frequency
+                        </td>
+                        <td className="py-5 px-6 text-center font-medium group-hover:bg-orange-500/5 transition-colors">Monthly</td>
+                        <td className="py-5 px-6 text-center font-medium bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">Bi-weekly</td>
+                        <td className="py-5 px-6 text-center font-medium group-hover:bg-orange-500/5 transition-colors">Weekly</td>
                       </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-3 px-4">Custom Training Program</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
+                      <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                        <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                          <Target className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          Custom Training Program
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
                       </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-3 px-4">Form Review & Feedback</td>
-                        <td className="py-3 px-4 text-center text-red-400">✗</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
+                      <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                        <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                          <Users className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          Form Review & Feedback
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-6 h-6 text-red-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
                       </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-3 px-4">Tension Reset Coaching</td>
-                        <td className="py-3 px-4 text-center text-red-400">✗</td>
-                        <td className="py-3 px-4 text-center text-red-400">✗</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
+                      <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                        <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                          <Zap className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          Tension Reset Coaching
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-6 h-6 text-red-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-6 h-6 text-red-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
                       </tr>
-                      <tr>
-                        <td className="py-3 px-4">24/7 Text Support</td>
-                        <td className="py-3 px-4 text-center text-red-400">✗</td>
-                        <td className="py-3 px-4 text-center text-red-400">✗</td>
-                        <td className="py-3 px-4 text-center text-green-400">✓</td>
+                      <tr className="hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                        <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                          <MessageCircle className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          24/7 Text Support
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-6 h-6 text-red-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-6 h-6 text-red-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -673,12 +742,31 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
+
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-b from-card/30 to-transparent">
-        <div className="container mx-auto px-4">
+      {/* Why Choose All Levels Athletics Section */}
+      <section className="relative py-40 overflow-hidden">
+        {/* Enhanced Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/30 via-yellow-500/15 to-orange-600/25"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-transparent to-yellow-500/10"></div>
+        
+        {/* Enhanced Animated Background Elements */}
+        <div className="absolute top-20 left-10 w-40 h-40 bg-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-500/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-orange-500/8 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Enhanced Header Section */}
           <div className="text-center mb-20">
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-8 py-4 rounded-full shadow-2xl border-2 border-white/20 backdrop-blur-sm mb-8 hover:scale-105 transition-transform">
+              <Trophy className="w-6 h-6 text-black" />
+              <span className="text-xl">500+ Success Stories</span>
+              <Star className="w-6 h-6 text-black" />
+            </div>
             <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
               Why Choose <span className="gradient-text">All Levels Athletics?</span>
             </h2>
@@ -687,98 +775,94 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
-            <div className="relative">
-              <img
-                src="/tension-reset-coaching.png"
-                alt="Daniel Ledbetter Professional Training"
-                className="w-full h-[600px] object-cover rounded-2xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-2xl" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="bg-black/80 backdrop-blur-sm rounded-lg p-6">
-                  <h3 className="font-heading text-xl font-bold mb-2 gradient-text">Daniel Ledbetter</h3>
-                  <p className="text-white/90">Certified Personal Trainer & Tension Reset Specialist</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <Card className="bg-card/80 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center">
-                    <Target className="w-10 h-10 text-black" />
+          {/* Enhanced Features Grid - Two Rows */}
+          <div className="max-w-6xl mx-auto">
+            {/* First Row - 3 Cards */}
+            <div className="grid lg:grid-cols-3 gap-6 mb-8">
+              {/* Feature Card 1 */}
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
+                <CardContent className="text-center py-6 px-6">
+                  <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <Target className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold mb-4">Personalized Approach</h3>
-                  <p className="text-white/80">
-                    Every program is tailored specifically to your goals, fitness level, and lifestyle. No cookie-cutter
-                    solutions.
+                  <h3 className="font-heading text-xl font-bold mb-4 group-hover:text-orange-400 transition-colors">Personalized Approach</h3>
+                  <p className="text-white/80 leading-relaxed text-base">
+                    Every program is tailored specifically to your goals, fitness level, and lifestyle. No cookie-cutter solutions.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center">
-                    <Zap className="w-10 h-10 text-black" />
+              {/* Feature Card 2 */}
+              <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
+                <CardContent className="text-center py-6 px-6">
+                  <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <Zap className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold mb-4">Proven Results</h3>
-                  <p className="text-white/80">
+                  <h3 className="font-heading text-xl font-bold mb-4 group-hover:text-yellow-400 transition-colors">Proven Results</h3>
+                  <p className="text-white/80 leading-relaxed text-base">
                     Over 500 successful transformations with a 98% client satisfaction rate. Our methods work.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center">
-                    <Users className="w-10 h-10 text-black" />
+              {/* Feature Card 3 */}
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
+                <CardContent className="text-center py-6 px-6">
+                  <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <Users className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold mb-4">Expert Guidance</h3>
-                  <p className="text-white/80">
-                    Work directly with Daniel Ledbetter, a certified professional with years of experience in body
-                    transformation.
+                  <h3 className="font-heading text-xl font-bold mb-4 group-hover:text-orange-400 transition-colors">Expert Guidance</h3>
+                  <p className="text-white/80 leading-relaxed text-base">
+                    Work directly with Daniel Ledbetter, a certified professional with years of experience in body transformation.
                   </p>
                 </CardContent>
               </Card>
+            </div>
 
-              <Card className="bg-card/80 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center">
-                    <Clock className="w-10 h-10 text-black" />
+            {/* Second Row - 3 Cards */}
+            <div className="grid lg:grid-cols-3 gap-6 mb-16">
+              {/* Feature Card 4 */}
+              <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
+                <CardContent className="text-center py-6 px-6">
+                  <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <Clock className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold mb-4">Flexible Scheduling</h3>
-                  <p className="text-white/80">
+                  <h3 className="font-heading text-xl font-bold mb-4 group-hover:text-yellow-400 transition-colors">Flexible Scheduling</h3>
+                  <p className="text-white/80 leading-relaxed text-base">
                     Train on your schedule with online coaching that fits your busy lifestyle. No gym required.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center">
-                    <Shield className="w-10 h-10 text-black" />
+              {/* Feature Card 5 */}
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
+                <CardContent className="text-center py-6 px-6">
+                  <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <Shield className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold mb-4">Ongoing Support</h3>
-                  <p className="text-white/80">
+                  <h3 className="font-heading text-xl font-bold mb-4 group-hover:text-orange-400 transition-colors">Ongoing Support</h3>
+                  <p className="text-white/80 leading-relaxed text-base">
                     Get continuous support and motivation throughout your journey. You're never alone in this process.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center">
-                    <Trophy className="w-10 h-10 text-black" />
+              {/* Feature Card 6 */}
+              <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
+                <CardContent className="text-center py-6 px-6">
+                  <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <Trophy className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold mb-4">Innovative Methods</h3>
-                  <p className="text-white/80">
+                  <h3 className="font-heading text-xl font-bold mb-4 group-hover:text-yellow-400 transition-colors">Innovative Methods</h3>
+                  <p className="text-white/80 leading-relaxed text-base">
                     Revolutionary tension reset techniques and cutting-edge recovery methods you won't find elsewhere.
                   </p>
                 </CardContent>
               </Card>
             </div>
           </div>
+
+
         </div>
       </section>
 
@@ -793,77 +877,13 @@ export default function HomePage() {
               <p className="text-xl md:text-2xl text-muted-foreground mb-8">
                 Get started with your free 7-day trial today - no credit card required
               </p>
-              <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-400 px-6 py-3 rounded-full border border-green-500/30">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-semibold">Free Trial • No Commitment • Cancel Anytime</span>
-              </div>
+
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-16 items-start">
-              <div className="space-y-8">
-                <div className="space-y-6">
-                  <h3 className="font-heading text-2xl font-bold gradient-text">Get In Touch</h3>
-
-                  <div className="flex items-center gap-4 p-4 bg-card/50 rounded-lg border border-orange-500/20 hover:border-orange-500/40 transition-colors">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-lg">Call or Text</div>
-                      <div className="text-muted-foreground">760-585-8832</div>
-                      <div className="text-sm text-white/60">Available evenings & weekends</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-card/50 rounded-lg border border-orange-500/20 hover:border-orange-500/40 transition-colors">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-lg">Email</div>
-                      <div className="text-muted-foreground">AllLevelsAthletics@gmail.com</div>
-                      <div className="text-sm text-white/60">Response within 24 hours</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-card/50 rounded-lg border border-orange-500/20 hover:border-orange-500/40 transition-colors">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-lg">Service Area</div>
-                      <div className="text-muted-foreground">Nationwide (Online Only)</div>
-                      <div className="text-sm text-white/60">Serving clients across all time zones</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-card/50 rounded-lg border border-orange-500/20 hover:border-orange-500/40 transition-colors">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-lg">Availability</div>
-                      <div className="text-muted-foreground">Evenings & Weekends</div>
-                      <div className="text-sm text-white/60">48-hour booking notice required</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-heading text-xl font-bold">Follow Our Journey</h3>
-                  <div className="flex gap-4">
-                    <Badge variant="outline" className="border-orange-500/30 text-orange-400 px-4 py-2 text-base">
-                      TikTok: @AllLevelsAthletics
-                    </Badge>
-                    <Badge variant="outline" className="border-yellow-500/30 text-yellow-400 px-4 py-2 text-base">
-                      Instagram: @AllLevelsAthletics
-                    </Badge>
-                  </div>
-                </div>
-              </div>
+            <div className="grid lg:grid-cols-2 gap-12 items-center justify-center">
 
               <Card className="bg-card/80 border-2 border-orange-500/30 glow-orange backdrop-blur-sm">
-                <CardHeader className="text-center pb-6">
+                <CardHeader className="text-center pb-4">
                   <CardTitle className="font-heading text-3xl mb-2">Start Your Journey</CardTitle>
                   <CardDescription className="text-lg">
                     Join hundreds of satisfied clients who transformed their lives
@@ -879,9 +899,9 @@ export default function HomePage() {
                       </span>
                     </Button>
 
-                    <div className="text-center space-y-3">
-                      <div className="text-sm text-muted-foreground">✨ No credit card required • Cancel anytime</div>
-                      <div className="flex justify-center items-center gap-2">
+                                                                <div className="text-center space-y-3">
+                        <div className="text-sm text-muted-foreground"> No credit card required • Cancel anytime</div>
+                        <div className="flex justify-center items-center gap-2">
                         <div className="flex -space-x-2">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 border-2 border-background" />
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 border-2 border-background" />
@@ -899,15 +919,13 @@ export default function HomePage() {
                       <div className="text-lg font-semibold">Questions? We're here to help!</div>
                       <div className="grid grid-cols-2 gap-3">
                         <Button
-                          variant="outline"
-                          className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 bg-transparent"
+                          className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black hover:from-orange-600 hover:to-yellow-600 border-orange-500 shadow-lg"
                         >
                           <Phone className="w-4 h-4 mr-2" />
                           Call Now
                         </Button>
                         <Button
-                          variant="outline"
-                          className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 bg-transparent"
+                          className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-600 hover:to-orange-600 border-yellow-500 shadow-lg"
                         >
                           <Mail className="w-4 h-4 mr-2" />
                           Email Us
@@ -917,6 +935,35 @@ export default function HomePage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Interactive Image Section */}
+              <div className="relative group cursor-pointer h-full">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl transform group-hover:scale-105 transition-all duration-500 hover:shadow-orange-500/25 h-full">
+                  <img
+                    src="/tension-reset-coaching.png"
+                    alt="Daniel Ledbetter Professional Training"
+                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/40 transition-all duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-transparent to-yellow-500/20 group-hover:from-orange-500/30 group-hover:to-yellow-500/30 transition-all duration-500"></div>
+                  
+                  {/* Interactive Floating Badge */}
+                  <div className="absolute top-6 right-6 transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="bg-black/90 backdrop-blur-sm rounded-3xl p-5 border-2 border-white/30 shadow-2xl group-hover:shadow-orange-500/25">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                          <Trophy className="w-6 h-6 text-black" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-white text-base group-hover:text-orange-400 transition-colors">Daniel Ledbetter</div>
+                          <div className="text-xs text-white/80 group-hover:text-white/90 transition-colors">Certified Trainer & Specialist</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
