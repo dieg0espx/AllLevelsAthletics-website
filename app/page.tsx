@@ -83,14 +83,14 @@ export default function HomePage() {
 
               {/* Description */}
                 <div className="space-y-6">
-                  <p className="text-xl md:text-2xl text-white/80 leading-relaxed">
+                  <p className="text-xl md:text-2xl text-white leading-relaxed">
                   Transform your body with{" "}
                     <span className="text-orange-500 font-semibold relative group cursor-default">
                       premium online personal training
                       <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
                     </span>
                   </p>
-                  <div className="grid grid-cols-1 gap-4 text-base text-white/70">
+                  <div className="grid grid-cols-1 gap-4 text-base text-white">
                     <div className="flex items-center gap-3 group cursor-default">
                       <Target className="w-5 h-5 text-orange-500 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-105 group-hover:text-yellow-400 will-change-transform" />
                     <span>Revolutionary Tension Reset Techniques</span>
@@ -883,13 +883,13 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center justify-center">
 
               <Card className="bg-card/80 border-2 border-orange-500/30 glow-orange backdrop-blur-sm">
-                <CardHeader className="text-center pb-4">
+                <CardHeader className="text-center pb-2">
                   <CardTitle className="font-heading text-3xl mb-2">Start Your Journey</CardTitle>
                   <CardDescription className="text-lg">
                     Join hundreds of satisfied clients who transformed their lives
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-8">
                   <div className="space-y-4">
                     <Button className="w-full gradient-orange-yellow text-black font-bold text-xl py-8 hover:scale-105 transition-all shadow-2xl group">
                       <span className="flex items-center gap-3">
