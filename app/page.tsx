@@ -19,6 +19,7 @@ import {
   Quote,
 } from "lucide-react"
 import { Navigation } from "@/components/navigation"
+import Stars from "@/components/Stars"
 
 export default function HomePage() {
   return (
@@ -26,110 +27,138 @@ export default function HomePage() {
       {/* Navigation */}
       <Navigation />
 
-      <section className="relative h-screen flex items-center overflow-hidden bg-background">
+             <section className="relative min-h-screen flex items-center overflow-hidden bg-background pt-32 pb-20">
         <div className="container mx-auto px-4 relative z-10 h-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center h-full py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full py-20">
             {/* Left Column - Text & CTA */}
-            <div className="space-y-6">
+              <div className="space-y-8 lg:space-y-10 order-2 lg:order-1">
               {/* Elite badge */}
-              <div className="inline-flex items-center gap-3 bg-white text-black font-bold text-lg px-6 py-3 rounded-full shadow-lg">
-                <Trophy className="w-5 h-5" />
-                Elite Online Training Since 2020
-                <Star className="w-5 h-5" />
+                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-full shadow-2xl border-2 border-white/20 backdrop-blur-sm">
+                  <Trophy className="w-6 h-6 text-black" />
+                  <span className="text-xl">500+ Transformations Since 2020</span>
+                  <Star className="w-6 h-6 text-black" />
               </div>
 
               {/* Main headline */}
-              <div className="space-y-4">
+                <div className="space-y-6">
                 <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-black leading-none tracking-tight">
-                  <span className="block text-foreground">ALL LEVELS</span>
-                  <span className="block text-orange-500">ATHLETICS</span>
+                    <span className="block text-foreground transition-all duration-500 ease-out hover:text-orange-400 hover:scale-105 transform cursor-default">ALL LEVELS</span>
+                    <span className="block text-orange-500 transition-all duration-500 ease-out hover:bg-gradient-to-r hover:from-orange-500 hover:via-yellow-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent hover:drop-shadow-[0_0_20px_rgba(251,146,60,0.5)] hover:scale-105 transform cursor-default relative group">
+                      ATHLETICS
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out blur-sm scale-110"></div>
+                    </span>
                 </h1>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-1 bg-orange-500 rounded-full" />
-                  <Zap className="w-6 h-6 text-orange-500" />
-                  <div className="w-12 h-1 bg-orange-500 rounded-full" />
+                  
+                  {/* Enhanced Energy Drawing */}
+                  <div className="flex items-center gap-4 relative">
+                    {/* Left energy line */}
+                    <div className="w-24 h-1 bg-gradient-to-r from-transparent via-orange-500 to-orange-500 rounded-full relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400 animate-pulse"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                    </div>
+                    
+                    {/* Central energy icon with enhanced effects */}
+                    <div className="relative group">
+                      <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:shadow-2xl group-hover:shadow-orange-500/50">
+                        <Zap className="w-5 h-5 text-white transition-all duration-300 ease-out group-hover:rotate-12 group-hover:scale-110" />
+                      </div>
+                      {/* Pulsing rings */}
+                      <div className="absolute inset-0 w-8 h-8 border-2 border-orange-500/30 rounded-full animate-ping"></div>
+                      <div className="absolute inset-0 w-8 h-8 border border-yellow-500/50 rounded-full animate-pulse"></div>
+                      {/* Energy particles */}
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
+                      <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    </div>
+                    
+                    {/* Right energy line */}
+                    <div className="w-24 h-1 bg-gradient-to-l from-transparent via-yellow-500 to-yellow-500 rounded-full relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-l from-yellow-400 via-orange-400 to-yellow-400 animate-pulse"></div>
+                      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                    </div>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="space-y-4">
-                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                <div className="space-y-6">
+                  <p className="text-xl md:text-2xl text-white/80 leading-relaxed">
                   Transform your body with{" "}
-                  <span className="text-orange-500 font-semibold">premium online personal training</span>
-                </p>
-                <div className="grid grid-cols-1 gap-3 text-base text-muted-foreground">
-                  <div className="flex items-center gap-3">
-                    <Target className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-orange-500 font-semibold relative group cursor-default">
+                      premium online personal training
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+                    </span>
+                  </p>
+                  <div className="grid grid-cols-1 gap-4 text-base text-white/70">
+                    <div className="flex items-center gap-3 group cursor-default">
+                      <Target className="w-5 h-5 text-orange-500 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-105 group-hover:text-yellow-400 will-change-transform" />
                     <span>Revolutionary Tension Reset Techniques</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Shield className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                    <div className="flex items-center gap-3 group cursor-default">
+                      <Shield className="w-5 h-5 text-yellow-500 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-105 group-hover:text-orange-400 will-change-transform" />
                     <span>Professional Recovery Tools & Methods</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Users className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <div className="flex items-center gap-3 group cursor-default">
+                      <Users className="w-5 h-5 text-orange-500 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-105 group-hover:text-yellow-400 will-change-transform" />
                     <span>500+ Success Stories & 98% Success Rate</span>
                   </div>
                 </div>
               </div>
 
               {/* CTA section */}
-              <div className="space-y-4">
+                <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     size="lg"
-                    className="bg-orange-500 text-white font-bold text-base px-6 py-3 rounded-full hover:bg-orange-600 transition-all duration-300 shadow-lg group"
+                      className="bg-orange-500 text-white font-bold text-base px-6 py-3 rounded-full transition-all duration-300 ease-out shadow-lg group hover:bg-gradient-to-r hover:from-orange-500 hover:to-yellow-500 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <span className="flex items-center gap-3">
                       <Play className="w-4 h-4" />
                       Start Free 7-Day Trial
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white text-base px-6 py-3 rounded-full transition-all duration-300 group"
-                  >
-                    <span className="flex items-center gap-3">
-                      <Trophy className="w-4 h-4" />
-                      View Success Stories
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
                     </span>
                   </Button>
                 </div>
 
-                <p className="text-muted-foreground text-sm">
-                  ✨ No credit card required • Cancel anytime • Join 500+ satisfied clients
+                  <p className="text-white/60 text-sm">
+                     No credit card required • Cancel anytime • Join 500+ satisfied clients
                 </p>
               </div>
 
             </div>
 
-            {/* Right Column - Square Image */}
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-sm aspect-square">
-                <div className="absolute inset-0 bg-orange-500/20 rounded-2xl transform rotate-3"></div>
-                <div className="absolute inset-0 bg-yellow-500/10 rounded-2xl transform -rotate-2"></div>
-                <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+              {/* Right Column - Large Prominent Image */}
+              <div className="order-1 lg:order-2 flex justify-center lg:justify-end items-center">
+                <div className="relative w-full max-w-md lg:max-w-lg aspect-[4/5] lg:aspect-square">
+                  {/* Background decorative elements */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-3xl transform rotate-1 scale-105"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 rounded-3xl transform -rotate-1 scale-105"></div>
+                  
+                  {/* Main image container */}
+                  <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl transition-transform duration-500 ease-out hover:scale-105">
                   <img
                     src="/athletic-person-gym.png"
                     alt="Professional athletic training"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                    
+                    {/* Gradient overlay for better integration */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/15 via-transparent to-yellow-500/15"></div>
+                    
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 rounded-3xl shadow-[inset_0_0_20px_rgba(251,146,60,0.1)]"></div>
                   
                   {/* Floating stats card */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-card/90 backdrop-blur-sm rounded-lg p-3 border border-orange-500/30">
+                    <div className="absolute bottom-6 left-6 right-6 bg-black/85 backdrop-blur-md rounded-xl p-4 border border-white/10">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-orange-500 font-bold text-base">Daniel Ledbetter</div>
-                        <div className="text-muted-foreground text-xs">Certified Personal Trainer</div>
+                          <div className="text-orange-500 font-bold text-lg">Daniel Ledbetter</div>
+                          <div className="text-white/80 text-sm">Certified Personal Trainer</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-foreground font-bold text-lg">500+</div>
-                        <div className="text-muted-foreground text-xs">Clients</div>
+                          <div className="text-white font-bold text-xl">500+</div>
+                          <div className="text-white/80 text-sm">Clients</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -140,100 +169,293 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-b from-card/30 to-transparent">
-        <div className="container mx-auto px-4">
+      <section className="gradient-bg-variant-a py-16 md:py-24" aria-labelledby="testimonials-heading">
+        <div className="wave-pattern-a"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
-              Real <span className="gradient-text">Success Stories</span>
+            <h2 id="testimonials-heading" className="font-heading text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Real <span className="text-amber-500">Success Stories</span>
             </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-neutral-200 max-w-3xl mx-auto">
               See how our clients transformed their lives with All Levels Athletics
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            <Card className="bg-card/80 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm">
-              <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden">
+          {/* Mobile Carousel */}
+          <div className="md:hidden">
+            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 -mx-4">
+              <div className="flex gap-6 px-4">
+                {/* Jessica M. Testimonial */}
+                <figure 
+                  className="flex-shrink-0 w-[85%] sm:w-[70%] snap-start flex flex-col h-full rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-6 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  itemScope 
+                  itemType="https://schema.org/Review"
+                  tabIndex={0}
+                >
+                  <div className="text-center mb-6">
+                    <div className="relative w-18 h-18 mx-auto mb-4">
                   <img
                     src="/smiling-fitness-woman-headshot.png"
                     alt="Jessica M. - Client Success Story"
-                    className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
                   />
                 </div>
                 <div className="flex justify-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
-                  ))}
+                      <Stars rating={5} />
+                      <span className="sr-only">5 out of 5 stars</span>
                 </div>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <Quote className="w-8 h-8 text-orange-500 mx-auto opacity-50" />
-                <p className="text-lg italic text-white/90">
+                  </div>
+                  
+                                     <blockquote className="flex-1">
+                     <div className="relative">
+                       <div className="text-center mb-4">
+                         <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                           <span itemProp="name">Jessica M.</span>
+                         </div>
+                         <div className="text-sm text-neutral-400" itemProp="reviewBody">
+                           Marketing Executive
+                         </div>
+                         <meta itemProp="reviewRating" content="5" />
+                       </div>
+                       <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-6"></div>
+                       <p className="text-lg leading-relaxed text-neutral-200 max-w-prose mx-auto line-clamp-5">
                   "Lost 30 pounds and gained incredible strength. Daniel's tension reset techniques changed everything
-                  for me!"
+                       for me! The personalized approach made all the difference in my fitness journey."
                 </p>
-                <div className="text-sm text-muted-foreground">
-                  <div className="font-semibold text-white">Jessica M.</div>
-                  <div>Marketing Executive</div>
                 </div>
-              </CardContent>
-            </Card>
+                 </blockquote>
+                </figure>
 
-            <Card className="bg-card/80 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm">
-              <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden">
+                {/* Robert K. Testimonial */}
+                <figure 
+                  className="flex-shrink-0 w-[85%] sm:w-[70%] snap-start flex flex-col h-full rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-6 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  itemScope 
+                  itemType="https://schema.org/Review"
+                  tabIndex={0}
+                >
+                  <div className="text-center mb-6">
+                    <div className="relative w-18 h-18 mx-auto mb-4">
                   <img
                     src="/confident-man-athletic-wear-headshot.png"
                     alt="Robert K. - Client Success Story"
-                    className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
                   />
                 </div>
                 <div className="flex justify-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
-                  ))}
+                      <Stars rating={5} />
+                      <span className="sr-only">5 out of 5 stars</span>
                 </div>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <Quote className="w-8 h-8 text-orange-500 mx-auto opacity-50" />
-                <p className="text-lg italic text-white/90">
+                  </div>
+                  
+                                     <blockquote className="flex-1">
+                     <div className="relative">
+                       <div className="text-center mb-4">
+                         <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                           <span itemProp="name">Robert K.</span>
+                         </div>
+                         <div className="text-sm text-neutral-400" itemProp="reviewBody">
+                           Software Engineer
+                         </div>
+                         <meta itemProp="reviewRating" content="5" />
+                       </div>
+                       <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-6"></div>
+                       <p className="text-lg leading-relaxed text-neutral-200 max-w-prose mx-auto line-clamp-5">
                   "Finally found a program that works with my busy schedule. The online coaching is incredibly
-                  effective!"
+                       effective and the recovery tools have been game-changing for my performance."
                 </p>
-                <div className="text-sm text-muted-foreground">
-                  <div className="font-semibold text-white">Robert K.</div>
-                  <div>Software Engineer</div>
                 </div>
-              </CardContent>
-            </Card>
+                 </blockquote>
+                </figure>
 
-            <Card className="bg-card/80 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm">
-              <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden">
+                {/* Amanda L. Testimonial */}
+                <figure 
+                  className="flex-shrink-0 w-[85%] sm:w-[70%] snap-start flex flex-col h-full rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-6 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  itemScope 
+                  itemType="https://schema.org/Review"
+                  tabIndex={0}
+                >
+                  <div className="text-center mb-6">
+                    <div className="relative w-18 h-18 mx-auto mb-4">
                   <img
                     src="/athletic-woman-headshot.png"
                     alt="Amanda L. - Client Success Story"
-                    className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
                   />
                 </div>
                 <div className="flex justify-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
-                  ))}
+                      <Stars rating={5} />
+                      <span className="sr-only">5 out of 5 stars</span>
                 </div>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <Quote className="w-8 h-8 text-orange-500 mx-auto opacity-50" />
-                <p className="text-lg italic text-white/90">
-                  "The MFRoller and tension reset course eliminated my chronic back pain. Life-changing results!"
-                </p>
-                <div className="text-sm text-muted-foreground">
-                  <div className="font-semibold text-white">Amanda L.</div>
-                  <div>Physical Therapist</div>
+                                    </div>
+                  
+                                     <blockquote className="flex-1">
+                     <div className="relative">
+                       <div className="text-center mb-4">
+                         <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                           <span itemProp="name">Amanda L.</span>
+                         </div>
+                         <div className="text-sm text-neutral-400" itemProp="reviewBody">
+                           Physical Therapist
+                         </div>
+                         <meta itemProp="reviewRating" content="5" />
+                       </div>
+                       <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-6"></div>
+                       <p className="text-lg leading-relaxed text-neutral-200 max-w-prose mx-auto line-clamp-5">
+                 "The MFRoller and tension reset course eliminated my chronic back pain. Life-changing results
+                       that I never thought possible with online training!"
+               </p>
                 </div>
-              </CardContent>
-            </Card>
+                 </blockquote>
+                </figure>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
+            {/* Jessica M. Testimonial */}
+            <figure 
+              className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+              itemScope 
+              itemType="https://schema.org/Review"
+            >
+              <div className="text-center mb-6">
+                <div className="relative w-18 h-18 mx-auto mb-4">
+                  <img
+                    src="/smiling-fitness-woman-headshot.png"
+                    alt="Jessica M. - Client Success Story"
+                    className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                    width={72}
+                    height={72}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="flex justify-center gap-1 mb-2">
+                  <Stars rating={5} />
+                  <span className="sr-only">5 out of 5 stars</span>
+                </div>
+              </div>
+              
+              <blockquote className="flex-1">
+                <div className="relative">
+                  <div className="text-center mb-4">
+                    <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                      <span itemProp="name">Jessica M.</span>
+                    </div>
+                    <div className="text-sm text-neutral-400" itemProp="reviewBody">
+                      Marketing Executive
+                    </div>
+                    <meta itemProp="reviewRating" content="5" />
+                  </div>
+                  <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-6"></div>
+                  <p className="text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
+                    "Lost 30 pounds and gained incredible strength. Daniel's tension reset techniques changed everything
+                    for me! The personalized approach made all the difference in my fitness journey."
+                  </p>
+                </div>
+              </blockquote>
+            </figure>
+
+            {/* Robert K. Testimonial */}
+            <figure 
+              className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+              itemScope 
+              itemType="https://schema.org/Review"
+            >
+              <div className="text-center mb-6">
+                <div className="relative w-18 h-18 mx-auto mb-4">
+                  <img
+                    src="/confident-man-athletic-wear-headshot.png"
+                    alt="Robert K. - Client Success Story"
+                    className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                    width={72}
+                    height={72}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="flex justify-center gap-1 mb-2">
+                  <Stars rating={5} />
+                  <span className="sr-only">5 out of 5 stars</span>
+                </div>
+              </div>
+              
+              <blockquote className="flex-1">
+                <div className="relative">
+                  <div className="text-center mb-4">
+                    <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                      <span itemProp="name">Robert K.</span>
+                    </div>
+                    <div className="text-sm text-neutral-400" itemProp="reviewBody">
+                      Software Engineer
+                    </div>
+                    <meta itemProp="reviewRating" content="5" />
+                  </div>
+                  <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-6"></div>
+                  <p className="text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
+                    "Finally found a program that works with my busy schedule. The online coaching is incredibly
+                    effective and the recovery tools have been game-changing for my performance."
+                  </p>
+                </div>
+              </blockquote>
+            </figure>
+
+            {/* Amanda L. Testimonial */}
+            <figure 
+              className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+              itemScope 
+              itemType="https://schema.org/Review"
+            >
+              <div className="text-center mb-6">
+                <div className="relative w-18 h-18 mx-auto mb-4">
+                  <img
+                    src="/athletic-woman-headshot.png"
+                    alt="Amanda L. - Client Success Story"
+                    className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                    width={72}
+                    height={72}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="flex justify-center gap-1 mb-2">
+                  <Stars rating={5} />
+                  <span className="sr-only">5 out of 5 stars</span>
+                </div>
+              </div>
+              
+              <blockquote className="flex-1">
+                <div className="relative">
+                  <div className="text-center mb-4">
+                    <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                      <span itemProp="name">Amanda L.</span>
+                    </div>
+                    <div className="text-sm text-neutral-400" itemProp="reviewBody">
+                      Physical Therapist
+                    </div>
+                    <meta itemProp="reviewRating" content="5" />
+                  </div>
+                  <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-6"></div>
+                  <p className="text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
+                    "The MFRoller and tension reset course eliminated my chronic back pain. Life-changing results
+                    that I never thought possible with online training!"
+                  </p>
+                </div>
+              </blockquote>
+            </figure>
           </div>
         </div>
       </section>
@@ -448,194 +670,6 @@ export default function HomePage() {
                     </tbody>
                   </table>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
-              Professional <span className="gradient-text">Recovery Tools</span>
-            </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Premium products designed to accelerate your recovery and performance
-            </p>
-            <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-400 px-6 py-3 rounded-full border border-blue-500/30">
-              <Shield className="w-5 h-5" />
-              <span className="font-semibold">30-Day Money-Back Guarantee</span>
-            </div>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
-            <Card className="bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm">
-              <CardHeader>
-                <div className="w-full h-56 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
-                  <img
-                    src="/body-tension-reset-course.png"
-                    alt="Body Tension Reset Course Preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <Badge className="absolute top-4 right-4 bg-red-500/90 text-white">50% OFF</Badge>
-                </div>
-                <CardTitle className="font-heading text-2xl mb-2">Body Tension Reset Course</CardTitle>
-                <CardDescription className="text-lg">30-Day Self-Guided Program</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <p className="text-white/80">
-                    Learn Daniel's revolutionary tension reset techniques that have helped hundreds of clients eliminate
-                    chronic pain and improve performance.
-                  </p>
-                  <ul className="space-y-2 text-sm text-white/70">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>30 detailed video lessons</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Downloadable exercise guides</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Progress tracking sheets</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Lifetime access</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl font-bold gradient-text">$49</span>
-                  <span className="text-lg text-muted-foreground line-through">$99</span>
-                  <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Launch Promo</Badge>
-                </div>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-4 hover:scale-105 transition-all">
-                  Get Course Now
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm">
-              <CardHeader>
-                <div className="w-full h-56 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
-                  <img
-                    src="/placeholder-717a8.png"
-                    alt="MFRoller Professional Tool"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <Badge className="absolute top-4 right-4 bg-green-500/90 text-white">In Stock</Badge>
-                </div>
-                <CardTitle className="font-heading text-2xl mb-2">MFRoller</CardTitle>
-                <CardDescription className="text-lg">Professional Myofascial Release Tool</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <p className="text-white/80">
-                    The professional-grade myofascial release tool designed by Daniel for maximum effectiveness and
-                    durability.
-                  </p>
-                  <ul className="space-y-2 text-sm text-white/70">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Medical-grade materials</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Ergonomic design</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Instruction manual included</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>2-year warranty</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl font-bold gradient-text">$99</span>
-                  <span className="text-base text-muted-foreground">+ free shipping</span>
-                </div>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-4 hover:scale-105 transition-all">
-                  Order MFRoller
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/80 border-2 border-orange-500 hover:border-yellow-500 transition-all glow-orange group relative backdrop-blur-sm">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="gradient-orange-yellow text-black font-bold px-6 py-2 text-lg shadow-2xl">
-                  💎 BEST VALUE
-                </Badge>
-              </div>
-              <CardHeader className="pt-10">
-                <div className="w-full h-56 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
-                  <img
-                    src="/mfroller-course-bundle.png"
-                    alt="Complete Bundle Package"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <Badge className="absolute top-4 right-4 bg-purple-500/90 text-white">Limited Time</Badge>
-                </div>
-                <CardTitle className="font-heading text-2xl mb-2">Complete Bundle</CardTitle>
-                <CardDescription className="text-lg">MFRoller + Course Package</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <p className="text-white/80">
-                    Get everything you need for complete body transformation and recovery optimization.
-                  </p>
-                  <ul className="space-y-2 text-sm text-white/70">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Body Tension Reset Course</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Professional MFRoller</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Bonus: Recovery protocols</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span>Free shipping & handling</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl font-bold gradient-text">$149</span>
-                    <span className="text-lg text-muted-foreground line-through">$199</span>
-                  </div>
-                  <p className="text-lg text-green-400 font-semibold">Save $50 + Free Shipping!</p>
-                </div>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-4 hover:scale-105 transition-all shadow-2xl">
-                  Get Complete Bundle
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* ... existing product guarantee section ... */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="bg-card/80 border-2 border-green-500/30 backdrop-blur-sm">
-              <CardContent className="text-center py-12">
-                <Shield className="w-16 h-16 text-green-400 mx-auto mb-6" />
-                <h3 className="font-heading text-2xl font-bold mb-4">30-Day Money-Back Guarantee</h3>
-                <p className="text-lg text-white/80 max-w-2xl mx-auto">
-                  We're so confident in our products that we offer a full 30-day money-back guarantee. If you're not
-                  completely satisfied, we'll refund your purchase - no questions asked.
-                </p>
               </CardContent>
             </Card>
           </div>

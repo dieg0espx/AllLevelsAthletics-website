@@ -2,10 +2,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Target, Users, Award, Zap, Heart, Brain } from "lucide-react"
+import { Navigation } from "@/components/navigation"
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <Navigation />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20">
         <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-yellow-500/10" />
