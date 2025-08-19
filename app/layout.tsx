@@ -31,10 +31,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} dark`}>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased" suppressHydrationWarning>
         <Navigation />
         <main>{children}</main>
         <Footer />
+        <script async src="https://www.tiktok.com/embed.js"></script>
       </body>
     </html>
   )

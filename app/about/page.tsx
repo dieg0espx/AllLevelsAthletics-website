@@ -3,8 +3,67 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Target, Users, Award, Zap, Heart, Brain, ArrowRight } from "lucide-react"
-import { useEffect } from "react"
+import { Target, Users, Award, Zap, Heart, Brain, ArrowRight, Instagram, MessageCircle, Play } from "lucide-react"
+import { useEffect, useState, useRef } from "react"
+
+// Extend Window interface for TikTok embed
+declare global {
+  interface Window {
+    TikTokEmbed?: {
+      reloadEmbeds: () => void;
+    };
+  }
+}
+
+// TikTok Video Component using official embed
+function TikTokVideo({ videoId, url }: { videoId: string; url: string }) {
+  const [isClient, setIsClient] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Load TikTok embed script if not already loaded
+    if (typeof window !== 'undefined' && !(window as any).TikTokEmbed) {
+      const script = document.createElement('script');
+      script.src = 'https://www.tiktok.com/embed.js';
+      script.async = true;
+      script.onload = () => {
+        // Reload embeds after script loads
+        if ((window as any).TikTokEmbed) {
+          (window as any).TikTokEmbed.reloadEmbeds();
+        }
+      };
+      document.head.appendChild(script);
+    } else if ((window as any).TikTokEmbed) {
+      // If script is already loaded, reload embeds
+      (window as any).TikTokEmbed.reloadEmbeds();
+    }
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="w-full h-[800px] bg-gradient-to-br from-orange-500/20 to-yellow-500/20 flex items-center justify-center">
+        <div className="text-6xl">🎬</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-[800px]" ref={containerRef}>
+      <blockquote
+        className="tiktok-embed"
+        cite={url}
+        data-video-id={videoId}
+        style={{ maxWidth: '100%', minWidth: '100%', height: '100%' }}
+      >
+        <section></section>
+      </blockquote>
+    </div>
+  );
+}
+
+
 
 export default function AboutPage() {
   useEffect(() => {
@@ -222,7 +281,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-20">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-8">
             {/* Mission Card */}
             <Card className="group bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 ease-out hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 relative overflow-hidden h-96">
               {/* Card background glow */}
@@ -280,53 +339,141 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Founder Story */}
-      <section className="py-20">
+      {/* Recent TikTok Videos */}
+      <section className="py-12 bg-card/50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
+              <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
+                Recent <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Transformations</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+                Watch real results and training tips from our TikTok community
+              </p>
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-semibold px-6 py-3 rounded-full shadow-2xl border-2 border-white/20 backdrop-blur-sm">
+                <Play className="w-5 h-5" />
+                <a 
+                  href="https://www.tiktok.com/@alllevelsathletics?_t=ZS-8z0yXonAvtS&_r=1" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:underline cursor-pointer"
+                >
+                  @AllLevelsAthletics
+                </a>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* TikTok Video 1 */}
+              <div className="h-[800px]">
+                <TikTokVideo 
+                  videoId="7483302730698607903"
+                  url="https://www.tiktok.com/@alllevelsathletics/video/7483302730698607903?_r=1&_t=ZS-8z0yXonAvtS"
+                />
+              </div>
+
+              {/* TikTok Video 2 */}
+              <div className="h-[800px]">
+                <TikTokVideo 
+                  videoId="7480011972436692255"
+                  url="https://www.tiktok.com/@alllevelsathletics/video/7480011972436692255"
+                />
+              </div>
+
+              {/* TikTok Video 3 */}
+              <div className="h-[800px]">
+                <TikTokVideo 
+                  videoId="7479345034266037535"
+                  url="https://www.tiktok.com/@alllevelsathletics/video/7479345034266037535"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Founder Story */}
+      <section className="py-20 bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-orange-500/5"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,146,60,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,146,60,0.08),transparent_50%)]"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
               <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-                Meet <span className="gradient-text">Daniel Ledbetter</span>
+                Meet <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Daniel Ledbetter</span>
               </h2>
               <p className="text-xl text-muted-foreground">Founder & Lead Performance Coach</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <div className="w-full h-96 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 rounded-lg flex items-center justify-center">
-                  <div className="text-8xl">👨‍💼</div>
+                <div className="relative group">
+                  <div className="w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
+                    <img
+                      src="/gymTrainer.jpg"
+                      alt="Daniel Ledbetter - Founder & Lead Performance Coach"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-yellow-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  {/* Border glow */}
+                  <div className="absolute inset-0 rounded-2xl border-2 border-white/30 group-hover:border-white/60 transition-all duration-500"></div>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Daniel's journey into elite performance coaching began with his own transformation. After years of
-                  struggling with traditional training methods that left him frustrated and plateaued, he discovered the
-                  revolutionary power of tension-based training and myofascial release techniques.
-                </p>
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    Daniel's journey into elite performance coaching began with his own transformation. After years of
+                    struggling with traditional training methods that left him frustrated and plateaued, he discovered the
+                    revolutionary power of tension-based training and myofascial release techniques.
+                  </p>
 
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  What started as a personal breakthrough quickly evolved into a mission to help others. Daniel spent
-                  years studying under world-renowned coaches, mastering the science of human movement, and developing
-                  his unique methodology that combines cutting-edge training principles with personalized coaching.
-                </p>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    What started as a personal breakthrough quickly evolved into a mission to help others. Daniel spent
+                    years studying under world-renowned coaches, mastering the science of human movement, and developing
+                    his unique methodology that combines cutting-edge training principles with personalized coaching.
+                  </p>
 
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Today, Daniel has helped over 500 athletes achieve their goals, from weekend warriors to elite
-                  competitors. His innovative approach to online coaching has revolutionized how people think about
-                  remote training, proving that distance is no barrier to exceptional results.
-                </p>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    Today, Daniel has helped over 500 athletes achieve their goals, from weekend warriors to elite
+                    competitors. His innovative approach to online coaching has revolutionized how people think about
+                    remote training, proving that distance is no barrier to exceptional results.
+                  </p>
+                </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-                    Certified Performance Coach
-                  </Badge>
-                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                    Myofascial Release Specialist
-                  </Badge>
-                  <Badge className="bg-orange-600/20 text-orange-300 border-orange-600/30">
-                    500+ Clients Transformed
-                  </Badge>
+                <div className="space-y-4">
+                  <h3 className="font-heading text-2xl font-bold text-white mb-4">Expertise & Achievements</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/30 transition-colors">
+                      Certified Performance Coach
+                    </Badge>
+                    <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30 transition-colors">
+                      Myofascial Release Specialist
+                    </Badge>
+                    <Badge className="bg-orange-600/20 text-orange-300 border-orange-600/30 hover:bg-orange-600/30 transition-colors">
+                      500+ Clients Transformed
+                    </Badge>
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30 transition-colors">
+                      Elite Training Methods
+                    </Badge>
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30 transition-colors">
+                      Online Coaching Pioneer
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-8 py-3 rounded-full hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25">
+                    <span className="flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      Work with Daniel
+                    </span>
+                  </Button>
                 </div>
               </div>
             </div>
