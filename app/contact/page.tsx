@@ -1,12 +1,16 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap } from "lucide-react"
+import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState } from "react"
 
 export default function ContactPage() {
+  const [currentSlide, setCurrentSlide] = useState(0)
   return (
     <div className="min-h-screen bg-background">
 
@@ -79,322 +83,504 @@ export default function ContactPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            <Card className="bg-card border-2 border-orange-500/50 hover:border-orange-500 transition-all hover:glow-orange text-center">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto rounded-full gradient-orange-yellow flex items-center justify-center mb-4">
-                  <Phone className="w-8 h-8 text-black" />
+            {/* Call or Text Card */}
+            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="flex-shrink-0">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                  <Phone className="w-10 h-10 text-white" />
                 </div>
-                <CardTitle className="font-heading text-xl">Call or Text</CardTitle>
-                <CardDescription>Direct line to Daniel</CardDescription>
+                <CardTitle className="font-heading text-2xl text-white">Call or Text</CardTitle>
+                <CardDescription className="text-orange-300">Direct line to Daniel</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold gradient-text mb-2">760-585-8832</div>
-                <p className="text-sm text-muted-foreground mb-4">Available evenings & weekends for consultations</p>
-                <Button className="w-full gradient-orange-yellow text-black font-bold">Call Now</Button>
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col justify-start">
+                  <div className="text-2xl font-bold gradient-text mb-3">760-585-8832</div>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    Available evenings & weekends for consultations
+                  </p>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20">
+                  <span className="flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    Call Now
+                  </span>
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-2 border-yellow-500/50 hover:border-yellow-500 transition-all hover:glow-yellow text-center">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto rounded-full gradient-orange-yellow flex items-center justify-center mb-4">
-                  <Mail className="w-8 h-8 text-black" />
+            {/* Email Card */}
+            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="flex-shrink-0">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                  <Mail className="w-10 h-10 text-white" />
                 </div>
-                <CardTitle className="font-heading text-xl">Email</CardTitle>
-                <CardDescription>Detailed inquiries welcome</CardDescription>
+                <CardTitle className="font-heading text-2xl text-white">Email</CardTitle>
+                <CardDescription className="text-yellow-300">Detailed inquiries welcome</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-lg font-bold gradient-text mb-2">AllLevelsAthletics@gmail.com</div>
-                <p className="text-sm text-muted-foreground mb-4">Response within 24 hours guaranteed</p>
-                <Button className="w-full gradient-orange-yellow text-black font-bold">Send Email</Button>
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col justify-start">
+                  <div className="text-lg font-bold gradient-text mb-3">AllLevelsAthletics@gmail.com</div>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    Response within 24 hours guaranteed
+                  </p>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20">
+                  <span className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Send Email
+                  </span>
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-2 border-orange-500/50 hover:border-orange-500 transition-all hover:glow-orange text-center">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto rounded-full gradient-orange-yellow flex items-center justify-center mb-4">
-                  <Calendar className="w-8 h-8 text-black" />
+            {/* Schedule Card */}
+            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="flex-shrink-0">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                  <Calendar className="w-10 h-10 text-white" />
                 </div>
-                <CardTitle className="font-heading text-xl">Schedule</CardTitle>
-                <CardDescription>Book your consultation</CardDescription>
+                <CardTitle className="font-heading text-2xl text-white">Schedule</CardTitle>
+                <CardDescription className="text-orange-300">Book your consultation</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-lg font-bold gradient-text mb-2">Free Consultation</div>
-                <p className="text-sm text-muted-foreground mb-4">48-hour advance booking required</p>
-                <Button className="w-full gradient-orange-yellow text-black font-bold">Book Now</Button>
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col justify-start">
+                  <div className="text-xl font-bold gradient-text mb-3">Free Consultation</div>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    48-hour advance booking required
+                  </p>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20">
+                  <span className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Book Now
+                  </span>
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-2 border-yellow-500/50 hover:border-yellow-500 transition-all hover:glow-yellow text-center">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto rounded-full gradient-orange-yellow flex items-center justify-center mb-4">
-                  <MessageCircle className="w-8 h-8 text-black" />
+            {/* Social Media Card */}
+            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="flex-shrink-0">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                  <MessageCircle className="w-10 h-10 text-white" />
                 </div>
-                <CardTitle className="font-heading text-xl">Social Media</CardTitle>
-                <CardDescription>Follow our journey</CardDescription>
+                <CardTitle className="font-heading text-2xl text-white">Social Media</CardTitle>
+                <CardDescription className="text-yellow-300">Follow our journey</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-lg font-bold gradient-text mb-2">@AllLevelsAthletics</div>
-                <p className="text-sm text-muted-foreground mb-4">TikTok & Instagram updates</p>
-                <Button className="w-full gradient-orange-yellow text-black font-bold">Follow Us</Button>
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col justify-start">
+                  <div className="text-lg font-bold gradient-text mb-3">@AllLevelsAthletics</div>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    TikTok & Instagram updates
+                  </p>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20">
+                  <span className="flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Follow Us
+                  </span>
+                </Button>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-                Send Us a <span className="gradient-text">Message</span>
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Tell us about your goals and we'll get back to you with a personalized plan
-              </p>
-            </div>
+                                                                                                               {/* Service Area & Availability - New Design */}
+          <section className="py-20 bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-500/10 relative overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute top-10 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute bottom-10 right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+           
+           <div className="container mx-auto px-4 relative z-10">
+             <div className="text-center mb-20">
+               <Badge className="gradient-orange-yellow text-black font-bold mb-6 text-lg px-6 py-2">
+                 Global Reach
+               </Badge>
+               <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
+                 Service Area & <span className="gradient-text">Availability</span>
+               </h2>
+               <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                 From California to worldwide - we bring elite training to dedicated athletes everywhere
+               </p>
+             </div>
 
-            <Card className="bg-card border-2 border-orange-500/30 glow-orange">
-              <CardHeader className="text-center">
-                <CardTitle className="font-heading text-2xl">Get Your Free Consultation</CardTitle>
-                <CardDescription>
-                  Fill out the form below and Daniel will personally respond within 24 hours
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input id="firstName" placeholder="Enter your first name" className="bg-background" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input id="lastName" placeholder="Enter your last name" className="bg-background" />
-                  </div>
-                </div>
+                                                       {/* Main Content Grid */}
+               <div className="max-w-7xl mx-auto">
+               {/* Top Row - Stats & Info */}
+               <div className="grid md:grid-cols-3 gap-8 mb-16">
+                 <div className="text-center group">
+                   <div className="relative">
+                     <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                       <Globe className="w-16 h-16 text-orange-400" />
+                     </div>
+                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+                   </div>
+                   <h3 className="font-heading text-3xl font-bold text-white mb-2">50 States</h3>
+                   <p className="text-orange-300 text-lg">Nationwide Coverage</p>
+                 </div>
+                 
+                 <div className="text-center group">
+                   <div className="relative">
+                     <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                       <Clock className="w-16 h-16 text-yellow-400" />
+                     </div>
+                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+                   </div>
+                   <h3 className="font-heading text-3xl font-bold text-white mb-2">24/7</h3>
+                   <p className="text-yellow-300 text-lg">Always Available</p>
+                 </div>
+                 
+                 <div className="text-center group">
+                   <div className="relative">
+                     <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                       <Users className="w-16 h-16 text-orange-400" />
+                     </div>
+                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+                   </div>
+                   <h3 className="font-heading text-3xl font-bold text-white mb-2">500+</h3>
+                   <p className="text-orange-300 text-lg">Athletes Served</p>
+                 </div>
+               </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input id="email" type="email" placeholder="your.email@example.com" className="bg-background" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" placeholder="(555) 123-4567" className="bg-background" />
-                  </div>
-                </div>
+               {/* Bottom Row - Interactive Gallery & Schedule */}
+               <div className="grid lg:grid-cols-2 gap-12 items-start">
+                 {/* Left - Interactive Training Gallery */}
+                 <div className="space-y-6">
+                   <div className="text-center lg:text-left">
+                     <h3 className="font-heading text-3xl font-bold text-white mb-4">Training Gallery</h3>
+                     <p className="text-muted-foreground text-lg">See our programs in action</p>
+                   </div>
+                   
+                                                                                                                                                                                                                                                                                                                               {/* Modern Carousel */}
+                       <div className="relative group">
+                         <div className="relative h-[540px] rounded-2xl overflow-hidden bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
+                       {/* Main Image */}
+                       <div className="relative h-full">
+                         <img
+                           src="/womanexcercising.jpg"
+                           alt="Total Body Transformation"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 0 ? 1 : 0,
+                             transform: currentSlide === 0 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/manexercising3.jpg"
+                           alt="Athletic Performance"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 1 ? 1 : 0,
+                             transform: currentSlide === 1 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/womanexcercising2.jpg"
+                           alt="Movement Restoration"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 2 ? 1 : 0,
+                             transform: currentSlide === 2 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/manexercising4.jpg"
+                           alt="Strength Fundamentals"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 3 ? 1 : 0,
+                             transform: currentSlide === 3 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/womanexcercising3.jpg"
+                           alt="Morning Movement"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 4 ? 1 : 0,
+                             transform: currentSlide === 4 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                       </div>
+                       
+                       {/* Gradient Overlay */}
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                       
+                       {/* Content Overlay */}
+                       <div className="absolute bottom-0 left-0 right-0 p-8">
+                         <div className="text-white">
+                           <h4 className="font-heading text-2xl font-bold mb-2">
+                             {currentSlide === 0 && "Total Body Transformation"}
+                             {currentSlide === 1 && "Athletic Performance"}
+                             {currentSlide === 2 && "Movement Restoration"}
+                             {currentSlide === 3 && "Strength Fundamentals"}
+                             {currentSlide === 4 && "Morning Movement"}
+                           </h4>
+                           <p className="text-orange-300 text-lg">
+                             {currentSlide === 0 && "Comprehensive strength & conditioning"}
+                             {currentSlide === 1 && "Elite sports performance enhancement"}
+                             {currentSlide === 2 && "Injury recovery & pain relief"}
+                             {currentSlide === 3 && "Build a solid foundation"}
+                             {currentSlide === 4 && "Start your day energized"}
+                           </p>
+                         </div>
+                       </div>
+                       
+                       {/* Navigation */}
+                       <button
+                         onClick={() => setCurrentSlide((prev) => (prev === 0 ? 4 : prev - 1))}
+                         className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-black/80 transition-all group opacity-0 group-hover:opacity-100"
+                       >
+                         <ChevronLeft className="w-6 h-6 text-white group-hover:text-orange-400 transition-colors" />
+                       </button>
+                       
+                       <button
+                         onClick={() => setCurrentSlide((prev) => (prev === 4 ? 0 : prev + 1))}
+                         className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-black/80 transition-all group opacity-0 group-hover:opacity-100"
+                       >
+                         <ChevronRight className="w-6 h-6 text-white group-hover:text-orange-400 transition-colors" />
+                       </button>
+                     </div>
+                     
+                     {/* Thumbnail Navigation */}
+                     <div className="flex justify-center gap-3 mt-6">
+                       {Array.from({ length: 5 }, (_, index) => (
+                         <button
+                           key={index}
+                           onClick={() => setCurrentSlide(index)}
+                           className={`w-4 h-4 rounded-full transition-all duration-300 hover:scale-125 ${
+                             currentSlide === index
+                               ? 'bg-orange-500 scale-125 shadow-lg shadow-orange-500/50' 
+                               : 'bg-white/30 hover:bg-white/50'
+                           }`}
+                         />
+                       ))}
+                     </div>
+                   </div>
+                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="goals">What are your fitness goals? *</Label>
-                  <Textarea
-                    id="goals"
-                    placeholder="Tell us about your current fitness level, goals, and what you hope to achieve..."
-                    className="bg-background min-h-[120px]"
-                  />
-                </div>
+                 {/* Right - Schedule & Availability */}
+                 <div className="space-y-6">
+                   <div className="text-center lg:text-left">
+                     <h3 className="font-heading text-3xl font-bold text-white mb-4">Availability</h3>
+                     <p className="text-muted-foreground text-lg">Flexible scheduling for your lifestyle</p>
+                   </div>
+                   
+                   {/* Schedule Cards */}
+                   <div className="space-y-4">
+                     <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500/60 transition-all group">
+                       <div className="flex items-center gap-4 mb-4">
+                         <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                           <Clock className="w-6 h-6 text-white" />
+                         </div>
+                         <div>
+                           <h4 className="font-heading text-xl font-bold text-white">Consultation Hours</h4>
+                           <p className="text-orange-300">Evenings & Weekends</p>
+                         </div>
+                       </div>
+                       <div className="grid grid-cols-2 gap-4 text-sm">
+                         <div className="flex justify-between">
+                           <span className="text-muted-foreground">Weekdays:</span>
+                           <span className="text-white font-semibold">6-9 PM PST</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-muted-foreground">Weekends:</span>
+                           <span className="text-white font-semibold">Flexible</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     <div className="bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-xl p-6 hover:border-yellow-500/60 transition-all group">
+                       <div className="flex items-center gap-4 mb-4">
+                         <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center">
+                           <Zap className="w-6 h-6 text-white" />
+                         </div>
+                         <div>
+                           <h4 className="font-heading text-xl font-bold text-white">Quick Start</h4>
+                           <p className="text-yellow-300">48-hour setup process</p>
+                         </div>
+                       </div>
+                       <div className="space-y-2">
+                         <div className="flex items-center gap-3">
+                           <div className="w-6 h-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold text-xs">1</div>
+                           <span className="text-muted-foreground">Contact & Consultation</span>
+                         </div>
+                         <div className="flex items-center gap-3">
+                           <div className="w-6 h-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold text-xs">2</div>
+                           <span className="text-muted-foreground">Program Selection</span>
+                         </div>
+                         <div className="flex items-center gap-3">
+                           <div className="w-6 h-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold text-xs">3</div>
+                           <span className="text-muted-foreground">Start Training</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/30 rounded-xl p-6 hover:border-orange-500/60 transition-all group">
+                       <div className="flex items-center gap-4 mb-4">
+                         <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                           <Globe className="w-6 h-6 text-white" />
+                         </div>
+                         <div>
+                           <h4 className="font-heading text-xl font-bold text-white">Global Support</h4>
+                           <p className="text-orange-300">Worldwide accessibility</p>
+                         </div>
+                       </div>
+                       <p className="text-muted-foreground text-sm leading-relaxed">
+                         Online coaching platform serving athletes across all time zones. 
+                         Flexible communication and 24/7 support ensure you're never alone in your journey.
+                       </p>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </section>
 
-                <div className="space-y-2">
-                  <Label htmlFor="experience">Current fitness experience</Label>
-                  <Textarea
-                    id="experience"
-                    placeholder="Describe your current workout routine, any injuries or limitations, and previous training experience..."
-                    className="bg-background min-h-[100px]"
-                  />
-                </div>
+       {/* Contact Form */}
+       <section className="py-20 bg-gradient-to-br from-orange-500/5 via-yellow-500/3 to-orange-500/5 relative overflow-hidden">
+         {/* Background Elements */}
+         <div className="absolute top-10 right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl animate-pulse"></div>
+         <div className="absolute bottom-10 left-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+         
+         <div className="container mx-auto px-4 relative z-10">
+           <div className="max-w-4xl mx-auto">
+                           <div className="text-center mb-16">
+                <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
+                  Send Us a <span className="gradient-text">Message</span>
+                </h2>
+               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                 Tell us about your goals and we'll get back to you with a personalized plan within 24 hours
+               </p>
+             </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="timeline">When would you like to start?</Label>
-                  <Input id="timeline" placeholder="Immediately, next week, next month..." className="bg-background" />
-                </div>
+             <Card className="bg-card/90 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 shadow-2xl hover:shadow-orange-500/25">
+               <CardHeader className="text-center pb-8">
+                 <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+                   <MessageCircle className="w-10 h-10 text-black" />
+                 </div>
+                 <CardTitle className="font-heading text-3xl">Get Your Free Consultation</CardTitle>
+                 <CardDescription className="text-lg text-muted-foreground">
+                   Fill out the form below and Daniel will personally respond within 24 hours
+                 </CardDescription>
+               </CardHeader>
+               <CardContent className="space-y-8">
+                 {/* Personal Information */}
+                 <div className="space-y-6">
+                   <h3 className="font-heading text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
+                     Personal Information
+                   </h3>
+                   <div className="grid md:grid-cols-2 gap-6">
+                     <div className="space-y-3">
+                       <Label htmlFor="firstName" className="text-sm font-semibold">First Name *</Label>
+                       <Input 
+                         id="firstName" 
+                         placeholder="Enter your first name" 
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-12" 
+                       />
+                     </div>
+                     <div className="space-y-3">
+                       <Label htmlFor="lastName" className="text-sm font-semibold">Last Name *</Label>
+                       <Input 
+                         id="lastName" 
+                         placeholder="Enter your last name" 
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-12" 
+                       />
+                     </div>
+                   </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="questions">Any questions for Daniel?</Label>
-                  <Textarea
-                    id="questions"
-                    placeholder="Ask about programs, pricing, methodology, or anything else you'd like to know..."
-                    className="bg-background min-h-[80px]"
-                  />
-                </div>
+                   <div className="grid md:grid-cols-2 gap-6">
+                     <div className="space-y-3">
+                       <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
+                       <Input 
+                         id="email" 
+                         type="email" 
+                         placeholder="your.email@example.com" 
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-12" 
+                       />
+                     </div>
+                     <div className="space-y-3">
+                       <Label htmlFor="phone" className="text-sm font-semibold">Phone Number</Label>
+                       <Input 
+                         id="phone" 
+                         type="tel" 
+                         placeholder="(555) 123-4567" 
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-12" 
+                       />
+                     </div>
+                   </div>
+                 </div>
 
-                <div className="text-center pt-4">
-                  <Button
-                    size="lg"
-                    className="gradient-orange-yellow text-black font-bold text-lg px-12 py-4 glow-orange hover:scale-105 transition-all"
-                  >
-                    Send Message & Get Free Consultation
-                  </Button>
-                  <p className="text-sm text-muted-foreground mt-4">
-                    We respect your privacy. Your information will never be shared with third parties.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+                 {/* Fitness Goals */}
+                 <div className="space-y-4">
+                   <h3 className="font-heading text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
+                     Your Fitness Journey
+                   </h3>
+                   <div className="space-y-3">
+                     <Label htmlFor="goals" className="text-sm font-semibold">What are your fitness goals? *</Label>
+                     <Textarea
+                       id="goals"
+                       placeholder="Tell us about your current fitness level, goals, and what you hope to achieve..."
+                       className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[120px] resize-none"
+                     />
+                   </div>
 
-      {/* Service Area & Availability */}
-      <section className="py-20 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-              Service Area & <span className="gradient-text">Availability</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Online coaching means we can work with clients anywhere in the world
-            </p>
-          </div>
+                   <div className="space-y-3">
+                     <Label htmlFor="experience" className="text-sm font-semibold">Current fitness experience</Label>
+                     <Textarea
+                       id="experience"
+                       placeholder="Describe your current workout routine, any injuries or limitations, and previous training experience..."
+                       className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[100px] resize-none"
+                     />
+                   </div>
 
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto items-center">
-            <div className="space-y-8">
-              <Card className="bg-card border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center">
-                      <Globe className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <CardTitle className="font-heading text-xl">Nationwide Service</CardTitle>
-                      <CardDescription>Online coaching available everywhere</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Our online coaching platform allows us to work with clients across the United States and
-                    internationally. Distance is no barrier to achieving your fitness goals.
-                  </p>
-                </CardContent>
-              </Card>
+                   <div className="space-y-3">
+                     <Label htmlFor="timeline" className="text-sm font-semibold">When would you like to start?</Label>
+                     <Input 
+                       id="timeline" 
+                       placeholder="Immediately, next week, next month..." 
+                       className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-12" 
+                     />
+                   </div>
+                 </div>
 
-              <Card className="bg-card border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <CardTitle className="font-heading text-xl">Flexible Hours</CardTitle>
-                      <CardDescription>Evenings & weekends preferred</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Consultation Hours:</span>
-                      <span className="font-semibold">6:00 PM - 9:00 PM PST</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Weekend Availability:</span>
-                      <span className="font-semibold">Saturday & Sunday</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Booking Notice:</span>
-                      <span className="font-semibold">48 hours required</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                 {/* Questions */}
+                 <div className="space-y-4">
+                   <h3 className="font-heading text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
+                     Questions & Additional Info
+                   </h3>
+                   <div className="space-y-3">
+                     <Label htmlFor="questions" className="text-sm font-semibold">Any questions for Daniel?</Label>
+                     <Textarea
+                       id="questions"
+                       placeholder="Ask about programs, pricing, methodology, or anything else you'd like to know..."
+                       className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[80px] resize-none"
+                     />
+                   </div>
+                 </div>
 
-              <Card className="bg-card border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center">
-                      <Users className="w-6 h-6 text-black" />
-                    </div>
-                    <div>
-                      <CardTitle className="font-heading text-xl">Response Time</CardTitle>
-                      <CardDescription>Quick and reliable communication</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Email Response:</span>
-                      <span className="font-semibold">Within 24 hours</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Text Messages:</span>
-                      <span className="font-semibold">Same day</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Emergency Support:</span>
-                      <span className="font-semibold">Available for clients</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="space-y-8">
-              <Card className="bg-card border-2 border-orange-500 glow-orange">
-                <CardHeader className="text-center">
-                  <div className="w-20 h-20 mx-auto rounded-full gradient-orange-yellow flex items-center justify-center mb-4">
-                    <MapPin className="w-10 h-10 text-black" />
-                  </div>
-                  <CardTitle className="font-heading text-2xl">Based in California</CardTitle>
-                  <CardDescription>Serving clients nationwide through online coaching</CardDescription>
-                </CardHeader>
-                <CardContent className="text-center space-y-4">
-                  <div className="text-6xl mb-4">🌎</div>
-                  <p className="text-muted-foreground">
-                    While we're based in California, our online coaching platform allows us to work with dedicated
-                    athletes anywhere. Join clients from coast to coast who are achieving incredible results.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 pt-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold gradient-text">50</div>
-                      <div className="text-sm text-muted-foreground">States Served</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold gradient-text">500+</div>
-                      <div className="text-sm text-muted-foreground">Remote Clients</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow">
-                <CardHeader className="text-center">
-                  <Zap className="w-16 h-16 mx-auto mb-4 text-yellow-500" />
-                  <CardTitle className="font-heading text-xl">Quick Start Process</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full gradient-orange-yellow flex items-center justify-center text-black font-bold text-sm">
-                        1
-                      </div>
-                      <span className="text-muted-foreground">Contact us via phone, email, or form</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full gradient-orange-yellow flex items-center justify-center text-black font-bold text-sm">
-                        2
-                      </div>
-                      <span className="text-muted-foreground">Schedule your free consultation</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full gradient-orange-yellow flex items-center justify-center text-black font-bold text-sm">
-                        3
-                      </div>
-                      <span className="text-muted-foreground">Discuss goals and choose your program</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full gradient-orange-yellow flex items-center justify-center text-black font-bold text-sm">
-                        4
-                      </div>
-                      <span className="text-muted-foreground">Start your transformation journey</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
+                 {/* Submit Button */}
+                 <div className="text-center pt-6 border-t border-orange-500/30">
+                   <Button
+                     size="lg"
+                     className="gradient-orange-yellow text-black font-bold text-lg px-16 py-6 rounded-full hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25"
+                   >
+                     <span className="flex items-center gap-3">
+                       <MessageCircle className="w-5 h-5" />
+                       Send Message & Get Free Consultation
+                     </span>
+                   </Button>
+                   <p className="text-sm text-muted-foreground mt-6 max-w-md mx-auto">
+                     We respect your privacy. Your information will never be shared with third parties.
+                   </p>
+                 </div>
+               </CardContent>
+             </Card>
+           </div>
+         </div>
+       </section>
 
       {/* FAQ Section */}
       <section className="py-20">

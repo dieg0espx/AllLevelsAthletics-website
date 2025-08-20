@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="py-16 bg-card/50 border-t border-border">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div className="space-y-4">
               <Image
