@@ -66,52 +66,12 @@ function TikTokVideo({ videoId, url }: { videoId: string; url: string }) {
 
 
 export default function AboutPage() {
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const target = entry.target as HTMLElement;
-          
-          // Check if this element has already been animated
-          if (target.getAttribute('data-animated') === 'true') {
-            return;
-          }
-          
-          const finalValue = parseInt(target.getAttribute('data-target') || '0');
-          const suffix = target.textContent?.includes('+') ? '+' : 
-                        target.textContent?.includes('%') ? '%' : '';
-          
-          // Mark as animated immediately
-          target.setAttribute('data-animated', 'true');
-          
-          let currentValue = 0;
-          const increment = finalValue / 50;
-          const timer = setInterval(() => {
-            currentValue += increment;
-            if (currentValue >= finalValue) {
-              currentValue = finalValue;
-              clearInterval(timer);
-            }
-            target.textContent = Math.floor(currentValue) + suffix;
-          }, 30);
-          
-          // Stop observing this element since it's been animated
-          observer.unobserve(target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    const countElements = document.querySelectorAll('.animate-count-up');
-    countElements.forEach(el => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <div className="min-h-screen bg-background">
 
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-50 pb-42 bg-gradient-to-br from-black via-gray-900 to-black">
+      <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-12 sm:pb-16 md:pb-20 lg:pb-24 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
         <div className="absolute inset-0">
           <img
@@ -126,19 +86,19 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,146,60,0.25),transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,146,60,0.2),transparent_50%)]"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-black mb-8 leading-tight tracking-tight animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-              <span className="block text-white mb-4">Transforming Lives Through</span>
+            <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight">
+              <span className="block text-white mb-2 sm:mb-4">Transforming Lives Through</span>
               <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Elite Training</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+            <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 sm:mb-10 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
               Founded on the belief that every athlete deserves world-class training, regardless of their starting
               point. We combine cutting-edge science with personalized coaching to unlock your true potential.
             </p>
             
             {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -182,17 +142,17 @@ export default function AboutPage() {
                 <img
                   src="/athletic-person-gym.png"
                   alt="Athletic training"
-                  className="w-full h-full object-cover animate-fade-in-out"
+                                            className="w-full h-full object-cover"
                 />
                 <img
                   src="/manexercising.jpg"
                   alt="Man exercising"
-                  className="absolute inset-0 w-full h-full object-cover animate-fade-in-out-delayed"
+                                            className="absolute inset-0 w-full h-full object-cover"
                 />
                 <img
                   src="/dumbell.jpg"
                   alt="Dumbbell training"
-                  className="absolute inset-0 w-full h-full object-cover animate-fade-in-out-delayed-2"
+                                            className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
@@ -215,7 +175,7 @@ export default function AboutPage() {
                       <Users className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors animate-count-up" data-target="500">0+</div>
+                                                  <div className="text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors" data-target="500">500+</div>
                       <div className="text-white/80 font-semibold text-sm">Athletes Transformed</div>
                     </div>
                   </div>
@@ -227,7 +187,7 @@ export default function AboutPage() {
                       <Award className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors animate-count-up" data-target="98">0%</div>
+                                                  <div className="text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors" data-target="98">98%</div>
                       <div className="text-white/80 font-semibold text-sm">Client Success Rate</div>
                     </div>
                   </div>
@@ -240,7 +200,7 @@ export default function AboutPage() {
                       <Target className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors animate-count-up" data-target="3">0</div>
+                                                  <div className="text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors" data-target="3">3</div>
                       <div className="text-white/80 font-semibold text-sm">Years of Excellence</div>
                     </div>
                   </div>

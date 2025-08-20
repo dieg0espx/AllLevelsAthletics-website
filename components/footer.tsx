@@ -3,10 +3,10 @@ import { Badge } from "@/components/ui/badge"
 
 export function Footer() {
   return (
-    <footer className="py-16 bg-card/50 border-t border-border">
-      <div className="container mx-auto px-4">
+    <footer className="py-12 sm:py-16 bg-card/50 border-t border-border">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12">
             <div className="space-y-4">
               <Image
                 src="/logo.png"

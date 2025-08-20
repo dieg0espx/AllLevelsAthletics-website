@@ -30,7 +30,7 @@ export default function ServicesPage() {
     <div className="min-h-screen bg-background">
 
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-50 pb-42 bg-gradient-to-br from-black via-gray-900 to-black">
+      <section className="relative overflow-hidden pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-12 sm:pb-16 md:pb-20 lg:pb-24 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
         <div className="absolute inset-0">
           <img
@@ -45,23 +45,23 @@ export default function ServicesPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,146,60,0.25),transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,146,60,0.2),transparent_50%)]"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="gradient-orange-yellow text-black font-bold mb-6 text-lg px-6 py-2 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+            <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-base sm:text-lg px-4 sm:px-6 py-2">
               Premium Training Services
             </Badge>
-            <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-black mb-8 leading-tight tracking-tight animate-fade-in-up" style={{animationDelay: '0.4s'}}>
-              <span className="block text-white mb-4">Choose Your Path to</span>
+            <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight">
+              <span className="block text-white mb-2 sm:mb-4">Choose Your Path to</span>
               <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Peak Performance</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 sm:mb-10 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
               Our tier-based coaching system is designed to meet you exactly where you are and take you exactly where
               you want to go. Every program includes our revolutionary tension reset methodology and personalized
               approach.
             </p>
             
             {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up" style={{animationDelay: '0.8s'}}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -392,10 +392,10 @@ export default function ServicesPage() {
            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-transparent to-yellow-500/10"></div>
            
           {/* Enhanced Animated Background Elements */}
-          <div className="absolute top-20 left-10 w-40 h-40 bg-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-500/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-orange-500/8 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
-          <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-20 left-10 w-40 h-40 bg-orange-500/15 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-500/15 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-orange-500/8 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl"></div>
 
           <div className="container mx-auto px-4 relative z-10">
           {/* Enhanced Header Section */}
