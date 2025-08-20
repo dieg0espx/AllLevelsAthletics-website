@@ -2,12 +2,20 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Zap } from "lucide-react"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+
+  const isActive = (path: string) => {
+    if (path === "/" && pathname === "/") return true
+    if (path !== "/" && pathname.startsWith(path)) return true
+    return false
+  }
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-black/95 backdrop-blur-md border-b border-orange-500/30">
@@ -32,38 +40,68 @@ export function Navigation() {
           <div className="hidden md:flex items-center space-x-8">
             <Link 
               href="/" 
-              className="text-white/90 hover:text-orange-400 transition-all duration-300 font-medium relative group"
+              className={`transition-all duration-300 font-medium relative group ${
+                isActive("/") 
+                  ? "text-orange-400" 
+                  : "text-white/90 hover:text-orange-400"
+              }`}
             >
               Home
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 group-hover:w-full transition-all duration-300"></span>
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transition-all duration-300 ${
+                isActive("/") ? "w-full" : "w-0 group-hover:w-full"
+              }`}></span>
             </Link>
             <Link 
               href="/about" 
-              className="text-white/90 hover:text-orange-400 transition-all duration-300 font-medium relative group"
+              className={`transition-all duration-300 font-medium relative group ${
+                isActive("/about") 
+                  ? "text-orange-400" 
+                  : "text-white/90 hover:text-orange-400"
+              }`}
             >
               About
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 group-hover:w-full transition-all duration-300"></span>
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transition-all duration-300 ${
+                isActive("/about") ? "w-full" : "w-0 group-hover:w-full"
+              }`}></span>
             </Link>
             <Link 
               href="/services" 
-              className="text-white/90 hover:text-orange-400 transition-all duration-300 font-medium relative group"
+              className={`transition-all duration-300 font-medium relative group ${
+                isActive("/services") 
+                  ? "text-orange-400" 
+                  : "text-white/90 hover:text-orange-400"
+              }`}
             >
               Services
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 group-hover:w-full transition-all duration-300"></span>
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transition-all duration-300 ${
+                isActive("/services") ? "w-full" : "w-0 group-hover:w-full"
+              }`}></span>
             </Link>
             <Link 
               href="/programs" 
-              className="text-white/90 hover:text-orange-400 transition-all duration-300 font-medium relative group"
+              className={`transition-all duration-300 font-medium relative group ${
+                isActive("/programs") 
+                  ? "text-orange-400" 
+                  : "text-white/90 hover:text-orange-400"
+              }`}
             >
               Programs
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 group-hover:w-full transition-all duration-300"></span>
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transition-all duration-300 ${
+                isActive("/programs") ? "w-full" : "w-0 group-hover:w-full"
+              }`}></span>
             </Link>
             <Link 
               href="/contact" 
-              className="text-white/90 hover:text-orange-400 transition-all duration-300 font-medium relative group"
+              className={`transition-all duration-300 font-medium relative group ${
+                isActive("/contact") 
+                  ? "text-orange-400" 
+                  : "text-white/90 hover:text-orange-400"
+              }`}
             >
               Contact
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 group-hover:w-full transition-all duration-300"></span>
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-500 transition-all duration-300 ${
+                isActive("/contact") ? "w-full" : "w-0 group-hover:w-full"
+              }`}></span>
             </Link>
           </div>
 
@@ -91,35 +129,45 @@ export function Navigation() {
           <div className="md:hidden py-6 space-y-4 border-t border-orange-500/20 bg-black/95 backdrop-blur-md">
             <Link 
               href="/" 
-              className="block text-white/90 hover:text-orange-400 transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5"
+              className={`block transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5 ${
+                isActive("/") ? "text-orange-400 bg-orange-500/10" : "text-white/90 hover:text-orange-400"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               Home
             </Link>
             <Link 
               href="/about" 
-              className="block text-white/90 hover:text-orange-400 transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5"
+              className={`block transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5 ${
+                isActive("/about") ? "text-orange-400 bg-orange-500/10" : "text-white/90 hover:text-orange-400"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               About
             </Link>
             <Link 
               href="/services" 
-              className="block text-white/90 hover:text-orange-400 transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5"
+              className={`block transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5 ${
+                isActive("/services") ? "text-orange-400 bg-orange-500/10" : "text-white/90 hover:text-orange-400"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               Services
             </Link>
             <Link 
               href="/programs" 
-              className="block text-white/90 hover:text-orange-400 transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5"
+              className={`block transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5 ${
+                isActive("/programs") ? "text-orange-400 bg-orange-500/10" : "text-white/90 hover:text-orange-400"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               Programs
             </Link>
             <Link 
               href="/contact" 
-              className="block text-white/90 hover:text-orange-400 transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5"
+              className={`block transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-white/5 ${
+                isActive("/contact") ? "text-orange-400 bg-orange-500/10" : "text-white/90 hover:text-orange-400"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               Contact
