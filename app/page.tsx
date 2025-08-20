@@ -54,8 +54,8 @@ export default function HomePage() {
                   <div className="flex items-center gap-4 relative">
                     {/* Left energy line */}
                     <div className="w-24 h-1 bg-gradient-to-r from-transparent via-orange-500 to-orange-500 rounded-full relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400 animate-pulse"></div>
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                                      <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
                     </div>
                     
                     {/* Central energy icon with enhanced effects */}
@@ -64,17 +64,17 @@ export default function HomePage() {
                         <Zap className="w-5 h-5 text-white transition-all duration-300 ease-out group-hover:rotate-12 group-hover:scale-110" />
                       </div>
                       {/* Pulsing rings */}
-                      <div className="absolute inset-0 w-8 h-8 border-2 border-orange-500/30 rounded-full animate-ping"></div>
-                      <div className="absolute inset-0 w-8 h-8 border border-yellow-500/50 rounded-full animate-pulse"></div>
+                      <div className="absolute inset-0 w-8 h-8 border-2 border-orange-500/30 rounded-full"></div>
+                      <div className="absolute inset-0 w-8 h-8 border border-yellow-500/50 rounded-full"></div>
                       {/* Energy particles */}
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
-                      <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full"></div>
+                      <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
                     </div>
                     
                     {/* Right energy line */}
                     <div className="w-24 h-1 bg-gradient-to-l from-transparent via-yellow-500 to-yellow-500 rounded-full relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-l from-yellow-400 via-orange-400 to-yellow-400 animate-pulse"></div>
-                      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                      <div className="absolute inset-0 bg-gradient-to-l from-yellow-400 via-orange-400 to-yellow-400"></div>
+                      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/30 to-transparent"></div>
                     </div>
                 </div>
               </div>
@@ -528,7 +528,7 @@ export default function HomePage() {
             <Card className="bg-card/80 border-2 border-orange-500 hover:border-yellow-500 transition-all glow-orange group relative backdrop-blur-sm scale-105">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <Badge className="gradient-orange-yellow text-black font-bold px-6 py-2 text-lg shadow-2xl">
-                  🔥 MOST POPULAR
+                    MOST POPULAR
                 </Badge>
               </div>
               <CardHeader className="text-center pb-4 pt-10">
@@ -756,10 +756,10 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-transparent to-yellow-500/10"></div>
         
         {/* Enhanced Animated Background Elements */}
-        <div className="absolute top-20 left-10 w-40 h-40 bg-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-500/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-orange-500/8 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
-        <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl animate-bounce" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-20 left-10 w-40 h-40 bg-orange-500/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-500/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-orange-500/8 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl"></div>
 
         <div className="container mx-auto px-4 relative z-10">
           {/* Enhanced Header Section */}
