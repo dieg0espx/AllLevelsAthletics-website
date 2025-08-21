@@ -102,6 +102,7 @@ export default function AboutPage() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                onClick={() => window.location.href = '/programs#featured-programs'}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
                   <Zap className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform duration-300" />
@@ -112,6 +113,7 @@ export default function AboutPage() {
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-4 sm:px-6 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                onClick={() => window.location.href = '/about#daniel-ledbetter'}
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
@@ -337,7 +339,7 @@ export default function AboutPage() {
       </section>
 
                     {/* Founder Story */}
-              <section className="gradient-bg-variant-a py-12 sm:py-16 md:py-20 overflow-hidden">
+              <section id="daniel-ledbetter" className="gradient-bg-variant-a py-12 sm:py-16 md:py-20 overflow-hidden">
                 <div className="wave-pattern-a"></div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -569,24 +571,15 @@ export default function AboutPage() {
             </p>
             
             {/* Enhanced buttons with better styling */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-12">
+            <div className="flex justify-center mb-8 sm:mb-12">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
+                onClick={() => window.location.href = '/contact#contact-form'}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
                   <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
                   Start Free 7-Day Trial
-                </span>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-orange-500 text-white hover:bg-yellow-500/10 hover:text-yellow-300 text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl bg-transparent backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20"
-              >
-                <span className="flex items-center gap-2 sm:gap-3">
-                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-                  Schedule Consultation
                 </span>
               </Button>
             </div>

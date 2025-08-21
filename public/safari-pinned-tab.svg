@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- This is a placeholder for safari-pinned-tab.svg -->
+  <!-- In production, replace this with an actual SVG of the All Levels Athletics logo -->
+  <!-- The logo should be monochrome and optimized for Safari pinned tabs -->
+  <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="8" y="10" text-anchor="middle" font-size="8" fill="currentColor">ALA</text>
+</svg>

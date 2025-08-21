@@ -103,6 +103,7 @@ export default function ProgramsPage() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg sm:text-xl px-10 sm:px-12 py-6 sm:py-8 rounded-full transition-all duration-300 ease-out shadow-2xl group hover:shadow-3xl hover:shadow-orange-500/30 hover:-translate-y-2 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                onClick={() => window.location.href = '/programs#featured-programs'}
               >
                 <span className="flex items-center gap-3">
                   <Target className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
@@ -114,6 +115,7 @@ export default function ProgramsPage() {
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto border-3 border-orange-500/60 text-orange-300 font-semibold text-lg sm:text-xl px-8 sm:px-10 py-6 sm:py-8 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/15 hover:border-orange-500/80 hover:text-orange-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background backdrop-blur-sm"
+                onClick={() => window.location.href = '/contact#contact-form'}
               >
                 <span className="flex items-center gap-3">
                   <Calendar className="w-5 h-5" />
@@ -127,7 +129,7 @@ export default function ProgramsPage() {
       </section>
 
       {/* Featured Programs */}
-      <section className="py-20 bg-card/30 relative overflow-hidden">
+      <section id="featured-programs" className="py-20 bg-card/30 relative overflow-hidden">
         {/* Enhanced Background Elements */}
         <div className="absolute top-20 left-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-500/10 rounded-full blur-3xl"></div>
@@ -197,7 +199,10 @@ export default function ProgramsPage() {
                     <span>Progress tracking system</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mb-4">
+                <Button 
+                  className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mb-4"
+                  onClick={() => window.location.href = '/contact#contact-form'}
+                >
                   Start Program
                 </Button>
               </CardContent>
@@ -256,7 +261,10 @@ export default function ProgramsPage() {
                     <span>Recovery optimization</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mb-4">
+                <Button 
+                  className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mb-4"
+                  onClick={() => window.location.href = '/contact#contact-form'}
+                >
                   Start Program
                 </Button>
               </CardContent>
@@ -315,7 +323,10 @@ export default function ProgramsPage() {
                     <span>Gradual strength building</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mb-4">
+                <Button 
+                  className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mb-4"
+                  onClick={() => window.location.href = '/contact#contact-form'}
+                >
                   Start Program
                 </Button>
               </CardContent>
@@ -325,12 +336,12 @@ export default function ProgramsPage() {
       </section>
 
       {/* Program Categories */}
-      <section className="py-20 bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-500/10 relative overflow-hidden">
+      <section id="programs" className="py-20 bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-500/10 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-2xl"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-6 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
               Program <span className="gradient-text">Categories</span>
@@ -404,9 +415,6 @@ export default function ProgramsPage() {
                       </ul>
                     </div>
                   </div>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mt-auto">
-                    Explore Strength Programs
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -441,9 +449,6 @@ export default function ProgramsPage() {
                       </ul>
                     </div>
                   </div>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mt-auto">
-                    Explore Recovery Programs
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -478,9 +483,6 @@ export default function ProgramsPage() {
                       </ul>
                     </div>
                   </div>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mt-auto">
-                    Explore Sport Programs
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -515,9 +517,7 @@ export default function ProgramsPage() {
                       </ul>
                     </div>
                   </div>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mt-auto">
-                    Explore Specialized Programs
-                  </Button>
+
                 </CardContent>
               </Card>
             </div>
@@ -577,7 +577,10 @@ export default function ProgramsPage() {
                   <p className="text-muted-foreground mb-6">
                     Dynamic warm-up, mobility work, and energizing movements to kickstart your day.
                   </p>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold py-3 hover:scale-105 transition-all">
+                  <Button 
+                    className="w-full gradient-orange-yellow text-black font-bold py-3 hover:scale-105 transition-all"
+                    onClick={() => window.location.href = '/contact#contact-form'}
+                  >
                     Join Live Class
                   </Button>
                 </div>
@@ -616,7 +619,10 @@ export default function ProgramsPage() {
                   <p className="text-muted-foreground mb-4">
                     Learn proper form and technique for fundamental strength movements.
                   </p>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all">
+                  <Button 
+                    className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all"
+                    onClick={() => window.location.href = '/contact#contact-form'}
+                  >
                     Start Class
                   </Button>
                 </div>
@@ -652,7 +658,10 @@ export default function ProgramsPage() {
                   <p className="text-muted-foreground mb-4">
                     High-intensity training session with personalized coaching and feedback.
                   </p>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all">
+                  <Button 
+                    className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all"
+                    onClick={() => window.location.href = '/contact#contact-form'}
+                  >
                     Join Premium Class
                   </Button>
                 </div>
@@ -775,24 +784,15 @@ export default function ProgramsPage() {
             </p>
             
             {/* Enhanced buttons with better mobile styling */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
+            <div className="flex justify-center mb-12">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 sm:px-10 py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 w-full sm:w-auto"
+                onClick={() => window.location.href = '/contact#contact-form'}
               >
                 <span className="flex items-center gap-3">
                   <Target className="w-6 h-6" />
-                  Take Program Assessment
-                </span>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-orange-500 text-white hover:bg-yellow-500/10 hover:text-yellow-300 text-lg px-8 sm:px-10 py-6 rounded-xl bg-transparent backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20 w-full sm:w-auto"
-              >
-                <span className="flex items-center gap-3">
-                  <Calendar className="w-6 h-6" />
-                  Schedule Consultation
+                  Start 7-Day Trial
                 </span>
               </Button>
             </div>

@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   /* Updated color tokens for black background with orange-yellow gradients */
   --background: oklch(0.1 0 0); /* Deep black background */

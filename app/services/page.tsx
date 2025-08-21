@@ -65,6 +65,7 @@ export default function ServicesPage() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                onClick={() => window.location.href = '/contact#contact-form'}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
                   <Zap className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform duration-300" />
@@ -75,6 +76,7 @@ export default function ServicesPage() {
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-4 sm:px-6 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                onClick={() => window.location.href = '/services#services'}
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
@@ -87,7 +89,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Service Comparison Table */}
-      <section className="py-16 sm:py-20 md:py-24 lg:py-32 bg-card/30">
+      <section id="services" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-card/30">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
@@ -508,7 +510,7 @@ export default function ServicesPage() {
       </section>
 
              {/* Digital Products Section */}
-       <section className="py-12 sm:py-16 md:py-20 bg-card/30">
+       <section id="products" className="py-12 sm:py-16 md:py-20 bg-card/30">
          <div className="container mx-auto px-4">
            <div className="text-center mb-12 sm:mb-16">
              <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
@@ -520,7 +522,7 @@ export default function ServicesPage() {
            </div>
 
           {/* Knot Roller Detailed Information with Image Gallery */}
-          <div className="max-w-7xl mx-auto">
+          <div id="knot-roller" className="max-w-7xl mx-auto">
                                                    <Card className="bg-transparent border-2 border-orange-500/30 overflow-hidden rounded-t-lg p-0">
                <CardHeader className="relative border-b border-orange-500/30 overflow-hidden p-0">
                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20"></div>
@@ -647,16 +649,13 @@ export default function ServicesPage() {
                          <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
                          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">+ shipping</p>
                          <div className="space-y-2 sm:space-y-3">
-                           <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                             onClick={() => window.location.href = '/contact#contact-form'}
+                           >
                              <span className="flex items-center gap-2">
                                <ShoppingCart className="w-4 h-4" />
                                Order Now
-                             </span>
-                           </Button>
-                           <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
-                             <span className="flex items-center gap-2">
-                               <Play className="w-4 h-4" />
-                               Watch Demo
                              </span>
                            </Button>
                          </div>
@@ -691,7 +690,7 @@ export default function ServicesPage() {
           </div>
 
                      {/* Body Tension Reset Course Detailed Information */}
-           <div className="mt-16 max-w-7xl mx-auto">
+           <div id="tension-reset-course" className="mt-16 max-w-7xl mx-auto">
                                                    <Card className="bg-transparent border-2 border-orange-500/30 overflow-hidden rounded-t-lg p-0">
                <CardHeader className="relative border-b border-orange-500/30 overflow-hidden p-0">
                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20"></div>
@@ -839,7 +838,7 @@ export default function ServicesPage() {
           </div>
 
                      {/* Complete Bundle Detailed Information */}
-           <div className="mt-16 max-w-7xl mx-auto">
+           <div id="complete-bundle" className="mt-16 max-w-7xl mx-auto">
                                                    <Card className="bg-transparent border-2 border-orange-500/30 overflow-hidden rounded-t-lg p-0">
                <CardHeader className="relative border-b border-orange-500/30 overflow-hidden p-0">
                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20"></div>
@@ -1018,7 +1017,10 @@ export default function ServicesPage() {
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base mb-4 sm:mb-6">
                     Get full access to our Starter program for 7 days. No commitment, no credit card required.
                   </p>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                  <Button 
+                    className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                    onClick={() => window.location.href = '/contact#contact-form'}
+                  >
                     <span className="flex items-center gap-2">
                       <Zap className="w-4 h-4" />
                       Start Free Trial
@@ -1039,7 +1041,10 @@ export default function ServicesPage() {
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base mb-4 sm:mb-6">
                     Perfect for training partners or family. Get three professional MFRollers for the price of two.
                   </p>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                  <Button 
+                    className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                    onClick={() => window.location.href = '/contact#contact-form'}
+                  >
                     <span className="flex items-center gap-2">
                       <Award className="w-4 h-4" />
                       Claim Offer
@@ -1060,7 +1065,10 @@ export default function ServicesPage() {
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base mb-4 sm:mb-6">
                     Commit to your transformation with our 6-month packages and save 10% on your monthly rate.
                   </p>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                  <Button 
+                    className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                    onClick={() => window.location.href = '/contact#contact-form'}
+                  >
                     <span className="flex items-center gap-2">
                       <Heart className="w-4 h-4" />
                       Get Discount
@@ -1172,24 +1180,15 @@ export default function ServicesPage() {
               </p>
               
               {/* Enhanced buttons with better styling */}
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-12">
+              <div className="flex justify-center mb-8 sm:mb-12">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
+                  onClick={() => window.location.href = '/contact#contact-form'}
                 >
                   <span className="flex items-center gap-2 sm:gap-3">
                     <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
                     Start Free 7-Day Trial
-                  </span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-2 border-orange-500 text-white hover:bg-yellow-500/10 hover:text-yellow-300 text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl bg-transparent backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20"
-                >
-                  <span className="flex items-center gap-2 sm:gap-3">
-                    <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-                    Schedule Consultation
                   </span>
                 </Button>
               </div>
