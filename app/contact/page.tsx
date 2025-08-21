@@ -11,6 +11,64 @@ import { useState } from "react"
 
 export default function ContactPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    goals: '',
+    experience: '',
+    timeline: '',
+    questions: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setSubmitStatus('success')
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          goals: '',
+          experience: '',
+          timeline: '',
+          questions: ''
+        })
+      } else {
+        setSubmitStatus('error')
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setSubmitStatus('error')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
 
@@ -32,20 +90,20 @@ export default function ContactPage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-base sm:text-lg px-4 sm:px-6 py-2">
-              Get In Touch
-            </Badge>
-            <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight">
-              <span className="block text-white mb-2 sm:mb-4">Ready to Start Your</span>
-              <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Transformation?</span>
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 sm:mb-10 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
-              Whether you have questions about our programs, want to schedule a consultation, or are ready to begin your
-              fitness journey, we're here to help you every step of the way.
-            </p>
-            
-            {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                         <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-base sm:text-lg px-4 sm:px-6 py-2">
+               Get In Touch
+             </Badge>
+             <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight">
+               <span className="block text-white mb-2 sm:mb-4">Ready to Start Your</span>
+               <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Transformation?</span>
+             </h1>
+             <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 sm:mb-10 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
+               Whether you have questions about our programs, want to schedule a consultation, or are ready to begin your
+               fitness journey, we're here to help you every step of the way.
+             </p>
+             
+             {/* Enhanced CTA Buttons */}
+             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -93,14 +151,14 @@ export default function ContactPage() {
                   <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Call or Text</h3>
                 </div>
               </div>
-              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6 flex-1">
                 <p className="text-orange-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Direct line to Daniel</p>
                 <div className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold gradient-text tracking-wide">760-585-8832</div>
               </div>
               <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
-                  Available evenings & weekends for consultations
-                </p>
+                    Available evenings & weekends for consultations
+                  </p>
                 <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
@@ -120,14 +178,14 @@ export default function ContactPage() {
                   <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Email</h3>
                 </div>
               </div>
-              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6 flex-1">
                 <p className="text-yellow-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Detailed inquiries welcome</p>
                 <div className="text-xs sm:text-sm lg:text-base font-bold gradient-text tracking-wide break-words">AllLevelsAthletics@gmail.com</div>
               </div>
               <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
-                  Response within 24 hours guaranteed
-                </p>
+                    Response within 24 hours guaranteed
+                  </p>
                 <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
@@ -147,14 +205,14 @@ export default function ContactPage() {
                   <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Schedule</h3>
                 </div>
               </div>
-              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6 flex-1">
                 <p className="text-orange-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Book your consultation</p>
                 <div className="text-sm sm:text-base lg:text-lg font-bold gradient-text tracking-wide">Free Consultation</div>
               </div>
               <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
-                  48-hour advance booking required
-                </p>
+                    48-hour advance booking required
+                  </p>
                 <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
@@ -174,14 +232,14 @@ export default function ContactPage() {
                   <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Social Media</h3>
                 </div>
               </div>
-              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6 flex-1">
                 <p className="text-yellow-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Follow our journey</p>
                 <div className="text-xs sm:text-sm lg:text-base font-bold gradient-text tracking-wide">@AllLevelsAthletics</div>
               </div>
               <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
-                  TikTok & Instagram updates
-                </p>
+                    TikTok & Instagram updates
+                  </p>
                 <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
@@ -195,257 +253,257 @@ export default function ContactPage() {
       </section>
 
       {/* Service Area & Availability - Enhanced for mobile */}
-      <section className="py-20 bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-500/10 relative overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-2xl"></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
+          <section className="py-20 bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-500/10 relative overflow-hidden">
+                         {/* Background Elements */}
+             <div className="absolute top-10 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
+             <div className="absolute bottom-10 right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-2xl"></div>
+           
+           <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 sm:mb-20">
             <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-base sm:text-lg px-4 sm:px-6 py-2">
-              Global Reach
-            </Badge>
+                 Global Reach
+               </Badge>
             <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-              Service Area & <span className="gradient-text">Availability</span>
-            </h2>
+                 Service Area & <span className="gradient-text">Availability</span>
+               </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl sm:max-w-4xl mx-auto leading-relaxed">
-              From California to worldwide - we bring elite training to dedicated athletes everywhere
-            </p>
-          </div>
+                 From California to worldwide - we bring elite training to dedicated athletes everywhere
+               </p>
+             </div>
 
-          {/* Main Content Grid */}
-          <div className="max-w-7xl mx-auto">
-            {/* Top Row - Stats & Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
-              <div className="text-center group">
-                <div className="relative">
+                                                       {/* Main Content Grid */}
+               <div className="max-w-7xl mx-auto">
+               {/* Top Row - Stats & Info */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+                 <div className="text-center group">
+                   <div className="relative">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                     <Globe className="w-12 h-12 sm:w-16 sm:h-16 text-orange-400" />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-                </div>
+                     </div>
+                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+                   </div>
                 <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">50 States</h3>
                 <p className="text-orange-300 text-base sm:text-lg">Nationwide Coverage</p>
-              </div>
-              
-              <div className="text-center group">
-                <div className="relative">
+                 </div>
+                 
+                 <div className="text-center group">
+                   <div className="relative">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                     <Clock className="w-12 h-12 sm:w-16 sm:h-16 text-yellow-400" />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-                </div>
+                     </div>
+                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+                   </div>
                 <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">24/7</h3>
                 <p className="text-yellow-300 text-base sm:text-lg">Always Available</p>
-              </div>
-              
-              <div className="text-center group">
-                <div className="relative">
+                 </div>
+                 
+                 <div className="text-center group col-span-2 sm:col-span-1">
+                   <div className="relative">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                     <Users className="w-12 h-12 sm:w-16 sm:h-16 text-orange-400" />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-                </div>
+                     </div>
+                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+                   </div>
                 <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">500+</h3>
                 <p className="text-orange-300 text-base sm:text-lg">Athletes Served</p>
-              </div>
-            </div>
+                 </div>
+               </div>
 
-            {/* Bottom Row - Interactive Gallery & Schedule */}
+               {/* Bottom Row - Interactive Gallery & Schedule */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
-              {/* Left - Interactive Training Gallery */}
+                 {/* Left - Interactive Training Gallery */}
               <div className="space-y-4 sm:space-y-6">
-                <div className="text-center lg:text-left">
+                   <div className="text-center lg:text-left">
                   <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Training Gallery</h3>
                   <p className="text-muted-foreground text-base sm:text-lg">See our programs in action</p>
-                </div>
-                
-                {/* Modern Carousel */}
-                <div className="relative group">
+                   </div>
+                   
+                                                                                                                                                                                                                                                                                                                               {/* Modern Carousel */}
+                       <div className="relative group">
                   <div className="relative h-[300px] sm:h-[400px] lg:h-[540px] rounded-2xl overflow-hidden bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
-                    {/* Main Image */}
-                    <div className="relative h-full">
-                      <img
-                        src="/womanexcercising.jpg"
-                        alt="Total Body Transformation"
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
-                        style={{ 
-                          opacity: currentSlide === 0 ? 1 : 0,
-                          transform: currentSlide === 0 ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                      />
-                      <img
-                        src="/manexercising3.jpg"
-                        alt="Athletic Performance"
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
-                        style={{ 
-                          opacity: currentSlide === 1 ? 1 : 0,
-                          transform: currentSlide === 1 ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                      />
-                      <img
-                        src="/womanexcercising2.jpg"
-                        alt="Movement Restoration"
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
-                        style={{ 
-                          opacity: currentSlide === 2 ? 1 : 0,
-                          transform: currentSlide === 2 ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                      />
-                      <img
-                        src="/manexercising4.jpg"
-                        alt="Strength Fundamentals"
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
-                        style={{ 
-                          opacity: currentSlide === 3 ? 1 : 0,
-                          transform: currentSlide === 3 ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                      />
-                      <img
-                        src="/womanexcercising3.jpg"
-                        alt="Morning Movement"
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
-                        style={{ 
-                          opacity: currentSlide === 4 ? 1 : 0,
-                          transform: currentSlide === 4 ? 'scale(1.05)' : 'scale(1)'
-                        }}
-                      />
-                    </div>
-                    
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                    
-                    {/* Content Overlay */}
+                       {/* Main Image */}
+                       <div className="relative h-full">
+                         <img
+                           src="/womanexcercising.jpg"
+                           alt="Total Body Transformation"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 0 ? 1 : 0,
+                             transform: currentSlide === 0 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/manexercising3.jpg"
+                           alt="Athletic Performance"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 1 ? 1 : 0,
+                             transform: currentSlide === 1 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/womanexcercising2.jpg"
+                           alt="Movement Restoration"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 2 ? 1 : 0,
+                             transform: currentSlide === 2 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/manexercising4.jpg"
+                           alt="Strength Fundamentals"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 3 ? 1 : 0,
+                             transform: currentSlide === 3 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                         <img
+                           src="/womanexcercising3.jpg"
+                           alt="Morning Movement"
+                           className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                           style={{ 
+                             opacity: currentSlide === 4 ? 1 : 0,
+                             transform: currentSlide === 4 ? 'scale(1.05)' : 'scale(1)'
+                           }}
+                         />
+                       </div>
+                       
+                       {/* Gradient Overlay */}
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                       
+                       {/* Content Overlay */}
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
-                      <div className="text-white">
+                         <div className="text-white">
                         <h4 className="font-heading text-lg sm:text-xl lg:text-2xl font-bold mb-2">
-                          {currentSlide === 0 && "Total Body Transformation"}
-                          {currentSlide === 1 && "Athletic Performance"}
-                          {currentSlide === 2 && "Movement Restoration"}
-                          {currentSlide === 3 && "Strength Fundamentals"}
-                          {currentSlide === 4 && "Morning Movement"}
-                        </h4>
+                             {currentSlide === 0 && "Total Body Transformation"}
+                             {currentSlide === 1 && "Athletic Performance"}
+                             {currentSlide === 2 && "Movement Restoration"}
+                             {currentSlide === 3 && "Strength Fundamentals"}
+                             {currentSlide === 4 && "Morning Movement"}
+                           </h4>
                         <p className="text-orange-300 text-sm sm:text-base lg:text-lg">
-                          {currentSlide === 0 && "Comprehensive strength & conditioning"}
-                          {currentSlide === 1 && "Elite sports performance enhancement"}
-                          {currentSlide === 2 && "Injury recovery & pain relief"}
-                          {currentSlide === 3 && "Build a solid foundation"}
-                          {currentSlide === 4 && "Start your day energized"}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Navigation */}
-                    <button
-                      onClick={() => setCurrentSlide((prev) => (prev === 0 ? 4 : prev - 1))}
+                             {currentSlide === 0 && "Comprehensive strength & conditioning"}
+                             {currentSlide === 1 && "Elite sports performance enhancement"}
+                             {currentSlide === 2 && "Injury recovery & pain relief"}
+                             {currentSlide === 3 && "Build a solid foundation"}
+                             {currentSlide === 4 && "Start your day energized"}
+                           </p>
+                         </div>
+                       </div>
+                       
+                       {/* Navigation */}
+                       <button
+                         onClick={() => setCurrentSlide((prev) => (prev === 0 ? 4 : prev - 1))}
                       className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-black/80 transition-all group opacity-0 group-hover:opacity-100"
-                    >
+                       >
                       <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6 text-white group-hover:text-orange-400 transition-colors" />
-                    </button>
-                    
-                    <button
-                      onClick={() => setCurrentSlide((prev) => (prev === 4 ? 0 : prev + 1))}
+                       </button>
+                       
+                       <button
+                         onClick={() => setCurrentSlide((prev) => (prev === 4 ? 0 : prev + 1))}
                       className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-black/80 transition-all group opacity-0 group-hover:opacity-100"
-                    >
+                       >
                       <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 text-white group-hover:text-orange-400 transition-colors" />
-                    </button>
-                  </div>
-                  
-                  {/* Thumbnail Navigation */}
+                       </button>
+                     </div>
+                     
+                     {/* Thumbnail Navigation */}
                   <div className="flex justify-center gap-2 sm:gap-3 mt-4 sm:mt-6">
-                    {Array.from({ length: 5 }, (_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
+                       {Array.from({ length: 5 }, (_, index) => (
+                         <button
+                           key={index}
+                           onClick={() => setCurrentSlide(index)}
                         className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-300 hover:scale-125 ${
-                          currentSlide === index
-                            ? 'bg-orange-500 scale-125 shadow-lg shadow-orange-500/50' 
-                            : 'bg-white/30 hover:bg-white/50'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+                             currentSlide === index
+                               ? 'bg-orange-500 scale-125 shadow-lg shadow-orange-500/50' 
+                               : 'bg-white/30 hover:bg-white/50'
+                           }`}
+                         />
+                       ))}
+                     </div>
+                   </div>
+                 </div>
 
-              {/* Right - Schedule & Availability */}
+                 {/* Right - Schedule & Availability */}
               <div className="space-y-4 sm:space-y-6">
-                <div className="text-center lg:text-left">
+                   <div className="text-center lg:text-left">
                   <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Availability</h3>
                   <p className="text-muted-foreground text-base sm:text-lg">Flexible scheduling for your lifestyle</p>
-                </div>
-                
-                {/* Schedule Cards */}
-                <div className="space-y-4">
+                   </div>
+                   
+                   {/* Schedule Cards */}
+                   <div className="space-y-4">
                   <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/30 rounded-xl p-4 sm:p-6 hover:border-orange-500/60 transition-all group">
                     <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
                         <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div>
+                         </div>
+                         <div>
                         <h4 className="font-heading text-lg sm:text-xl font-bold text-white">Consultation Hours</h4>
                         <p className="text-orange-300 text-sm sm:text-base">Evenings & Weekends</p>
-                      </div>
-                    </div>
+                         </div>
+                       </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Weekdays:</span>
-                        <span className="text-white font-semibold">6-9 PM PST</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Weekends:</span>
-                        <span className="text-white font-semibold">Flexible</span>
-                      </div>
-                    </div>
-                  </div>
-                  
+                         <div className="flex justify-between">
+                           <span className="text-muted-foreground">Weekdays:</span>
+                           <span className="text-white font-semibold">6-9 PM PST</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-muted-foreground">Weekends:</span>
+                           <span className="text-white font-semibold">Flexible</span>
+                         </div>
+                       </div>
+                     </div>
+                     
                   <div className="bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-xl p-4 sm:p-6 hover:border-yellow-500/60 transition-all group">
                     <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center">
                         <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div>
+                         </div>
+                         <div>
                         <h4 className="font-heading text-lg sm:text-xl font-bold text-white">Quick Start</h4>
                         <p className="text-yellow-300 text-sm sm:text-base">48-hour setup process</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
+                         </div>
+                       </div>
+                       <div className="space-y-2">
+                         <div className="flex items-center gap-3">
                         <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold text-xs">1</div>
                         <span className="text-muted-foreground text-sm sm:text-base">Contact & Consultation</span>
-                      </div>
-                      <div className="flex items-center gap-3">
+                         </div>
+                         <div className="flex items-center gap-3">
                         <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold text-xs">2</div>
                         <span className="text-muted-foreground text-sm sm:text-base">Program Selection</span>
-                      </div>
-                      <div className="flex items-center gap-3">
+                         </div>
+                         <div className="flex items-center gap-3">
                         <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold text-xs">3</div>
                         <span className="text-muted-foreground text-sm sm:text-base">Start Training</span>
-                      </div>
-                    </div>
-                  </div>
-                  
+                         </div>
+                       </div>
+                     </div>
+                     
                   <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/30 rounded-xl p-4 sm:p-6 hover:border-orange-500/60 transition-all group">
                     <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
                         <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      </div>
-                      <div>
+                         </div>
+                         <div>
                         <h4 className="font-heading text-lg sm:text-xl font-bold text-white">Global Support</h4>
                         <p className="text-orange-300 text-sm sm:text-base">Worldwide accessibility</p>
-                      </div>
-                    </div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      Online coaching platform serving athletes across all time zones. 
-                      Flexible communication and 24/7 support ensure you're never alone in your journey.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                         </div>
+                       </div>
+                       <p className="text-muted-foreground text-sm leading-relaxed">
+                         Online coaching platform serving athletes across all time zones. 
+                         Flexible communication and 24/7 support ensure you're never alone in your journey.
+                       </p>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </section>
 
                {/* Contact Form */}
         <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-orange-500/5 via-yellow-500/3 to-orange-500/5 relative overflow-hidden">
@@ -464,124 +522,169 @@ export default function ContactPage() {
                 </p>
               </div>
 
-             <Card className="bg-card/90 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 shadow-2xl hover:shadow-orange-500/25">
-                <CardHeader className="text-center pb-6 sm:pb-8">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
-                    <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
+                           <Card className="bg-card/90 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 shadow-2xl hover:shadow-orange-500/25">
+                 <CardHeader className="text-center pb-6 sm:pb-8">
+                   <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+                     <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
                   </div>
-                  <CardTitle className="font-heading text-2xl sm:text-3xl">Get Your Free Consultation</CardTitle>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground">
+                   <CardTitle className="font-heading text-2xl sm:text-3xl">Get Your Free Consultation</CardTitle>
+                   <CardDescription className="text-base sm:text-lg text-muted-foreground">
                     Fill out the form below and Daniel will personally respond within 24 hours
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 sm:space-y-8">
-                  {/* Personal Information */}
+                <form onSubmit={handleSubmit}>
+                 <CardContent className="space-y-6 sm:space-y-8">
+                 {/* Personal Information */}
                   <div className="space-y-4 sm:space-y-6">
                     <h3 className="font-heading text-lg sm:text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
-                      Personal Information
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                     Personal Information
+                   </h3>
+                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       <div className="space-y-2 sm:space-y-3">
                         <Label htmlFor="firstName" className="text-sm font-semibold">First Name *</Label>
-                        <Input 
-                          id="firstName" 
-                          placeholder="Enter your first name" 
-                          className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                        />
+                                                 <Input 
+                           id="firstName" 
+                           name="firstName"
+                           value={formData.firstName}
+                           onChange={handleInputChange}
+                           placeholder="Enter your first name" 
+                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
+                           required
+                         />
                       </div>
                       <div className="space-y-2 sm:space-y-3">
                         <Label htmlFor="lastName" className="text-sm font-semibold">Last Name *</Label>
-                        <Input 
-                          id="lastName" 
-                          placeholder="Enter your last name" 
-                          className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                        />
+                                                 <Input 
+                           id="lastName" 
+                           name="lastName"
+                           value={formData.lastName}
+                           onChange={handleInputChange}
+                           placeholder="Enter your last name" 
+                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
+                           required
+                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       <div className="space-y-2 sm:space-y-3">
                         <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
-                        <Input 
-                          id="email" 
-                          type="email" 
-                          placeholder="your.email@example.com" 
-                          className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                        />
+                                                 <Input 
+                           id="email" 
+                           name="email"
+                           type="email" 
+                           value={formData.email}
+                           onChange={handleInputChange}
+                           placeholder="your.email@example.com" 
+                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
+                           required
+                         />
                       </div>
                       <div className="space-y-2 sm:space-y-3">
                         <Label htmlFor="phone" className="text-sm font-semibold">Phone Number</Label>
-                        <Input 
-                          id="phone" 
-                          type="tel" 
-                          placeholder="(555) 123-4567" 
-                          className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                        />
+                                                 <Input 
+                           id="phone" 
+                           name="phone"
+                           type="tel" 
+                           value={formData.phone}
+                           onChange={handleInputChange}
+                           placeholder="(555) 123-4567" 
+                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
+                         />
                       </div>
                     </div>
-                  </div>
+                 </div>
 
-                  {/* Fitness Goals */}
-                  <div className="space-y-4">
+                 {/* Fitness Goals */}
+                 <div className="space-y-4">
                     <h3 className="font-heading text-lg sm:text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
-                      Your Fitness Journey
-                    </h3>
+                     Your Fitness Journey
+                   </h3>
                     <div className="space-y-2 sm:space-y-3">
-                      <Label htmlFor="goals" className="text-sm font-semibold">What are your fitness goals? *</Label>
-                      <Textarea
+                     <Label htmlFor="goals" className="text-sm font-semibold">What are your fitness goals? *</Label>
+                                           <Textarea
                         id="goals"
+                        name="goals"
+                        value={formData.goals}
+                        onChange={handleInputChange}
                         placeholder="Tell us about your current fitness level, goals, and what you hope to achieve..."
-                        className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[100px] sm:min-h-[120px] resize-none"
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[100px] sm:min-h-[120px] resize-none"
+                        required
                       />
-                    </div>
+                   </div>
 
                     <div className="space-y-2 sm:space-y-3">
-                      <Label htmlFor="experience" className="text-sm font-semibold">Current fitness experience</Label>
-                      <Textarea
+                     <Label htmlFor="experience" className="text-sm font-semibold">Current fitness experience</Label>
+                                           <Textarea
                         id="experience"
+                        name="experience"
+                        value={formData.experience}
+                        onChange={handleInputChange}
                         placeholder="Describe your current workout routine, any injuries or limitations, and previous training experience..."
-                        className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[80px] sm:min-h-[100px] resize-none"
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[80px] sm:min-h-[100px] resize-none"
                       />
-                    </div>
+                   </div>
 
                     <div className="space-y-2 sm:space-y-3">
-                      <Label htmlFor="timeline" className="text-sm font-semibold">When would you like to start?</Label>
-                      <Input 
+                     <Label htmlFor="timeline" className="text-sm font-semibold">When would you like to start?</Label>
+                                           <Input 
                         id="timeline" 
+                        name="timeline"
+                        value={formData.timeline}
+                        onChange={handleInputChange}
                         placeholder="Immediately, next week, next month..." 
-                        className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
                       />
-                    </div>
-                  </div>
+                   </div>
+                 </div>
 
-                  {/* Questions */}
-                  <div className="space-y-4">
+                 {/* Questions */}
+                 <div className="space-y-4">
                     <h3 className="font-heading text-lg sm:text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
-                      Questions & Additional Info
-                    </h3>
+                     Questions & Additional Info
+                   </h3>
                     <div className="space-y-2 sm:space-y-3">
-                      <Label htmlFor="questions" className="text-sm font-semibold">Any questions for Daniel?</Label>
-                      <Textarea
+                     <Label htmlFor="questions" className="text-sm font-semibold">Any questions for Daniel?</Label>
+                                           <Textarea
                         id="questions"
+                        name="questions"
+                        value={formData.questions}
+                        onChange={handleInputChange}
                         placeholder="Ask about programs, pricing, methodology, or anything else you'd like to know..."
-                        className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[60px] sm:min-h-[80px] resize-none"
+                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[60px] sm:min-h-[80px] resize-none"
                       />
-                    </div>
-                  </div>
+                   </div>
+                 </div>
 
-                  {/* Submit Button */}
-                  <div className="text-center pt-4 sm:pt-6 border-t border-orange-500/30">
+                                   {/* Submit Button */}
+                   <div className="text-center pt-4 sm:pt-6 border-t border-orange-500/30">
                     <Button
+                      type="submit"
                       size="lg"
-                      className="gradient-orange-yellow text-black font-bold text-base sm:text-lg px-8 sm:px-16 py-4 sm:py-6 rounded-full hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25 w-full"
+                      disabled={isSubmitting}
+                      className="gradient-orange-yellow text-black font-bold text-sm sm:text-base px-8 sm:px-16 py-4 sm:py-6 rounded-full hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25 w-full disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Send Message & Get Free Consultation
+                      {isSubmitting ? 'Sending...' : 'Send Message & Get Free Consultation'}
                     </Button>
+                    
+                    {submitStatus === 'success' && (
+                      <p className="text-green-400 text-sm mt-4">
+                        Message sent successfully! Daniel will get back to you within 24 hours.
+                      </p>
+                    )}
+                    
+                    {submitStatus === 'error' && (
+                      <p className="text-red-400 text-sm mt-4">
+                        There was an error sending your message. Please try again.
+                      </p>
+                    )}
+                    
                     <p className="text-xs sm:text-sm text-muted-foreground mt-4 sm:mt-6 max-w-md mx-auto">
                       We respect your privacy. Your information will never be shared with third parties.
                     </p>
                   </div>
                 </CardContent>
+                </form>
               </Card>
            </div>
          </div>

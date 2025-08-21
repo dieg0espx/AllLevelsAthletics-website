@@ -24,6 +24,10 @@ import {
 } from "lucide-react"
 
 import Stars from "@/components/Stars"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import { useEffect, useState } from "react"
 
 export default function HomePage() {
   return (
@@ -183,16 +187,27 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Mobile Carousel */}
+          {/* Mobile Auto-Scrolling Carousel */}
           <div className="md:hidden relative">
-            <div className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 -mx-4" id="testimonials-carousel">
-              <div className="flex gap-4 sm:gap-6 px-4 pl-48">
+            <Slider
+              dots={false}
+              arrows={false}
+              infinite={true}
+              speed={3000}
+              slidesToShow={1}
+              slidesToScroll={1}
+              autoplay={true}
+              autoplaySpeed={4000}
+              pauseOnHover={false}
+              pauseOnFocus={false}
+              className="success-stories-slider"
+            >
                 {/* Jessica M. Testimonial */}
+              <div className="px-2 sm:px-4">
                 <figure 
-                  className="flex-shrink-0 w-[70%] sm:w-[75%] md:w-[70%] snap-start flex flex-col h-full rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
                   itemScope 
                   itemType="https://schema.org/Review"
-                  tabIndex={0}
                 >
                   <div className="text-center mb-4 sm:mb-6">
                     <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
@@ -224,20 +239,21 @@ export default function HomePage() {
                          <meta itemProp="reviewRating" content="5" />
                        </div>
                        <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                       <p className="text-sm sm:text-lg leading-relaxed text-neutral-200 max-w-prose mx-auto line-clamp-5">
+                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
                   "Lost 30 pounds and gained incredible strength. Daniel's tension reset techniques changed everything
                        for me! The personalized approach made all the difference in my fitness journey."
                 </p>
                 </div>
                  </blockquote>
                 </figure>
+              </div>
 
                 {/* Robert K. Testimonial */}
+              <div className="px-2 sm:px-4">
                 <figure 
-                  className="flex-shrink-0 w-[70%] sm:w-[75%] md:w-[70%] snap-start flex flex-col h-full rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
                   itemScope 
                   itemType="https://schema.org/Review"
-                  tabIndex={0}
                 >
                   <div className="text-center mb-4 sm:mb-6">
                     <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
@@ -269,20 +285,21 @@ export default function HomePage() {
                          <meta itemProp="reviewRating" content="5" />
                        </div>
                        <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                       <p className="text-sm sm:text-lg leading-relaxed text-neutral-200 max-w-prose mx-auto line-clamp-5">
+                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
                   "Finally found a program that works with my busy schedule. The online coaching is incredibly
                        effective and the recovery tools have been game-changing for my performance."
                 </p>
                 </div>
                  </blockquote>
                 </figure>
+              </div>
 
                 {/* Amanda L. Testimonial */}
+              <div className="px-2 sm:px-4">
                 <figure 
-                  className="flex-shrink-0 w-[70%] sm:w-[75%] md:w-[70%] snap-start flex flex-col h-full rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
                   itemScope 
                   itemType="https://schema.org/Review"
-                  tabIndex={0}
                 >
                   <div className="text-center mb-4 sm:mb-6">
                     <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
@@ -314,7 +331,7 @@ export default function HomePage() {
                          <meta itemProp="reviewRating" content="5" />
                        </div>
                        <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                       <p className="text-sm sm:text-lg leading-relaxed text-neutral-200 max-w-prose mx-auto line-clamp-5">
+                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
                  "The MFRoller and tension reset course eliminated my chronic back pain. Life-changing results
                        that I never thought possible with online training!"
                </p>
@@ -322,41 +339,148 @@ export default function HomePage() {
                  </blockquote>
                 </figure>
               </div>
+
+              {/* Michael T. Testimonial */}
+              <div className="px-2 sm:px-4">
+                <figure 
+                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  itemScope 
+                  itemType="https://schema.org/Review"
+                >
+                  <div className="text-center mb-4 sm:mb-6">
+                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
+                      <img
+                        src="/person1.png"
+                        alt="Michael T. - Client Success Story"
+                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    <div className="flex justify-center gap-1 mb-2">
+                      <Stars rating={5} />
+                      <span className="sr-only">5 out of 5 stars</span>
+              </div>
             </div>
             
-            {/* Navigation Arrows */}
-            <button 
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-orange-500 transition-all duration-300 shadow-lg z-10"
-              onClick={() => {
-                const carousel = document.getElementById('testimonials-carousel');
-                if (carousel) {
-                  carousel.scrollBy({ left: -300, behavior: 'smooth' });
-                }
-              }}
-              aria-label="Previous testimonial"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            
-            <button 
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-orange-500 transition-all duration-300 shadow-lg z-10"
-              onClick={() => {
-                const carousel = document.getElementById('testimonials-carousel');
-                if (carousel) {
-                  carousel.scrollBy({ left: 300, behavior: 'smooth' });
-                }
-              }}
-              aria-label="Next testimonial"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+                  <blockquote className="flex-1">
+                    <div className="relative">
+                      <div className="text-center mb-3 sm:mb-4">
+                        <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                          <span itemProp="name">Michael T.</span>
+                        </div>
+                        <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
+                          Firefighter
+                        </div>
+                        <meta itemProp="reviewRating" content="5" />
+                      </div>
+                      <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
+                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
+                        "As a firefighter, I need to stay in peak condition. Daniel's programs have improved my strength,
+                        endurance, and recovery time significantly. The tension reset techniques are revolutionary!"
+                      </p>
+                    </div>
+                  </blockquote>
+                </figure>
+              </div>
+
+              {/* Sarah J. Testimonial */}
+              <div className="px-2 sm:px-4">
+                <figure 
+                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  itemScope 
+                  itemType="https://schema.org/Review"
+                >
+                  <div className="text-center mb-4 sm:mb-6">
+                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
+                      <img
+                        src="/person2.png"
+                        alt="Sarah J. - Client Success Story"
+                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    <div className="flex justify-center gap-1 mb-2">
+                      <Stars rating={5} />
+                      <span className="sr-only">5 out of 5 stars</span>
+                    </div>
+                  </div>
+                  
+                  <blockquote className="flex-1">
+                    <div className="relative">
+                      <div className="text-center mb-3 sm:mb-4">
+                        <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                          <span itemProp="name">Sarah J.</span>
+                        </div>
+                        <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
+                          Nurse
+                        </div>
+                        <meta itemProp="reviewRating" content="5" />
+                      </div>
+                      <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
+                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
+                        "Working 12-hour shifts as a nurse, I needed a flexible program. Daniel's online coaching fits
+                        perfectly into my schedule and has transformed my energy levels and overall health."
+                      </p>
+                    </div>
+                  </blockquote>
+                </figure>
+              </div>
+
+              {/* David R. Testimonial */}
+              <div className="px-2 sm:px-4">
+                <figure 
+                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
+                  itemScope 
+                  itemType="https://schema.org/Review"
+                >
+                  <div className="text-center mb-4 sm:mb-6">
+                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
+                      <img
+                        src="/person3.png"
+                        alt="David R. - Client Success Story"
+                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    <div className="flex justify-center gap-1 mb-2">
+                      <Stars rating={5} />
+                      <span className="sr-only">5 out of 5 stars</span>
+                    </div>
           </div>
 
-          {/* Desktop Grid */}
+                  <blockquote className="flex-1">
+                    <div className="relative">
+                      <div className="text-center mb-3 sm:mb-4">
+                        <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
+                          <span itemProp="name">David R.</span>
+                        </div>
+                        <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
+                          Business Owner
+                        </div>
+                        <meta itemProp="reviewRating" content="5" />
+                      </div>
+                      <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
+                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
+                        "At 45, I thought my best days were behind me. Daniel's programs proved me wrong. I'm stronger
+                        now than I was in my 20s, and the tension reset techniques have eliminated my chronic pain."
+                      </p>
+                    </div>
+                  </blockquote>
+                </figure>
+              </div>
+            </Slider>
+          </div>
+
+          {/* Desktop Grid with Manual Scrolling */}
           <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
             {/* Jessica M. Testimonial */}
             <figure 
@@ -510,145 +634,145 @@ export default function HomePage() {
           </div>
 
           {/* ... existing service cards ... */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 sm:gap-16 md:gap-20 max-w-7xl mx-auto mb-8 sm:mb-12 md:mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto mb-8 sm:mb-12 md:mb-16">
             {/* Starter Tier */}
-            <Card className="bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm h-full flex flex-col">
+            <Card className="bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm h-full flex flex-col max-w-[280px] sm:max-w-sm mx-auto w-full">
               <CardHeader className="text-center pb-4 flex-shrink-0">
-                <Badge className="w-fit mx-auto mb-4 sm:mb-6 bg-orange-500/20 text-orange-400 border-orange-500/30 text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
+                <Badge className="w-fit mx-auto mb-3 sm:mb-4 bg-orange-500/20 text-orange-400 border-orange-500/30 text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-1.5">
                   STARTER
                 </Badge>
-                <CardTitle className="font-heading text-2xl sm:text-3xl mb-3 sm:mb-4">Foundation</CardTitle>
-                <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
-                  <div className="text-4xl sm:text-5xl font-black gradient-text">$197</div>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground">/month</CardDescription>
+                <CardTitle className="font-heading text-xl sm:text-2xl mb-2 sm:mb-3">Foundation</CardTitle>
+                <div className="space-y-1 mb-2 sm:mb-3">
+                  <div className="text-3xl sm:text-4xl font-black gradient-text">$197</div>
+                  <CardDescription className="text-sm sm:text-base text-muted-foreground">/month</CardDescription>
                 </div>
-                <p className="text-white/80 text-base sm:text-lg">Perfect for beginners ready to start their fitness journey</p>
+                <p className="text-white/80 text-sm sm:text-base">Perfect for beginners ready to start their fitness journey</p>
               </CardHeader>
-              <CardContent className="space-y-4 sm:space-y-6 flex flex-col flex-grow">
-                <ul className="space-y-3 sm:space-y-4 flex-grow">
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                      <span className="text-base sm:text-lg">1x/month personalized check-ins</span>
+              <CardContent className="space-y-3 sm:space-y-4 flex flex-col flex-grow">
+                <ul className="space-y-2 sm:space-y-3 flex-grow">
+                    <li className="flex items-center gap-2 sm:gap-3">
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                      <span className="text-sm sm:text-base">1x/month personalized check-ins</span>
                     </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Fully customized training program</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Fully customized training program</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Email support & guidance</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Email support & guidance</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Access to exercise library</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Access to exercise library</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Nutrition guidelines</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Nutrition guidelines</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Basic recovery guidance</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Basic recovery guidance</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto">
+                <Button className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto">
                   Start Foundation Program
                 </Button>
               </CardContent>
             </Card>
 
             {/* Growth Tier - Most Popular */}
-            <Card className="bg-card/80 border-2 border-orange-500 hover:border-yellow-500 transition-all glow-orange group relative backdrop-blur-sm scale-105 h-full flex flex-col">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="gradient-orange-yellow text-black font-bold px-4 sm:px-6 py-2 text-base sm:text-lg shadow-2xl">
+            <Card className="bg-card/80 border-2 border-orange-500 hover:border-yellow-500 transition-all glow-orange group relative backdrop-blur-sm scale-105 h-full flex flex-col max-w-[280px] sm:max-w-sm mx-auto w-full">
+              <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
+                <Badge className="gradient-orange-yellow text-black font-bold px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm shadow-2xl">
                     MOST POPULAR
                 </Badge>
               </div>
-              <CardHeader className="text-center pb-4 pt-10 flex-shrink-0">
-                <Badge className="w-fit mx-auto mb-4 sm:mb-6 bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
+              <CardHeader className="text-center pb-4 pt-6 sm:pt-8 flex-shrink-0">
+                <Badge className="w-fit mx-auto mb-3 sm:mb-4 bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
                   GROWTH
                 </Badge>
-                <CardTitle className="font-heading text-2xl sm:text-3xl mb-3 sm:mb-4">Accelerated</CardTitle>
-                <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
-                  <div className="text-4xl sm:text-5xl font-black gradient-text">$297</div>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground">/month</CardDescription>
+                <CardTitle className="font-heading text-lg sm:text-xl mb-2 sm:mb-3">Accelerated</CardTitle>
+                <div className="space-y-1 mb-2 sm:mb-3">
+                  <div className="text-2xl sm:text-3xl font-black gradient-text">$297</div>
+                  <CardDescription className="text-xs sm:text-sm text-muted-foreground">/month</CardDescription>
                 </div>
-                <p className="text-white/80 text-base sm:text-lg">Ideal for committed individuals seeking faster results</p>
+                <p className="text-white/80 text-xs sm:text-sm">Ideal for committed individuals seeking faster results</p>
               </CardHeader>
-              <CardContent className="space-y-4 sm:space-y-6 flex flex-col flex-grow">
-                <ul className="space-y-3 sm:space-y-4 flex-grow">
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">2x/month detailed check-ins</span>
+              <CardContent className="space-y-3 sm:space-y-4 flex flex-col flex-grow">
+                <ul className="space-y-2 sm:space-y-3 flex-grow">
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">2x/month detailed check-ins</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Form review & video feedback</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Form review & video feedback</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Progressive training adjustments</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Progressive training adjustments</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Priority email support</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Priority email support</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Meal planning assistance</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Meal planning assistance</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Recovery optimization</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Recovery optimization</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all shadow-2xl mt-auto">
+                <Button className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all shadow-2xl mt-auto">
                   Choose Growth Program
                 </Button>
               </CardContent>
             </Card>
 
             {/* Elite Tier */}
-            <Card className="bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm h-full flex flex-col">
+            <Card className="bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm h-full flex flex-col max-w-[280px] sm:max-w-sm mx-auto w-full">
               <CardHeader className="text-center pb-4 flex-shrink-0">
-                <Badge className="w-fit mx-auto mb-4 sm:mb-6 bg-orange-600/20 text-orange-300 border-orange-600/30 text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
+                <Badge className="w-fit mx-auto mb-3 sm:mb-4 bg-orange-600/20 text-orange-300 border-orange-600/30 text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-1.5">
                   ELITE
                 </Badge>
-                <CardTitle className="font-heading text-2xl sm:text-3xl mb-3 sm:mb-4">Premium</CardTitle>
-                <div className="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
-                  <div className="text-4xl sm:text-5xl font-black gradient-text">$497</div>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground">/month</CardDescription>
+                <CardTitle className="font-heading text-xl sm:text-2xl mb-2 sm:mb-3">Premium</CardTitle>
+                <div className="space-y-1 mb-2 sm:mb-3">
+                  <div className="text-3xl sm:text-4xl font-black gradient-text">$497</div>
+                  <CardDescription className="text-sm sm:text-base text-muted-foreground">/month</CardDescription>
                 </div>
-                <p className="text-white/80 text-base sm:text-lg">Maximum support for serious athletes and professionals</p>
+                <p className="text-white/80 text-sm sm:text-base">Maximum support for serious athletes and professionals</p>
               </CardHeader>
-              <CardContent className="space-y-4 sm:space-y-6 flex flex-col flex-grow">
-                <ul className="space-y-3 sm:space-y-4 flex-grow">
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Weekly personalized check-ins</span>
+              <CardContent className="space-y-3 sm:space-y-4 flex flex-col flex-grow">
+                <ul className="space-y-2 sm:space-y-3 flex-grow">
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Weekly personalized check-ins</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Complete tension reset coaching</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Complete tension reset coaching</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Video analysis & technique review</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Video analysis & technique review</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Mobility prioritization program</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Mobility prioritization program</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">24/7 text support access</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">24/7 text support access</span>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg">Supplement recommendations</span>
+                  <li className="flex items-center gap-2 sm:gap-3">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm sm:text-base">Supplement recommendations</span>
                   </li>
                 </ul>
-                <Button className="w-full gradient-orange-yellow text-black font-bold text-lg py-6 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto">
+                <Button className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto">
                   Go Elite Premium
                 </Button>
               </CardContent>
@@ -656,13 +780,13 @@ export default function HomePage() {
           </div>
 
           {/* Service Comparison Table */}
-          <div className="max-w-7xl mx-auto mt-20 mb-16">
+          <div className="max-w-[280px] sm:max-w-6xl mx-auto mt-20 mb-16">
             <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
               <CardHeader className="text-center pb-8 pt-8">
-                <CardTitle className="font-heading text-4xl md:text-5xl font-bold mb-6">
+                  <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                   Choose Your <span className="gradient-text">Perfect Plan</span>
                 </CardTitle>
-                <CardDescription className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto">
                   Compare our training tiers and find the perfect match for your fitness journey
                 </CardDescription>
               </CardHeader>
@@ -671,16 +795,16 @@ export default function HomePage() {
                   <table className="w-full text-left">
                     <thead className="sticky top-0 bg-card/95 backdrop-blur-sm z-10">
                       <tr className="border-b-2 border-orange-500/30">
-                        <th className="py-6 px-6 text-xl font-bold text-left">Features</th>
-                        <th className="py-6 px-6 text-center text-xl font-bold text-orange-400">Foundation</th>
-                        <th className="py-6 px-6 text-center text-xl font-bold text-yellow-400">Growth</th>
-                        <th className="py-6 px-6 text-center text-xl font-bold text-orange-300">Elite</th>
+                        <th className="py-6 px-6 text-base sm:text-lg md:text-xl font-bold text-left">Features</th>
+                        <th className="py-6 px-6 text-center text-base sm:text-lg md:text-xl font-bold text-orange-400">Foundation</th>
+                        <th className="py-6 px-6 text-center text-base sm:text-lg md:text-xl font-bold text-yellow-400">Growth</th>
+                        <th className="py-6 px-6 text-center text-base sm:text-lg md:text-xl font-bold text-orange-300">Elite</th>
                       </tr>
                     </thead>
-                    <tbody className="text-lg">
+                    <tbody className="text-sm sm:text-base md:text-lg">
                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                         <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
-                          <Clock className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                           Check-in Frequency
                         </td>
                         <td className="py-5 px-6 text-center font-medium group-hover:bg-orange-500/5 transition-colors">Monthly</td>
@@ -689,91 +813,92 @@ export default function HomePage() {
                       </tr>
                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                         <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
-                          <Target className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          <Target className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                           Custom Training Program
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                       </tr>
                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                         <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
-                          <Users className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          <Users className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                           Form Review & Feedback
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                            <X className="w-6 h-6 text-red-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                       </tr>
                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                         <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
-                          <Zap className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                           Tension Reset Coaching
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                            <X className="w-6 h-6 text-red-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                            <X className="w-6 h-6 text-red-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                       </tr>
                       <tr className="hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                         <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
-                          <MessageCircle className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                           24/7 Text Support
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                            <X className="w-6 h-6 text-red-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                            <X className="w-6 h-6 text-red-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                            <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-400" />
                           </div>
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
                           </div>
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
+
               </CardContent>
             </Card>
           </div>

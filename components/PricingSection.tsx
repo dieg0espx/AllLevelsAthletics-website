@@ -157,71 +157,56 @@ const PlanCard = ({
 
   return (
     <article
-      className={`relative flex flex-col h-full rounded-2xl border border-stroke bg-surface p-6 lg:p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 ${
-        isPopular ? 'ring-2 ring-primary/20 scale-105' : ''
+      className={`relative bg-card/80 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange group backdrop-blur-sm h-full flex flex-col max-w-[280px] sm:max-w-sm mx-auto w-full ${
+        isPopular ? 'border-orange-500 hover:border-yellow-500 glow-orange scale-105' : ''
       }`}
       aria-labelledby={`${plan.id}-title`}
       aria-describedby={isPopular ? `${plan.id}-popular` : undefined}
     >
       {isPopular && (
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+        <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
           <div
             id={`${plan.id}-popular`}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-black"
+            className="gradient-orange-yellow text-black font-bold px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base shadow-2xl"
           >
-            <StarIcon className="h-3 w-3" />
             MOST POPULAR
           </div>
         </div>
       )}
 
-      <header className="text-center pb-6 pt-4">
-        <div className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium mb-4 ${plan.badgeColor}`}>
+      <header className="text-center pb-4 pt-8 sm:pt-10 flex-shrink-0">
+        <div className={`inline-flex items-center rounded-full border px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium mb-3 sm:mb-4 ${plan.badgeColor}`}>
           {plan.badge}
         </div>
-        <h3 id={`${plan.id}-title`} className="text-2xl font-bold mb-2">
+        <h3 id={`${plan.id}-title`} className="text-lg sm:text-xl mb-2 sm:mb-3 font-bold">
           {plan.name}
         </h3>
-        <p className="text-muted text-sm leading-relaxed">
-          {plan.subtitle}
-        </p>
+        <div className="space-y-1 mb-2 sm:mb-3">
+          <div className="text-2xl sm:text-3xl font-black">${price}</div>
+          <p className="text-xs sm:text-sm text-muted">/month</p>
+        </div>
+        <p className="text-white/80 text-xs sm:text-sm">Perfect for beginners ready to start their fitness journey</p>
       </header>
 
-      <div className="flex items-baseline justify-center mb-6">
-        <span className="text-4xl font-black">${price}</span>
-        <span className="text-muted ml-1">/month</span>
+      <div className="space-y-3 sm:space-y-4 flex flex-col flex-grow">
+        <ul className="space-y-2 sm:space-y-3 flex-grow">
+          {plan.features.map((feature, index) => (
+            <li key={index} className="flex items-center gap-2 sm:gap-3">
+              <CheckIcon className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
+              <span className="text-xs sm:text-sm">{feature}</span>
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={() => handleAnalytics(plan.id, isAnnual ? 'annual' : 'monthly', isPopular ? 'popular' : 'standard')}
+          data-plan={plan.id}
+          data-billing={isAnnual ? 'annual' : 'monthly'}
+          data-variant={isPopular ? 'popular' : 'standard'}
+          className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base py-3 sm:py-4 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
+        >
+          Start 7-Day Free Trial
+        </button>
       </div>
-
-      {isAnnual && savings > 0 && (
-        <div className="text-center mb-6">
-          <p className="text-success text-sm">
-            Save ${savings}/month with annual billing
-          </p>
-        </div>
-      )}
-
-      <ul className="space-y-3 mb-8 flex-1">
-        {plan.features.map((feature, index) => (
-          <li key={index} className="flex items-start gap-2">
-            <CheckIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-            <span className="text-sm leading-relaxed">{feature}</span>
-          </li>
-        ))}
-      </ul>
-
-      <button
-        onClick={() => handleAnalytics(plan.id, isAnnual ? 'annual' : 'monthly', isPopular ? 'popular' : 'standard')}
-        data-plan={plan.id}
-        data-billing={isAnnual ? 'annual' : 'monthly'}
-        data-variant={isPopular ? 'popular' : 'standard'}
-        className={`w-full rounded-xl py-3 px-4 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface ${
-          isPopular
-            ? 'bg-primary text-black hover:bg-primary/90 focus:ring-primary'
-            : 'bg-surface border border-stroke text-white hover:border-primary/50 focus:ring-primary'
-        }`}
-      >
-        Start 7-Day Free Trial
-      </button>
     </article>
   )
 }
@@ -336,7 +321,7 @@ export default function PricingSection() {
 
         <BillingToggle isAnnual={isAnnual} setIsAnnual={setIsAnnual} />
 
-        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto mb-8 sm:mb-12 md:mb-16">
           {pricingData.tiers.map((plan) => (
             <PlanCard
               key={plan.id}

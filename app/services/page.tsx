@@ -86,6 +86,314 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* Service Comparison Table */}
+      <section className="py-16 sm:py-20 md:py-24 lg:py-32 bg-card/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
+                                             <CardHeader className="text-center pb-4 sm:pb-6 pt-8">
+                  <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
+                    Compare <span className="gradient-text">Training Tiers</span>
+                  </CardTitle>
+                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                    Find the perfect level of support for your fitness journey
+                  </CardDescription>
+                </CardHeader>
+               <CardContent className="p-0">
+                 <div className="overflow-x-auto">
+                   <table className="w-full text-left">
+                     <thead className="sticky top-0 bg-card/95 backdrop-blur-sm z-10">
+                       <tr className="border-b-2 border-orange-500/30">
+                                                   <th className="py-6 px-6 text-base sm:text-lg md:text-xl font-bold text-left">
+                            <div>
+                              <div className="text-xl sm:text-2xl font-bold">Features</div>
+                              <div className="text-xs sm:text-sm text-muted-foreground">What's included in each tier</div>
+                            </div>
+                          </th>
+                         <th className="py-6 px-6 text-center">
+                           <div className="space-y-2">
+                             <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
+                             <div className="text-xl font-bold text-orange-400">Foundation</div>
+                             <div className="text-3xl font-bold gradient-text">$197</div>
+                             <div className="text-sm text-muted-foreground">/month</div>
+                           </div>
+                         </th>
+                         <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
+                           <div className="space-y-2">
+                             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
+                             <div className="text-xl font-bold text-yellow-400">Accelerated</div>
+                             <div className="text-3xl font-bold gradient-text">$297</div>
+                             <div className="text-sm text-muted-foreground">/month</div>
+                           </div>
+                         </th>
+                         <th className="py-6 px-6 text-center">
+                           <div className="space-y-2">
+                             <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
+                             <div className="text-xl font-bold text-orange-300">Premium</div>
+                             <div className="text-3xl font-bold gradient-text">$497</div>
+                             <div className="text-sm text-muted-foreground">/month</div>
+                           </div>
+                         </th>
+                       </tr>
+                     </thead>
+                                           <tbody className="text-sm sm:text-base md:text-lg">
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Clock className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Monthly Check-ins</div>
+                               <div className="text-sm text-muted-foreground">Regular progress reviews</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center font-medium group-hover:bg-orange-500/5 transition-colors">1x per month</td>
+                         <td className="py-5 px-6 text-center font-medium bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">2x per month</td>
+                         <td className="py-5 px-6 text-center font-medium group-hover:bg-orange-500/5 transition-colors">Weekly</td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Target className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Custom Program Design</div>
+                               <div className="text-sm text-muted-foreground">Personalized workout plans</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Users className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Form Review & Feedback</div>
+                               <div className="text-sm text-muted-foreground">Video analysis & corrections</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Play className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Video Analysis</div>
+                               <div className="text-sm text-muted-foreground">Detailed movement breakdown</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Heart className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Tension Coaching</div>
+                               <div className="text-sm text-muted-foreground">Myofascial release guidance</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Zap className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Mobility Prioritization</div>
+                               <div className="text-sm text-muted-foreground">Flexibility & range of motion</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Mail className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Email Support</div>
+                               <div className="text-sm text-muted-foreground">Basic communication</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Star className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Priority Support</div>
+                               <div className="text-sm text-muted-foreground">Faster response times</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Target className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Training Progression</div>
+                               <div className="text-sm text-muted-foreground">Systematic advancement</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Heart className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Nutrition Guidance</div>
+                               <div className="text-sm text-muted-foreground">Diet & meal planning support</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                     </tbody>
+                   </table>
+                 </div>
+                 
+               </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
       
                    <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 overflow-hidden">
             {/* Enhanced Gradient Background */}
