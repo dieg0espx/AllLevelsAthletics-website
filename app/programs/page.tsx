@@ -517,9 +517,7 @@ export default function ProgramsPage() {
                       </ul>
                     </div>
                   </div>
-                  <Button className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all mt-auto">
-                    Explore Specialized Programs
-                  </Button>
+
                 </CardContent>
               </Card>
             </div>
