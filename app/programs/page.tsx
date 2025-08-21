@@ -373,7 +373,7 @@ export default function ProgramsPage() {
               ref={carouselRef}
               className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing scrollbar-hide"
             >
-              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[300px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
@@ -410,7 +410,7 @@ export default function ProgramsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[300px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
@@ -447,7 +447,7 @@ export default function ProgramsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[300px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
@@ -484,7 +484,7 @@ export default function ProgramsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[300px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
@@ -522,29 +522,7 @@ export default function ProgramsPage() {
               </Card>
             </div>
 
-            {/* Enhanced Carousel Indicators - 4 dots for 4 categories */}
-            <div className="flex justify-center gap-3 mt-8">
-              {Array.from({ length: 4 }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setCurrentSlide(index)
-                    if (carouselRef.current) {
-                      carouselRef.current.scrollTo({
-                        left: index * slideWidth,
-                        behavior: 'smooth'
-                      })
-                    }
-                  }}
-                  className={`w-4 h-4 rounded-full transition-all duration-300 hover:scale-125 ${
-                    index === currentSlide
-                      ? 'bg-orange-500 scale-125 shadow-lg shadow-orange-500/50' 
-                      : 'bg-white/30 hover:bg-white/50'
-                  }`}
-                  aria-label={`Go to category ${index + 1}`}
-                />
-              ))}
-            </div>
+
           </div>
         </div>
       </section>
@@ -618,7 +596,7 @@ export default function ProgramsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 to-transparent"></div>
                   <div className="absolute top-4 left-4">
                     <Badge className="bg-orange-500 text-white">
-                      📺 ON-DEMAND
+                       ON-DEMAND
                     </Badge>
                   </div>
                 </div>
@@ -654,7 +632,7 @@ export default function ProgramsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 to-transparent"></div>
                   <div className="absolute top-4 left-4">
                     <Badge className="bg-orange-500 text-white font-bold">
-                      👑 PREMIUM
+                       PREMIUM
                     </Badge>
                   </div>
                 </div>
