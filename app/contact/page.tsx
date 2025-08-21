@@ -69,6 +69,38 @@ export default function ContactPage() {
     }
   }
 
+  // Function to handle phone calls
+  const handlePhoneCall = () => {
+    window.location.href = 'tel:760-585-8832'
+  }
+
+  // Function to handle email
+  const handleEmail = () => {
+    window.location.href = 'mailto:AllLevelsAthletics@gmail.com'
+  }
+
+  // Function to scroll to contact form
+  const scrollToContactForm = () => {
+    const element = document.getElementById('contact-form')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  // Function to scroll to multiple ways to connect section
+  const scrollToConnectSection = () => {
+    const element = document.querySelector('section:nth-of-type(2)') // The "Multiple Ways to Connect" section
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  // Function to handle social media links
+  const handleSocialMedia = () => {
+    // You can update these URLs to the actual social media profiles
+    window.open('https://www.tiktok.com/@AllLevelsAthletics', '_blank')
+  }
+
   return (
     <div className="min-h-screen bg-background">
 
@@ -106,6 +138,7 @@ export default function ContactPage() {
              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
+                onClick={scrollToConnectSection}
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-lg px-8 py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <span className="flex items-center gap-3">
@@ -116,6 +149,7 @@ export default function ContactPage() {
               <Button
                 variant="outline"
                 size="lg"
+                onClick={scrollToContactForm}
                 className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-6 py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <span className="flex items-center gap-2">
@@ -159,7 +193,10 @@ export default function ContactPage() {
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                     Available evenings & weekends for consultations
                   </p>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                <Button 
+                  onClick={handlePhoneCall}
+                  className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
+                >
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Call Now
@@ -186,7 +223,10 @@ export default function ContactPage() {
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                     Response within 24 hours guaranteed
                   </p>
-                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                <Button 
+                  onClick={handleEmail}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
+                >
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Send Email
@@ -213,7 +253,10 @@ export default function ContactPage() {
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                     48-hour advance booking required
                   </p>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                <Button 
+                  onClick={scrollToContactForm}
+                  className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
+                >
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Book Now
@@ -240,7 +283,10 @@ export default function ContactPage() {
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                     TikTok & Instagram updates
                   </p>
-                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                <Button 
+                  onClick={handleSocialMedia}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
+                >
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Follow Us
@@ -506,7 +552,7 @@ export default function ContactPage() {
          </section>
 
                {/* Contact Form */}
-        <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-orange-500/5 via-yellow-500/3 to-orange-500/5 relative overflow-hidden">
+        <section id="contact-form" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-orange-500/5 via-yellow-500/3 to-orange-500/5 relative overflow-hidden">
                     {/* Background Elements */}
            <div className="absolute top-10 right-10 w-24 sm:w-32 h-24 sm:h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
            <div className="absolute bottom-10 left-10 w-32 sm:w-40 h-32 sm:h-40 bg-yellow-500/10 rounded-full blur-2xl"></div>
@@ -791,6 +837,7 @@ export default function ContactPage() {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-12">
               <Button
                 size="lg"
+                onClick={handlePhoneCall}
                 className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 w-full sm:w-auto"
               >
                 <span className="flex items-center gap-2 sm:gap-3">
@@ -801,6 +848,7 @@ export default function ContactPage() {
               <Button
                 variant="outline"
                 size="lg"
+                onClick={handleEmail}
                 className="border-2 border-orange-500 text-white hover:bg-yellow-500/10 hover:text-yellow-300 text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl bg-transparent backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20 w-full sm:w-auto"
               >
                 <span className="flex items-center gap-2 sm:gap-3">

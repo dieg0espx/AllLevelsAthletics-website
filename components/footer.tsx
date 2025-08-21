@@ -29,86 +29,66 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Services Section */}
-            <div className="space-y-3 sm:space-y-4">
-              <h3 className="font-semibold text-base sm:text-lg text-white">Services</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <a href="/services" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Foundation Training
-                  </a>
-                </li>
-                <li>
-                  <a href="/services" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Growth Program
-                  </a>
-                </li>
-                <li>
-                  <a href="/services" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Elite Coaching
-                  </a>
-                </li>
-                <li>
-                  <a href="/programs" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Specialized Programs
-                  </a>
-                </li>
-              </ul>
-            </div>
+                                                   {/* Services Section */}
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-base sm:text-lg text-white">Services</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>
+                    <a href="/services#services" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                      Foundation Training
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/programs#featured-programs" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                      Growth Program
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/programs#programs" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                      Specialized Programs
+                    </a>
+                  </li>
+                </ul>
+              </div>
 
-            {/* Products Section */}
-            <div className="space-y-3 sm:space-y-4">
-              <h3 className="font-semibold text-base sm:text-lg text-white">Products</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <a href="#products" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Tension Reset Course
-                  </a>
-                </li>
-                <li>
-                  <a href="#products" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    MFRoller
-                  </a>
-                </li>
-                <li>
-                  <a href="#products" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Complete Bundle
-                  </a>
-                </li>
-                <li>
-                  <a href="/blog" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Free Resources
-                  </a>
-                </li>
-              </ul>
-            </div>
+                          {/* Products Section */}
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-base sm:text-lg text-white">Products</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li>
+                    <a href="/services#tension-reset-course" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                      Tension Reset Course
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/services#knot-roller" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                      All Levels Knot Roller
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/services#complete-bundle" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                      Complete Bundle
+                    </a>
+                  </li>
+                </ul>
+              </div>
 
-            {/* Company Section */}
-            <div className="space-y-3 sm:space-y-4">
-              <h3 className="font-semibold text-base sm:text-lg text-white">Company</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <a href="/about" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    About Daniel
-                  </a>
-                </li>
-                <li>
-                  <a href="/team" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Our Team
-                  </a>
-                </li>
-                <li>
-                  <a href="/contact" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a href="/blog" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                    Blog & Resources
-                  </a>
-                </li>
-              </ul>
-            </div>
+             {/* Company Section */}
+             <div className="space-y-3 sm:space-y-4">
+               <h3 className="font-semibold text-base sm:text-lg text-white">Company</h3>
+               <ul className="space-y-2 text-muted-foreground">
+                 <li>
+                   <a href="/about#daniel-ledbetter" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                     About Daniel
+                   </a>
+                 </li>
+                 <li>
+                   <a href="/contact#contact-form" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
+                     Contact Us
+                   </a>
+                 </li>
+               </ul>
+             </div>
           </div>
 
           {/* Bottom Section */}
