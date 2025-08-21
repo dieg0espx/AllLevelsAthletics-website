@@ -71,37 +71,39 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Methods - Enhanced for mobile */}
-      <section className="py-12 sm:py-16 md:py-20 bg-card/30">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-card/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 md:mb-6">
               Multiple Ways to <span className="gradient-text">Connect</span>
             </h2>
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl sm:max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
               Choose the method that works best for you - we're available when you need us
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
             {/* Call or Text Card */}
-            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-6 lg:p-8">
-              <div className="flex items-start gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-orange-500/20">
-                  <Phone className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-5 lg:p-6 xl:p-8">
+              <div className="flex items-start gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-orange-500/20">
+                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading text-lg sm:text-xl lg:text-2xl text-white mb-1 sm:mb-2 font-bold">Call or Text</h3>
-                  <p className="text-orange-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Direct line to Daniel</p>
-                  <div className="text-base sm:text-lg lg:text-xl font-bold gradient-text tracking-wide">760-585-8832</div>
+                  <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Call or Text</h3>
                 </div>
               </div>
-              <div className="mt-auto pt-3 sm:pt-4 border-t border-orange-500/20">
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-5 text-xs sm:text-sm lg:text-base">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <p className="text-orange-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Direct line to Daniel</p>
+                <div className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold gradient-text tracking-wide">760-585-8832</div>
+              </div>
+              <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                   Available evenings & weekends for consultations
                 </p>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-sm sm:text-base">
-                  <span className="flex items-center gap-2">
-                    <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Call Now
                   </span>
                 </Button>
@@ -109,24 +111,26 @@ export default function ContactPage() {
             </Card>
 
             {/* Email Card */}
-            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-6 lg:p-8">
-              <div className="flex items-start gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-yellow-500/20">
-                  <Mail className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-5 lg:p-6 xl:p-8">
+              <div className="flex items-start gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-yellow-500/20">
+                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading text-lg sm:text-xl lg:text-2xl text-white mb-1 sm:mb-2 font-bold">Email</h3>
-                  <p className="text-yellow-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Detailed inquiries welcome</p>
-                  <div className="text-xs sm:text-sm lg:text-base font-bold gradient-text tracking-wide">AllLevelsAthletics@gmail.com</div>
+                  <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Email</h3>
                 </div>
               </div>
-              <div className="mt-auto pt-3 sm:pt-4 border-t border-yellow-500/20">
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-5 text-xs sm:text-sm lg:text-base">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <p className="text-yellow-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Detailed inquiries welcome</p>
+                <div className="text-xs sm:text-sm lg:text-base font-bold gradient-text tracking-wide break-words">AllLevelsAthletics@gmail.com</div>
+              </div>
+              <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                   Response within 24 hours guaranteed
                 </p>
-                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-sm sm:text-base">
-                  <span className="flex items-center gap-2">
-                    <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Send Email
                   </span>
                 </Button>
@@ -134,24 +138,26 @@ export default function ContactPage() {
             </Card>
 
             {/* Schedule Card */}
-            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-6 lg:p-8">
-              <div className="flex items-start gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-orange-500/20">
-                  <Calendar className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-5 lg:p-6 xl:p-8">
+              <div className="flex items-start gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-orange-500/20">
+                  <Calendar className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading text-lg sm:text-xl lg:text-2xl text-white mb-1 sm:mb-2 font-bold">Schedule</h3>
-                  <p className="text-orange-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Book your consultation</p>
-                  <div className="text-sm sm:text-base lg:text-lg font-bold gradient-text tracking-wide">Free Consultation</div>
+                  <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Schedule</h3>
                 </div>
               </div>
-              <div className="mt-auto pt-3 sm:pt-4 border-t border-orange-500/20">
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-5 text-xs sm:text-sm lg:text-base">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <p className="text-orange-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Book your consultation</p>
+                <div className="text-sm sm:text-base lg:text-lg font-bold gradient-text tracking-wide">Free Consultation</div>
+              </div>
+              <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                   48-hour advance booking required
                 </p>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-sm sm:text-base">
-                  <span className="flex items-center gap-2">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Book Now
                   </span>
                 </Button>
@@ -159,24 +165,26 @@ export default function ContactPage() {
             </Card>
 
             {/* Social Media Card */}
-            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-6 lg:p-8">
-              <div className="flex items-start gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-yellow-500/20">
-                  <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 group backdrop-blur-sm h-full flex flex-col p-4 sm:p-5 lg:p-6 xl:p-8">
+              <div className="flex items-start gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg flex-shrink-0 ring-2 ring-yellow-500/20">
+                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading text-lg sm:text-xl lg:text-2xl text-white mb-1 sm:mb-2 font-bold">Social Media</h3>
-                  <p className="text-yellow-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Follow our journey</p>
-                  <div className="text-xs sm:text-sm lg:text-base font-bold gradient-text tracking-wide">@AllLevelsAthletics</div>
+                  <h3 className="font-heading text-base sm:text-lg lg:text-xl xl:text-2xl text-white mb-1 sm:mb-2 font-bold">Social Media</h3>
                 </div>
               </div>
-              <div className="mt-auto pt-3 sm:pt-4 border-t border-yellow-500/20">
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-5 text-xs sm:text-sm lg:text-base">
+              <div className="w-full mb-3 sm:mb-4 lg:mb-5 xl:mb-6">
+                <p className="text-yellow-300 text-xs sm:text-sm lg:text-base mb-2 sm:mb-3 opacity-90">Follow our journey</p>
+                <div className="text-xs sm:text-sm lg:text-base font-bold gradient-text tracking-wide">@AllLevelsAthletics</div>
+              </div>
+              <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                   TikTok & Instagram updates
                 </p>
-                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-sm sm:text-base">
-                  <span className="flex items-center gap-2">
-                    <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation">
+                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
                     Follow Us
                   </span>
                 </Button>
