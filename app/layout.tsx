@@ -4,6 +4,7 @@ import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
+import { AuthProvider } from "@/contexts/auth-context"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -250,9 +251,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <Navigation />
-        <main>{children}</main>
-        <Footer />
+        <AuthProvider>
+          <Navigation />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </body>
     </html>

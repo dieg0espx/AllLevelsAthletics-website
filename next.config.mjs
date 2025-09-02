@@ -23,7 +23,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com https://*.tiktok.com https://*.ttwstatic.com",
               "img-src 'self' data: https: blob: https://*.tiktok.com https://*.bytedance.net https://*.ttwstatic.com",
               "media-src 'self' https: https://*.tiktok.com https://*.ttwstatic.com",
-              "connect-src 'self' https://www.tiktok.com https://*.tiktok.com https://*.bytedance.net https://*.ttwstatic.com",
+              "connect-src 'self' https://www.tiktok.com https://*.tiktok.com https://*.bytedance.net https://*.ttwstatic.com https://*.supabase.co https://*.supabase.com",
               "frame-src 'self' https://www.tiktok.com https://*.tiktok.com https://*.bytedance.net https://*.ttwstatic.com",
               "frame-ancestors 'self'",
               "object-src 'none'",
