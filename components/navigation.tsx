@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Zap } from "lucide-react"
+import { Menu, X, Zap, User } from "lucide-react"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -105,8 +105,18 @@ export function Navigation() {
             </Link>
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
+          {/* Desktop CTA and Login */}
+          <div className="hidden lg:flex items-center space-x-4">
+            {/* Login/Register Icon */}
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-white/90 hover:text-orange-400 hover:bg-white/10 transition-all duration-300 rounded-full p-3 group"
+            >
+              <User className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+            </Button>
+            
+            {/* Start Trial Button */}
             <Button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-6 xl:px-8 py-2 xl:py-3 rounded-full shadow-lg hover:shadow-orange-500/25 hover:-translate-y-0.5 transition-all duration-300 group text-sm xl:text-base">
               <span className="flex items-center gap-2">
                 Start Trial
@@ -173,7 +183,21 @@ export function Navigation() {
             >
               Contact
             </Link>
-            <div className="pt-4 sm:pt-6 border-t border-orange-500/20">
+            
+            {/* Mobile Login/Register */}
+            <div className="pt-2">
+              <Button 
+                variant="ghost" 
+                className="w-full text-white/90 hover:text-orange-400 hover:bg-white/10 transition-all duration-300 font-medium py-3 rounded-lg group"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                  Login / Register
+                </span>
+              </Button>
+            </div>
+            
+            <div className="pt-2">
               <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation">
                 <span className="flex items-center justify-center gap-2 text-base sm:text-lg">
                   Start Trial
