@@ -27,6 +27,22 @@ export default function ServicesPage() {
     return () => clearInterval(interval)
   }, [rollerImages.length])
 
+  // Handle scroll to products section from query parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const scrollTo = urlParams.get('scrollTo')
+    
+    if (scrollTo === 'products') {
+      // Wait for the page to fully load, then scroll to products section
+      setTimeout(() => {
+        const productsSection = document.getElementById('products')
+        if (productsSection) {
+          productsSection.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 1000) // Wait 1 second for page to load
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
 

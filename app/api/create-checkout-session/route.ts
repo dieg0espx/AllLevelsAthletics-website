@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
-
 export async function POST(request: NextRequest) {
+  // Declare variables at function scope for error handling
+  let baseUrl: string
+  let successUrl: string
+  let cancelUrl: string
+  
   try {
+    // Debug: Log all environment variables
+    console.log('=== ENVIRONMENT VARIABLES DEBUG ===')
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY)
+    console.log('STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY?.length || 0)
+    console.log('SITE_URL:', process.env.SITE_URL)
+    console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL)
+    console.log('All env keys:', Object.keys(process.env).filter(key => key.includes('SITE') || key.includes('URL')))
+    console.log('================================')
+    
     // Check if Stripe secret key is configured
     if (!process.env.STRIPE_SECRET_KEY) {
       console.error('STRIPE_SECRET_KEY is not configured')
@@ -15,35 +26,176 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+    
+    // Initialize Stripe
+    let stripe: Stripe
+    try {
+      stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2024-12-18.acacia',
+        typescript: true,
+        appInfo: {
+          name: 'All Levels Athletics',
+          version: '1.0.0',
+        },
+      })
+      console.log('Stripe instance created successfully')
+    } catch (stripeInitError) {
+      console.error('Failed to initialize Stripe:', stripeInitError)
+      return NextResponse.json(
+        { error: 'Failed to initialize Stripe payment processor' },
+        { status: 500 }
+      )
+    }
 
-    const { items, shippingInfo } = await request.json()
+    let items: any[]
+    let shippingInfo: any
+    
+    try {
+      const requestBody = await request.json()
+      items = requestBody.items
+      shippingInfo = requestBody.shippingInfo
+      
+      console.log('Request body parsed successfully')
+      console.log('API received items:', items)
+      console.log('API received shippingInfo:', shippingInfo)
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError)
+      return NextResponse.json(
+        { error: 'Invalid request body format' },
+        { status: 400 }
+      )
+    }
+
+    // Validate required data
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      console.error('Validation failed: items array is invalid or empty')
+      return NextResponse.json(
+        { error: 'Invalid or empty items array' },
+        { status: 400 }
+      )
+    }
+
+    if (!shippingInfo || !shippingInfo.email) {
+      console.error('Validation failed: shippingInfo or email is missing')
+      return NextResponse.json(
+        { error: 'Shipping information and email are required' },
+        { status: 400 }
+      )
+    }
 
     // Create line items from cart items
-    const lineItems = items.map((item: any) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: item.name,
-          description: item.description,
-          images: [item.image],
+    const lineItems = items.map((item: any) => {
+      console.log('Processing item:', item)
+      
+      // Ensure price is a valid number
+      const price = typeof item.price === 'number' ? item.price : parseFloat(item.price)
+      if (isNaN(price) || price <= 0) {
+        throw new Error(`Invalid price for item ${item.name}: ${item.price}`)
+      }
+      
+      // Convert relative image URLs to absolute URLs for Stripe
+      let imageUrl = null
+      if (item.image) {
+        if (item.image.startsWith('http')) {
+          // Already an absolute URL
+          imageUrl = item.image
+        } else {
+          // Convert relative URL to absolute URL
+          imageUrl = `${baseUrl}${item.image}`
+        }
+      }
+      
+      return {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.name || 'Product',
+            description: item.description || 'Product description',
+            images: imageUrl ? [imageUrl] : [],
+          },
+          unit_amount: Math.round(price * 100), // Convert to cents
         },
-        unit_amount: Math.round(item.price * 100), // Convert to cents
-      },
-      quantity: item.quantity,
-    }))
+        quantity: item.quantity || 1,
+      }
+    })
+    
+    console.log('Created line items:', lineItems)
+    console.log('Image URLs being sent to Stripe:')
+    lineItems.forEach((item, index) => {
+      if (item.price_data.product_data.images && item.price_data.product_data.images.length > 0) {
+        console.log(`Item ${index + 1} image:`, item.price_data.product_data.images[0])
+      }
+    })
+
+    // Get base URL from environment or fallback to localhost
+    baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    
+    console.log('=== URL DEBUGGING ===')
+    console.log('Using baseUrl from env:', baseUrl)
+    
+    // Validate that the URLs are properly formatted
+    // Stripe requires the exact format: {CHECKOUT_SESSION_ID} as a placeholder
+    successUrl = `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`
+    cancelUrl = `${baseUrl}/checkout`
+    
+    console.log('Success URL:', successUrl)
+    console.log('Cancel URL:', cancelUrl)
+    console.log('Success URL length:', successUrl.length)
+    console.log('Cancel URL length:', cancelUrl.length)
+    
+    // Additional URL validation for Stripe
+    if (successUrl.length > 2048) {
+      throw new Error('Success URL is too long for Stripe (max 2048 characters)')
+    }
+    if (cancelUrl.length > 2048) {
+      throw new Error('Cancel URL is too long for Stripe (max 2048 characters)')
+    }
+    
+    // Test URL validity and ensure they're properly formatted for Stripe
+    try {
+      const successUrlObj = new URL(successUrl)
+      const cancelUrlObj = new URL(cancelUrl)
+      
+      // Ensure URLs are HTTP/HTTPS
+      if (!['http:', 'https:'].includes(successUrlObj.protocol)) {
+        throw new Error(`Invalid protocol for success URL: ${successUrlObj.protocol}`)
+      }
+      if (!['http:', 'https:'].includes(cancelUrlObj.protocol)) {
+        throw new Error(`Invalid protocol for cancel URL: ${cancelUrlObj.protocol}`)
+      }
+      
+      console.log('URLs are valid and properly formatted')
+      console.log('Success URL protocol:', successUrlObj.protocol)
+      console.log('Cancel URL protocol:', cancelUrlObj.protocol)
+    } catch (urlError) {
+      console.error('URL validation failed:', urlError)
+      return NextResponse.json(
+        { 
+          error: 'Invalid checkout URLs. Please check your site configuration.',
+          details: {
+            urlError: urlError.message,
+            baseUrl,
+            successUrl,
+            cancelUrl
+          }
+        },
+        { status: 400 }
+      )
+    }
+    console.log('=== END URL DEBUGGING ===')
 
     // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionData = {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${request.nextUrl.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.nextUrl.origin}/checkout`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer_email: shippingInfo.email,
       metadata: {
         items: JSON.stringify(items.map((item: any) => ({ id: item.id, name: item.name }))),
         shippingInfo: JSON.stringify(shippingInfo),
       },
-      customer_email: shippingInfo?.email,
       shipping_address_collection: {
         allowed_countries: ['US', 'CA', 'GB', 'AU'], // Add more countries as needed
       },
@@ -69,13 +221,83 @@ export async function POST(request: NextRequest) {
           },
         },
       ],
-    })
+    }
+
+    console.log('Creating Stripe session with data:', JSON.stringify(sessionData, null, 2))
+
+    console.log('Attempting to create Stripe session...')
+    console.log('Final session data being sent to Stripe:')
+    console.log('- success_url:', sessionData.success_url)
+    console.log('- cancel_url:', sessionData.cancel_url)
+    console.log('- mode:', sessionData.mode)
+    console.log('- line_items count:', sessionData.line_items.length)
+    
+    let session: any
+    try {
+      session = await stripe.checkout.sessions.create(sessionData)
+      console.log('Stripe session created successfully:', session.id)
+    } catch (stripeError) {
+      console.error('Stripe session creation failed:', stripeError)
+      if (stripeError instanceof Stripe.errors.StripeError) {
+        console.error('Stripe error type:', stripeError.type)
+        console.error('Stripe error code:', stripeError.code)
+        console.error('Stripe error message:', stripeError.message)
+      }
+      throw stripeError // Re-throw to be caught by outer catch
+    }
 
     return NextResponse.json({ sessionId: session.id })
   } catch (error) {
     console.error('Error creating checkout session:', error)
+    
+    // Provide more specific error messages
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error('Stripe error details:', {
+        type: error.type,
+        code: error.code,
+        message: error.message,
+        decline_code: error.decline_code,
+        param: error.param
+      })
+      
+      // Handle specific URL-related errors
+      if (error.message.includes('Not a valid URL') || error.message.includes('Invalid checkout URLs')) {
+        console.error('URL validation failed. Base URL:', baseUrl)
+        console.error('Success URL:', successUrl)
+        console.error('Cancel URL:', cancelUrl)
+        console.error('Environment variables:')
+        console.error('- NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL)
+        console.error('- SITE_URL:', process.env.SITE_URL)
+        console.error('- NODE_ENV:', process.env.NODE_ENV)
+        return NextResponse.json(
+          { 
+            error: 'Invalid checkout URLs. Please check your site configuration.',
+            details: {
+              baseUrl,
+              successUrl,
+              cancelUrl,
+              envVars: {
+                NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+                SITE_URL: process.env.SITE_URL,
+                NODE_ENV: process.env.NODE_ENV
+              }
+            }
+          },
+          { status: 400 }
+        )
+      }
+      
+      return NextResponse.json(
+        { error: `Stripe error: ${error.message}` },
+        { status: 400 }
+      )
+    }
+    
+    // Log the full error for debugging
+    console.error('Full error object:', JSON.stringify(error, null, 2))
+    
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { error: 'Failed to create checkout session. Please try again.' },
       { status: 500 }
     )
   }

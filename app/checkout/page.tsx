@@ -13,9 +13,14 @@ import Link from "next/link"
 import Image from "next/image"
 import { loadStripe } from "@stripe/stripe-js"
 import { AuthModal } from "@/components/auth-modal"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+
+// Debug: Log the Stripe key
+console.log('Stripe publishable key loaded:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'Yes' : 'No')
+console.log('Stripe key length:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.length || 0)
+console.log('Stripe key starts with pk_:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_') || false)
 
 interface ShippingInfo {
   firstName: string
@@ -34,6 +39,7 @@ export default function CheckoutPage() {
   const { user, loading } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     firstName: "",
     lastName: "",
@@ -55,59 +61,89 @@ export default function CheckoutPage() {
     }).format(price)
   }
 
-  const handleShippingSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setStep('payment')
-  }
+     const handleShippingSubmit = (e: React.FormEvent) => {
+     e.preventDefault()
+     setStep('payment')
+     // Scroll to top of the page when transitioning to payment
+     window.scrollTo({ top: 0, behavior: 'smooth' })
+   }
 
-  const handleCheckout = async () => {
-    setIsProcessing(true)
-    
-    try {
-      // Create checkout session with all cart items
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: state.items,
-          shippingInfo,
-        }),
-      })
+     const handleCheckout = async () => {
+     setIsProcessing(true)
+     
+     try {
+       // Check if Stripe is properly configured
+       if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 
+           !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.startsWith('pk_')) {
+         throw new Error('Stripe is not properly configured. Please check your environment variables.')
+       }
+       
+       // Validate required fields
+       if (!shippingInfo.firstName || !shippingInfo.lastName || !shippingInfo.email || 
+           !shippingInfo.phone || !shippingInfo.address || !shippingInfo.city || 
+           !shippingInfo.state || !shippingInfo.zipCode) {
+         throw new Error('Please fill in all required shipping information')
+       }
 
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session')
-      }
+       // Debug: Log the data being sent
+       console.log('Cart items:', state.items)
+       console.log('Shipping info:', shippingInfo)
 
-      const { sessionId } = await response.json()
+       // Create checkout session with all cart items
+       const response = await fetch('/api/create-checkout-session', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           items: state.items,
+           shippingInfo,
+         }),
+       })
 
-      // Redirect to Stripe checkout
-      const stripe = await stripePromise
-      if (stripe) {
-        const { error } = await stripe.redirectToCheckout({ sessionId })
-        if (error) {
-          console.error('Stripe error:', error)
-          alert('Payment failed. Please try again.')
-        }
-      }
-    } catch (error) {
-      console.error('Checkout error:', error)
-      alert('Something went wrong. Please try again.')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
+       if (!response.ok) {
+         const errorData = await response.json().catch(() => ({}))
+         console.error('Server error response:', errorData)
+         throw new Error(errorData.error || errorData.message || `HTTP error! status: ${response.status}`)
+       }
+
+       const { sessionId } = await response.json()
+
+       if (!sessionId) {
+         throw new Error('No session ID received from server')
+       }
+
+       // Redirect to Stripe checkout
+       const stripe = await stripePromise
+       if (stripe) {
+         console.log('Stripe loaded successfully, redirecting to checkout...')
+         const { error } = await stripe.redirectToCheckout({ sessionId })
+         if (error) {
+           console.error('Stripe redirect error:', error)
+           throw new Error(`Stripe error: ${error.message}`)
+         }
+       } else {
+         console.error('Stripe failed to load')
+         throw new Error('Stripe failed to load')
+       }
+     } catch (error) {
+       console.error('Checkout error:', error)
+       const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+       alert(`Checkout Error: ${errorMessage}`)
+     } finally {
+       setIsProcessing(false)
+     }
+   }
 
            // Show loading state while checking authentication
     if (loading) {
       return (
         <div className="min-h-screen gradient-bg-variant-a py-12 mt-16">
           <div className="max-w-2xl mx-auto px-4 text-center">
-           <div className="relative mb-8">
-             <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl"></div>
-             <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-orange-500 mx-auto relative z-10"></div>
-           </div>
+                       <div className="relative mb-8 pt-16">
+              <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl"></div>
+              <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-orange-500 mx-auto relative z-10"></div>
+            </div>
            <h1 className="text-2xl font-bold text-white mb-4">Loading...</h1>
            <p className="text-gray-300">Please wait while we prepare your checkout experience</p>
          </div>
@@ -120,10 +156,10 @@ export default function CheckoutPage() {
        return (
          <div className="min-h-screen gradient-bg-variant-a py-12 mt-16">
            <div className="max-w-2xl mx-auto px-4 text-center">
-           <div className="relative mb-8">
-             <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl"></div>
-             <Lock className="w-20 h-20 text-orange-500 mx-auto relative z-10" />
-           </div>
+                       <div className="relative mb-8 pt-24">
+              <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl"></div>
+              <Lock className="w-20 h-20 text-orange-500 mx-auto relative z-10" />
+            </div>
            <h1 className="text-3xl md:text-4xl font-bold text-white mb-6 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
              Authentication Required
            </h1>
@@ -139,23 +175,23 @@ export default function CheckoutPage() {
                 Login / Register
               </Button>
                              <div className="pt-4">
-                 <Button 
-                   variant="outline" 
-                   onClick={() => {
-                     window.location.href = '/services#products';
-                     // Force scroll to products section after navigation
-                     setTimeout(() => {
-                       const productsSection = document.getElementById('products');
-                       if (productsSection) {
-                         productsSection.scrollIntoView({ behavior: 'smooth' });
-                       }
-                     }, 100);
-                   }}
-                   className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-orange-500 transition-all duration-300 px-8 py-3"
-                 >
-                   <ShoppingCart className="w-5 h-5 mr-2" />
-                   Continue Shopping
-                 </Button>
+                                                                       <Button 
+                                      variant="outline" 
+                                      onClick={() => {
+                                        router.push('/services?scrollTo=products');
+                                        // Force scroll to products section after navigation
+                                        setTimeout(() => {
+                                          const productsSection = document.getElementById('products');
+                                          if (productsSection) {
+                                            productsSection.scrollIntoView({ behavior: 'smooth' });
+                                          }
+                                        }, 1000);
+                                      }}
+                                      className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-orange-500 transition-all duration-300 px-8 py-3"
+                                    >
+                                      <ShoppingCart className="w-5 h-5 mr-2" />
+                                      Continue Shopping
+                                    </Button>
                </div>
             </div>
          </div>
@@ -171,12 +207,12 @@ export default function CheckoutPage() {
 
                                                                                                if (state.items.length === 0) {
            return (
-             <div className="min-h-screen gradient-bg-variant-a py-12 mt-24">
+                           <div className="min-h-screen gradient-bg-variant-a py-12 mt-8">
            <div className="max-w-2xl mx-auto px-4 text-center">
-           <div className="relative mb-8">
-             <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl"></div>
-             <ShoppingCart className="w-20 h-20 text-orange-500 mx-auto relative z-10" />
-           </div>
+                       <div className="relative mb-8 pt-16">
+              <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-3xl"></div>
+              <ShoppingCart className="w-20 h-20 text-orange-500 mx-auto relative z-10" />
+            </div>
            <h1 className="text-3xl md:text-4xl font-bold text-white mb-6 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
              Your Cart is Empty
            </h1>
@@ -184,12 +220,22 @@ export default function CheckoutPage() {
              Start building your fitness journey by adding some amazing products to your cart.
            </p>
            <div className="space-y-6">
-                           <Link href="/services#products" scroll={false}>
-                <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Start Shopping
-                </Button>
-              </Link>
+                                                       <Button 
+                              onClick={() => {
+                                router.push('/services?scrollTo=products');
+                                // Force scroll to products section after navigation
+                                setTimeout(() => {
+                                  const productsSection = document.getElementById('products');
+                                  if (productsSection) {
+                                    productsSection.scrollIntoView({ behavior: 'smooth' });
+                                  }
+                                }, 1000);
+                              }}
+                              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105"
+                            >
+                              <ShoppingCart className="w-5 h-5 mr-2" />
+                              Start Shopping
+                            </Button>
            </div>
            
            
@@ -199,7 +245,7 @@ export default function CheckoutPage() {
    }
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                return (
-               <div className="min-h-screen gradient-bg-variant-a pt-24 pb-16 mt-24">
+                               <div className="min-h-screen gradient-bg-variant-a pt-16 pb-16 mt-16">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                            {/* Header */}
              <div className="mb-16 text-center pt-8">
@@ -323,15 +369,15 @@ export default function CheckoutPage() {
                      <p className="text-orange-300 text-sm text-center">Ready to proceed with your purchase?</p>
                    </div>
                    
-                   <div className="mt-8 pt-6 border-t border-gray-700">
-                     <Button 
-                       onClick={() => setStep('shipping')}
-                       className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-5 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-[1.02]"
-                     >
-                       Continue to Shipping
-                       <ArrowLeft className="w-6 h-6 ml-3 rotate-180" />
-                     </Button>
-                   </div>
+                                       <div className="mt-8 pt-6 border-t border-gray-700">
+                      <Button 
+                        onClick={() => setStep('shipping')}
+                        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-5 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-[1.02]"
+                      >
+                        Continue to Shipping
+                        <ArrowLeft className="w-6 h-6 ml-3 rotate-180" />
+                      </Button>
+                    </div>
                  </CardContent>
                </Card>
              )}
@@ -350,30 +396,43 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleShippingSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-white font-medium">First Name</Label>
-                        <Input
-                          id="firstName"
-                          value={shippingInfo.firstName}
-                          onChange={(e) => setShippingInfo({...shippingInfo, firstName: e.target.value})}
-                          required
-                          className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
-                          placeholder="Enter your first name"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName" className="text-white font-medium">Last Name</Label>
-                        <Input
-                          id="lastName"
-                          value={shippingInfo.lastName}
-                          onChange={(e) => setShippingInfo({...shippingInfo, lastName: e.target.value})}
-                          required
-                          className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
-                          placeholder="Enter your last name"
-                        />
-                      </div>
-                    </div>
+                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div className="space-y-2">
+                         <Label htmlFor="firstName" className="text-white font-medium">First Name</Label>
+                         <Input
+                           id="firstName"
+                           value={shippingInfo.firstName}
+                           onChange={(e) => setShippingInfo({...shippingInfo, firstName: e.target.value})}
+                           required
+                           className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                           placeholder="Enter your first name"
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <Label htmlFor="lastName" className="text-white font-medium">Last Name</Label>
+                         <Input
+                           id="lastName"
+                           value={shippingInfo.lastName}
+                           onChange={(e) => setShippingInfo({...shippingInfo, lastName: e.target.value})}
+                           required
+                           className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                           placeholder="Enter your last name"
+                         />
+                       </div>
+                     </div>
+                     
+                     <div className="space-y-2">
+                       <Label htmlFor="email" className="text-white font-medium">Email</Label>
+                       <Input
+                         id="email"
+                         type="email"
+                         value={shippingInfo.email}
+                         onChange={(e) => setShippingInfo({...shippingInfo, email: e.target.value})}
+                         required
+                         className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                         placeholder="Enter your email address"
+                       />
+                     </div>
                     
                                          <div className="space-y-2">
                        <Label htmlFor="phone" className="text-white font-medium">Phone</Label>

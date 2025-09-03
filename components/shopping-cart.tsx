@@ -56,7 +56,7 @@ export function ShoppingCart() {
                 <ShoppingCartIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-white mb-2">Your cart is empty</h3>
                 <p className="text-gray-400 mb-6">Add some products to get started!</p>
-                <Link href="/services">
+                <Link href="/services#products">
                   <Button 
                     onClick={closeCart}
                     className="bg-orange-500 hover:bg-orange-600 text-white"
