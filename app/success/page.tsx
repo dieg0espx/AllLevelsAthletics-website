@@ -6,17 +6,129 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Package, Home, ShoppingBag, Mail, Truck, Clock, Star } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function SuccessPage() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const [isLoading, setIsLoading] = useState(true)
+  const [orderSaved, setOrderSaved] = useState(false)
+  const [orderSaveAttempted, setOrderSaveAttempted] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     // Simulate loading for better UX
     const timer = setTimeout(() => setIsLoading(false), 2000)
+    
+    // Save order to user account if we have session ID and user
+    if (sessionId && user) {
+      saveOrderToAccount()
+    }
+    
     return () => clearTimeout(timer)
-  }, [])
+  }, [sessionId, user])
+
+  const saveOrderToAccount = async () => {
+    // Prevent duplicate calls
+    if (orderSaveAttempted) {
+      console.log('🔄 Order save already attempted, skipping...')
+      return
+    }
+    
+    setOrderSaveAttempted(true)
+    
+    try {
+      console.log('🔄 Starting to save order...')
+      console.log('Session ID:', sessionId)
+      console.log('User ID:', user?.id)
+      console.log('User email:', user?.email)
+      
+      // Get cart items from localStorage (you might want to store this in context instead)
+      const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]')
+      const shippingInfo = JSON.parse(localStorage.getItem('shippingInfo') || '{}')
+      
+      console.log('📦 Cart items from localStorage:', cartItems)
+      console.log('🚚 Shipping info from localStorage:', shippingInfo)
+      
+      if (cartItems.length === 0) {
+        console.log('❌ No cart items found in localStorage')
+        return
+      }
+
+      const totalAmount = cartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
+      console.log('💰 Total amount:', totalAmount)
+
+      // Add user's email to shipping info
+      const shippingInfoWithEmail = {
+        ...shippingInfo,
+        email: user?.email || ''
+      }
+      console.log('📧 Shipping info with email:', shippingInfoWithEmail)
+
+      const orderData = {
+        sessionId,
+        items: cartItems,
+        shippingInfo: shippingInfoWithEmail,
+        userId: user?.id,
+        totalAmount
+      }
+      console.log('📤 Sending order data to API:', orderData)
+
+      const response = await fetch('/api/save-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      })
+
+      console.log('📡 API response status:', response.status)
+      console.log('📡 API response ok:', response.ok)
+
+      if (response.ok) {
+        const responseData = await response.json()
+        console.log('✅ Order saved successfully:', responseData)
+        
+        if (responseData.message === 'Order already exists') {
+          setOrderSaved(true)
+          console.log('✅ Order was already saved previously')
+        } else {
+          setOrderSaved(true)
+          console.log('✅ New order saved successfully')
+        }
+        
+        // Clear cart after successful save
+        localStorage.removeItem('cartItems')
+        localStorage.removeItem('shippingInfo')
+        console.log('🧹 Cart cleared from localStorage')
+      } else {
+        const errorData = await response.json().catch(() => 'Failed to parse error response')
+        console.error('❌ Failed to save order:', errorData)
+        console.error('❌ Response status:', response.status)
+        console.error('❌ Response status text:', response.statusText)
+        console.error('❌ DETAILED ERROR INFO:', errorData)
+        
+        // Display all error properties
+        if (errorData.details) console.error('❌ Error details:', errorData.details)
+        if (errorData.stack) console.error('❌ Error stack:', errorData.stack)
+        if (errorData.fullError) console.error('❌ Full error:', errorData.fullError)
+        if (errorData.error) console.error('❌ Error message:', errorData.error)
+        if (errorData.errorName) console.error('❌ Error name:', errorData.errorName)
+        
+        // Log the entire error object structure
+        console.error('❌ Complete error object:', JSON.stringify(errorData, null, 2))
+      }
+    } catch (error) {
+      console.error('💥 Error saving order:', error)
+      if (error instanceof Error) {
+        console.error('💥 Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        })
+      }
+    }
+  }
 
   if (isLoading) {
     return (
@@ -198,17 +310,17 @@ export default function SuccessPage() {
           <div className="text-center">
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button asChild className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
-                <Link href="/">
+                <Link href="/dashboard">
                   <Home className="w-5 h-5 mr-2" />
-                  Back to Home
+                  Go to My Account
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="border-orange-500/40 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/60 px-8 py-4 text-lg font-semibold transition-all duration-300">
-                <Link href="/services">
-                  <ShoppingBag className="w-5 h-5 mr-2" />
-                  Browse More Products
-                </Link>
-              </Button>
+                             <Button asChild variant="outline" className="border-orange-500/40 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/60 px-8 py-4 text-lg font-semibold transition-all duration-300">
+                 <Link href="/services?scrollTo=products">
+                   <ShoppingBag className="w-5 h-5 mr-2" />
+                   Browse More Products
+                 </Link>
+               </Button>
             </div>
             
             {/* Additional Info */}

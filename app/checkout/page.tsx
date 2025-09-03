@@ -25,7 +25,6 @@ console.log('Stripe key starts with pk_:', process.env.NEXT_PUBLIC_STRIPE_PUBLIS
 interface ShippingInfo {
   firstName: string
   lastName: string
-  email: string
   phone: string
   address: string
   city: string
@@ -43,7 +42,6 @@ export default function CheckoutPage() {
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     firstName: "",
     lastName: "",
-    email: "",
     phone: "",
     address: "",
     city: "",
@@ -78,16 +76,20 @@ export default function CheckoutPage() {
          throw new Error('Stripe is not properly configured. Please check your environment variables.')
        }
        
-       // Validate required fields
-       if (!shippingInfo.firstName || !shippingInfo.lastName || !shippingInfo.email || 
-           !shippingInfo.phone || !shippingInfo.address || !shippingInfo.city || 
-           !shippingInfo.state || !shippingInfo.zipCode) {
-         throw new Error('Please fill in all required shipping information')
-       }
+               // Validate required fields
+        if (!shippingInfo.firstName || !shippingInfo.lastName || 
+            !shippingInfo.phone || !shippingInfo.address || !shippingInfo.city || 
+            !shippingInfo.state || !shippingInfo.zipCode) {
+          throw new Error('Please fill in all required shipping information')
+        }
 
        // Debug: Log the data being sent
        console.log('Cart items:', state.items)
        console.log('Shipping info:', shippingInfo)
+
+       // Store cart items and shipping info in localStorage for order saving
+       localStorage.setItem('cartItems', JSON.stringify(state.items))
+       localStorage.setItem('shippingInfo', JSON.stringify(shippingInfo))
 
        // Create checkout session with all cart items
        const response = await fetch('/api/create-checkout-session', {
@@ -386,13 +388,16 @@ export default function CheckoutPage() {
             {step === 'shipping' && (
               <Card className="bg-gray-900 border-gray-700 shadow-2xl">
                 <CardHeader className="pb-6">
-                  <CardTitle className="flex items-center gap-3 text-white text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Truck className="w-6 h-6 text-orange-500" />
-                    </div>
-                    Shipping Information
-                  </CardTitle>
-                  <p className="text-gray-400">Please provide your shipping details to receive your products</p>
+                                     <CardTitle className="flex items-center gap-3 text-white text-2xl">
+                     <div className="p-2 bg-orange-500/20 rounded-lg">
+                       <Truck className="w-6 h-6 text-orange-500" />
+                     </div>
+                     Shipping Information
+                   </CardTitle>
+                   <p className="text-gray-400">
+                     Please provide your shipping details to receive your products. 
+                     <span className="text-orange-400"> Your email ({user?.email}) will be automatically included.</span>
+                   </p>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleShippingSubmit} className="space-y-6">
@@ -421,18 +426,7 @@ export default function CheckoutPage() {
                        </div>
                      </div>
                      
-                     <div className="space-y-2">
-                       <Label htmlFor="email" className="text-white font-medium">Email</Label>
-                       <Input
-                         id="email"
-                         type="email"
-                         value={shippingInfo.email}
-                         onChange={(e) => setShippingInfo({...shippingInfo, email: e.target.value})}
-                         required
-                         className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
-                         placeholder="Enter your email address"
-                       />
-                     </div>
+                     
                     
                                          <div className="space-y-2">
                        <Label htmlFor="phone" className="text-white font-medium">Phone</Label>

@@ -19,6 +19,7 @@ export default function ClientDashboard() {
   const router = useRouter()
   const { user, signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
+  const [purchasedProductsCount, setPurchasedProductsCount] = useState(0)
 
   useEffect(() => {
     // Check if user is authenticated
@@ -29,8 +30,26 @@ export default function ClientDashboard() {
 
     // Simulate loading
     const timer = setTimeout(() => setIsLoading(false), 1000)
+    
+    // Fetch purchased products count
+    if (user) {
+      fetchPurchasedProductsCount()
+    }
+    
     return () => clearTimeout(timer)
   }, [user, router])
+
+  const fetchPurchasedProductsCount = async () => {
+    try {
+      const response = await fetch(`/api/user-orders?userId=${user?.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setPurchasedProductsCount(data.orders?.length || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching products count:', error)
+    }
+  }
 
   const handleSignOut = async () => {
     await signOut()
@@ -179,10 +198,14 @@ export default function ClientDashboard() {
                 <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Package className="w-6 h-6 text-orange-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">No Products Yet</h3>
-                <p className="text-white/70 text-sm mb-3">Track your orders</p>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {purchasedProductsCount > 0 ? `${purchasedProductsCount} Products` : 'No Products Yet'}
+                </h3>
+                <p className="text-white/70 text-sm mb-3">
+                  {purchasedProductsCount > 0 ? 'Track your orders' : 'Start shopping'}
+                </p>
                 <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
-                  View Details
+                  {purchasedProductsCount > 0 ? 'View Details' : 'Browse Products'}
                 </Button>
               </div>
             </CardContent>

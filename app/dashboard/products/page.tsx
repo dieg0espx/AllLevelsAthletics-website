@@ -24,39 +24,8 @@ export default function ProductsPage() {
   const { user, signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
 
-  // Mock data - replace with real data from your backend
-  const [purchasedProducts] = useState([
-    {
-      id: 1,
-      name: "All Levels Knot Roller",
-      orderNumber: "ORD-2024-001",
-      purchaseDate: "2024-01-10",
-      price: 99.00,
-      status: "delivered",
-      trackingNumber: "TRK123456789",
-      estimatedDelivery: "2024-01-15",
-      actualDelivery: "2024-01-14",
-      shippingAddress: "123 Fitness St, Gym City, GC 12345",
-      items: [
-        { name: "All Levels Knot Roller", quantity: 1, price: 99.00 }
-      ]
-    },
-    {
-      id: 2,
-      name: "Body Tension Reset Course",
-      orderNumber: "ORD-2024-002",
-      purchaseDate: "2024-01-05",
-      price: 49.00,
-      status: "delivered",
-      trackingNumber: "TRK987654321",
-      estimatedDelivery: "2024-01-12",
-      actualDelivery: "2024-01-11",
-      shippingAddress: "123 Fitness St, Gym City, GC 12345",
-      items: [
-        { name: "Body Tension Reset Course", quantity: 1, price: 49.00 }
-      ]
-    }
-  ])
+  const [purchasedProducts, setPurchasedProducts] = useState([])
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true)
 
   const [filterStatus, setFilterStatus] = useState("all")
 
@@ -68,6 +37,39 @@ export default function ProductsPage() {
     const timer = setTimeout(() => setIsLoading(false), 1000)
     return () => clearTimeout(timer)
   }, [user, router])
+
+  useEffect(() => {
+    if (user) {
+      fetchUserOrders()
+    }
+  }, [user])
+
+  const fetchUserOrders = async () => {
+    try {
+      console.log('🔄 Dashboard: Fetching user orders...')
+      console.log('👤 User ID:', user.id)
+      
+      setIsLoadingOrders(true)
+      const response = await fetch(`/api/user-orders?userId=${user.id}`)
+      
+      console.log('📡 API response status:', response.status)
+      console.log('📡 API response ok:', response.ok)
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('📦 Orders data received:', data)
+        console.log('📦 Orders count:', data.orders?.length || 0)
+        setPurchasedProducts(data.orders || [])
+      } else {
+        const errorData = await response.json().catch(() => 'Failed to parse error')
+        console.error('❌ Failed to fetch orders:', errorData)
+      }
+    } catch (error) {
+      console.error('💥 Error fetching orders:', error)
+    } finally {
+      setIsLoadingOrders(false)
+    }
+  }
 
   const handleSignOut = async () => {
     await signOut()
@@ -257,7 +259,13 @@ export default function ProductsPage() {
                       <div className="space-y-3">
                         <div className="flex items-start gap-2 text-sm">
                           <MapPin className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
-                          <span className="text-white/80">{product.shippingAddress}</span>
+                          <div className="text-white/80">
+                            <div>{product.shippingAddress?.firstName} {product.shippingAddress?.lastName}</div>
+                            <div>{product.shippingAddress?.address}</div>
+                            <div>{product.shippingAddress?.city}, {product.shippingAddress?.state} {product.shippingAddress?.zipCode}</div>
+                            <div>{product.shippingAddress?.country}</div>
+                            <div className="text-orange-400">{product.shippingAddress?.email}</div>
+                          </div>
                         </div>
                         
                         <div className="flex items-center gap-2 text-sm">

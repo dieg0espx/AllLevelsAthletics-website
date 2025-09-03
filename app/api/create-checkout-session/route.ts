@@ -75,10 +75,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!shippingInfo || !shippingInfo.email) {
-      console.error('Validation failed: shippingInfo or email is missing')
+    if (!shippingInfo) {
+      console.error('Validation failed: shippingInfo is missing')
       return NextResponse.json(
-        { error: 'Shipping information and email are required' },
+        { error: 'Shipping information is required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate required shipping fields
+    const requiredFields = ['firstName', 'lastName', 'phone', 'address', 'city', 'state', 'zipCode']
+    const missingFields = requiredFields.filter(field => !shippingInfo[field])
+    
+    if (missingFields.length > 0) {
+      console.error('Validation failed: missing shipping fields:', missingFields)
+      return NextResponse.json(
+        { error: `Missing required shipping fields: ${missingFields.join(', ')}` },
         { status: 400 }
       )
     }
@@ -191,7 +203,6 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
-      customer_email: shippingInfo.email,
       metadata: {
         items: JSON.stringify(items.map((item: any) => ({ id: item.id, name: item.name }))),
         shippingInfo: JSON.stringify(shippingInfo),
