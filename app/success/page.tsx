@@ -14,11 +14,23 @@ export default function SuccessPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [orderSaved, setOrderSaved] = useState(false)
   const [orderSaveAttempted, setOrderSaveAttempted] = useState(false)
+  const [cartItems, setCartItems] = useState<any[]>([])
+  const [shippingInfo, setShippingInfo] = useState<any>({})
+  const [totalAmount, setTotalAmount] = useState(0)
   const { user } = useAuth()
 
   useEffect(() => {
     // Simulate loading for better UX
     const timer = setTimeout(() => setIsLoading(false), 2000)
+    
+    // Load cart items and shipping info into state
+    const storedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]')
+    const storedShippingInfo = JSON.parse(localStorage.getItem('shippingInfo') || '{}')
+    const calculatedTotal = storedCartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
+    
+    setCartItems(storedCartItems)
+    setShippingInfo(storedShippingInfo)
+    setTotalAmount(calculatedTotal)
     
     // Save order to user account if we have session ID and user
     if (sessionId && user) {
@@ -143,54 +155,7 @@ export default function SuccessPage() {
 
   return (
     <div className="min-h-screen bg-black text-white pt-20">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-500/10"></div>
-        
-        {/* Animated background elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
-        
-        <div className="relative container mx-auto px-4 py-16">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Success Icon */}
-            <div className="relative mb-8">
-              <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-green-500/25">
-                <CheckCircle className="w-14 h-14 text-white" />
-              </div>
-            </div>
-            
-            {/* Main Heading */}
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 bg-clip-text text-transparent">
-              Order Successful!
-            </h1>
-                         <p className="text-xl md:text-2xl text-white/80 mb-6 leading-relaxed">
-               Thank you for your purchase! 
-             </p>
-             
-             {/* Order ID Badge */}
-             {sessionId && (
-               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-3 mb-6">
-                 <Package className="w-5 h-5 text-orange-400" />
-                 <span className="text-white/90 font-mono text-sm">Order ID: {sessionId}</span>
-               </div>
-             )}
-             
-             {/* Order Status */}
-             <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-6 max-w-3xl mx-auto">
-               <div className="flex items-center justify-center gap-3 mb-3">
-                 <Clock className="w-5 h-5 text-green-400" />
-                 <h3 className="text-lg font-semibold text-green-400">What happens next?</h3>
-               </div>
-               <p className="text-white/90 text-base leading-relaxed">
-                 You'll receive an email confirmation with your order details and tracking information. 
-                 Your product will ship within 24 hours and arrive at your doorstep in 3-7 business days!
-               </p>
-             </div>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pb-16">
@@ -198,68 +163,129 @@ export default function SuccessPage() {
           
 
 
-          {/* Product Details Card */}
-          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 backdrop-blur-sm mb-12 shadow-2xl">
-            <CardHeader>
-              <CardTitle className="text-2xl text-white flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
-                  <Package className="w-5 h-5 text-orange-400" />
+                                                                                       {/* Order Receipt Card */}
+             <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 backdrop-blur-sm mb-12 shadow-2xl mt-16">
+              <CardHeader className="pt-8 pb-6">
+                <div className="flex items-center justify-between mb-6">
+                  <CardTitle className="text-2xl text-white flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
+                      <ShoppingBag className="w-5 h-5 text-orange-400" />
+                    </div>
+                    Order Receipt
+                  </CardTitle>
+                  {sessionId && (
+                    <div className="inline-flex items-center gap-2 bg-orange-500/20 backdrop-blur-sm border border-orange-500/30 rounded-full px-4 py-2">
+                      <Package className="w-4 h-4 text-orange-400" />
+                      <span className="text-white/90 font-mono text-sm">ID: {sessionId}</span>
+                    </div>
+                  )}
                 </div>
-                All Levels Knot Roller
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Product Image */}
-                <div className="relative group">
-                                     <img
-                     src="/roller/roller 5.jpeg"
-                     alt="All Levels Knot Roller"
-                     className="w-full h-64 lg:h-80 object-cover rounded-2xl shadow-2xl group-hover:scale-105 transition-transform duration-500"
-                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
-                </div>
-                
-                {/* Product Info */}
-                <div className="space-y-6">
-                  {/* Features */}
-                  <div>
-                    <h4 className="font-semibold text-orange-400 mb-4 text-lg flex items-center gap-2">
-                      <Star className="w-5 h-5" />
-                      Product Features
-                    </h4>
-                    <ul className="space-y-3 text-white/80">
-                      <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span>Precision ball bearings for smooth operation</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span>Non-slip rubber base for stability</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span>Versatile design for multiple uses</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span>Durable stainless steel construction</span>
-                      </li>
-                    </ul>
-                  </div>
+                <CardDescription className="text-white/70 text-base">
+                  Your purchase summary and order details
+                </CardDescription>
+              </CardHeader>
+                          <CardContent className="pt-6 pb-8">
+                <div className="space-y-8">
+                {/* Order Summary */}
+                <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-6">
+                  <h4 className="font-semibold text-orange-400 mb-4 text-lg flex items-center gap-2">
+                    <Package className="w-5 h-5" />
+                    Products Purchased
+                  </h4>
                   
-                  {/* Shipping Info */}
-                  <div>
-                    <h4 className="font-semibold text-orange-400 mb-4 text-lg flex items-center gap-2">
-                      <Truck className="w-5 h-5" />
-                      Shipping Information
-                    </h4>
-                    <p className="text-white/80 leading-relaxed">
-                      Your order will ship within 24 hours and includes tracking information. 
-                      You'll receive updates via email and can track your package every step of the way.
-                    </p>
-                  </div>
+                                                                           {/* Products List */}
+                   <div className="space-y-4">
+                     {cartItems.length > 0 ? (
+                       <>
+                         {cartItems.map((item: any, index: number) => (
+                           <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+                             <div className="flex items-center gap-4">
+                               <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                                 <img
+                                   src={
+                                     item.name.includes("All Levels Knot Roller") 
+                                       ? "/roller/roller 5.jpeg"
+                                       : item.name.includes("Body Tension Reset Course")
+                                       ? "/gymTools.jpg"
+                                       : item.name.includes("Complete Bundle")
+                                       ? "/roller.jpg"
+                                       : item.image || "/placeholder.jpg"
+                                   }
+                                   alt={item.name}
+                                   className="w-full h-full object-cover"
+                                 />
+                               </div>
+                               <div>
+                                 <h5 className="font-semibold text-white">{item.name}</h5>
+                                 <p className="text-white/70 text-sm">Quantity: {item.quantity}</p>
+                                 <p className="text-white/60 text-sm">${item.price} each</p>
+                               </div>
+                             </div>
+                             <div className="text-right">
+                               <p className="text-xl font-bold text-orange-400">${(item.price * item.quantity).toFixed(2)}</p>
+                             </div>
+                           </div>
+                         ))}
+                         
+                         {/* Total */}
+                         <div className="border-t border-orange-500/20 pt-4">
+                           <div className="flex justify-between items-center">
+                             <span className="text-lg font-semibold text-white">Total Amount:</span>
+                             <span className="text-2xl font-bold text-orange-400">${totalAmount.toFixed(2)}</span>
+                           </div>
+                         </div>
+                       </>
+                     ) : (
+                       <div className="text-center py-8">
+                         <Package className="w-16 h-16 text-orange-400 mx-auto mb-4 opacity-50" />
+                         <p className="text-white/60">No products found in this order</p>
+                       </div>
+                     )}
+                   </div>
                 </div>
+
+                                 {/* Shipping Information */}
+                 <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-6">
+                   <h4 className="font-semibold text-orange-400 mb-4 text-lg flex items-center gap-2">
+                     <Truck className="w-5 h-5 text-orange-400" />
+                     Shipping Details
+                   </h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-white/80">
+                     <div>
+                       <p className="font-medium text-white">Name:</p>
+                       <p>{shippingInfo.firstName} {shippingInfo.lastName}</p>
+                     </div>
+                     <div>
+                       <p className="font-medium text-white">Email:</p>
+                       <p className="text-orange-400">{user?.email}</p>
+                     </div>
+                     <div>
+                       <p className="font-medium text-white">Phone:</p>
+                       <p>{shippingInfo.phone}</p>
+                     </div>
+                     <div>
+                       <p className="font-medium text-white">Address:</p>
+                       <p>{shippingInfo.address}</p>
+                       <p>{shippingInfo.city}, {shippingInfo.state} {shippingInfo.zipCode}</p>
+                       <p>{shippingInfo.country}</p>
+                     </div>
+                   </div>
+                 </div>
+
+                                 {/* Order Status */}
+                 <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-6">
+                   <h4 className="font-semibold text-orange-400 mb-4 text-lg flex items-center gap-2">
+                     <CheckCircle className="w-5 h-5 text-orange-400" />
+                     Order Status
+                   </h4>
+                   <div className="flex items-center gap-3">
+                     <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse"></div>
+                     <span className="text-white/80">Order confirmed and processing</span>
+                   </div>
+                   <p className="text-white/60 text-sm mt-2">
+                     Estimated delivery: 3-7 business days
+                   </p>
+                 </div>
               </div>
             </CardContent>
           </Card>

@@ -66,6 +66,22 @@ export default function CheckoutPage() {
      window.scrollTo({ top: 0, behavior: 'smooth' })
    }
 
+     const handleStepChange = (newStep: 'cart' | 'shipping' | 'payment' | 'confirmation') => {
+    setStep(newStep)
+    // Scroll to top of the page when changing steps
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [step])
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
      const handleCheckout = async () => {
      setIsProcessing(true)
      
@@ -373,7 +389,7 @@ export default function CheckoutPage() {
                    
                                        <div className="mt-8 pt-6 border-t border-gray-700">
                       <Button 
-                        onClick={() => setStep('shipping')}
+                        onClick={() => handleStepChange('shipping')}
                         className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-5 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-[1.02]"
                       >
                         Continue to Shipping
@@ -493,7 +509,7 @@ export default function CheckoutPage() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setStep('cart')}
+                        onClick={() => handleStepChange('cart')}
                         className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
                       >
                         Back to Cart
@@ -539,7 +555,7 @@ export default function CheckoutPage() {
                     <div className="flex flex-col sm:flex-row gap-4">
                       <Button
                         variant="outline"
-                        onClick={() => setStep('shipping')}
+                        onClick={() => handleStepChange('shipping')}
                         className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white py-3 px-6 transition-all duration-200"
                       >
                         <ArrowLeft className="w-4 h-4 mr-2" />
