@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award, Play, Mail, Trophy, Star, Info, ShoppingCart, MessageCircle } from "lucide-react"
 import { useState, useEffect } from "react"
+import AddToCart from "@/components/stripe-checkout"
 
 export default function ServicesPage() {
   const [selectedImage, setSelectedImage] = useState("/roller/roller 5.jpeg")
@@ -649,15 +650,19 @@ export default function ServicesPage() {
                          <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
                          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">+ shipping</p>
                          <div className="space-y-2 sm:space-y-3">
-                           <Button 
+                           <AddToCart
+                             productId="knot-roller"
+                             productName="All Levels Knot Roller"
+                             price={99}
+                             image="/roller/roller5.jpeg"
+                             description="Professional myofascial release tool for athletes and fitness enthusiasts"
                              className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                             onClick={() => window.location.href = '/contact#contact-form'}
                            >
                              <span className="flex items-center gap-2">
                                <ShoppingCart className="w-4 h-4" />
-                               Order Now
+                               Add to Cart
                              </span>
-                           </Button>
+                           </AddToCart>
                          </div>
                        </div>
                        
@@ -790,12 +795,19 @@ export default function ServicesPage() {
                          <p className="text-xs sm:text-sm text-muted-foreground line-through mb-1">$99</p>
                          <p className="text-xs sm:text-sm text-green-400 font-semibold mb-3 sm:mb-4">50% OFF</p>
                          <div className="space-y-2 sm:space-y-3">
-                           <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                           <AddToCart
+                             productId="tension-reset-course"
+                             productName="Body Tension Reset Course"
+                             price={49}
+                             image="/roller/roller5.jpeg"
+                             description="30-day self-guided program to reduce body tension and pain"
+                             className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                           >
                              <span className="flex items-center gap-2">
                                <ShoppingCart className="w-4 h-4" />
-                               Get Course
+                               Add to Cart
                              </span>
-                           </Button>
+                           </AddToCart>
                            <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
                              <span className="flex items-center gap-2">
                                <Play className="w-4 h-4" />
@@ -938,12 +950,19 @@ export default function ServicesPage() {
                           <p className="text-xs sm:text-sm text-muted-foreground line-through mb-1">$199</p>
                           <p className="text-xs sm:text-sm text-orange-400 font-semibold mb-3 sm:mb-4">Save $50!</p>
                           <div className="space-y-2 sm:space-y-3">
-                            <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                            <AddToCart
+                              productId="complete-bundle"
+                              productName="Complete Bundle - Knot Roller + Course"
+                              price={149}
+                              image="/roller/roller5.jpeg"
+                              description="Complete recovery system with Knot Roller and Body Tension Reset Course"
+                              className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                            >
                               <span className="flex items-center gap-2">
                                 <ShoppingCart className="w-4 h-4" />
-                                Get Bundle
+                                Add to Cart
                               </span>
-                            </Button>
+                            </AddToCart>
                             <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
                               <span className="flex items-center gap-2">
                                 <Info className="w-4 h-4" />

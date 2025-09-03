@@ -5,6 +5,7 @@ import "./globals.css"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { AuthProvider } from "@/contexts/auth-context"
+import { CartProvider } from "@/contexts/cart-context"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -252,9 +253,11 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <Navigation />
-          <main>{children}</main>
-          <Footer />
+          <CartProvider>
+            <Navigation />
+            <main>{children}</main>
+            <Footer />
+          </CartProvider>
         </AuthProvider>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </body>

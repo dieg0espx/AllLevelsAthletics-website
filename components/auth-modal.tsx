@@ -9,13 +9,16 @@ import { User, Lock, Mail, Eye, EyeOff, Zap, CheckCircle, AlertCircle } from "lu
 import { authService } from "@/lib/auth"
 import type { RegisterData, LoginData } from "@/lib/auth"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
+import { useRouter } from 'next/navigation';
 
 interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
+  redirectTo?: string // Optional redirect path
 }
 
-export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -78,10 +81,16 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           setMessage({ type: 'success', text: 'Successfully logged in!' })
           // Close modal after successful login
           setTimeout(() => {
-            onClose()
-            setFormData({ email: '', password: '', confirmPassword: '', full_name: '' })
-            setMessage(null)
-          }, 1500)
+            onClose();
+            setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
+            setMessage(null);
+            // Smart redirect: if redirectTo is provided, go there; otherwise go to dashboard
+            if (redirectTo) {
+              router.push(redirectTo);
+            } else {
+              router.push('/dashboard');
+            }
+          }, 1500);
         }
       } else {
         const { user, error } = await authService.register({
@@ -103,6 +112,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         }
       }
     } catch (error) {
+      console.error('Login error:', error);
       setMessage({ type: 'error', text: siteConfig.labels.validation.unexpectedError })
     } finally {
       setIsLoading(false)
@@ -144,10 +154,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   }
 
+  const handleClose = () => {
+    onClose();
+    setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
+    setMessage(null);
+  };
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className={`sm:max-w-md ${siteConfig.styles.modal.background} ${siteConfig.styles.modal.border} ${siteConfig.styles.modal.shadow}`}>
         <DialogHeader className="text-center">
           <DialogTitle className={`text-2xl font-bold bg-gradient-to-r ${siteConfig.styles.button.primary} bg-clip-text text-transparent`}>

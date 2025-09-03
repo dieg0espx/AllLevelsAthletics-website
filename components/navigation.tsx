@@ -5,9 +5,11 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Zap, User, LogOut } from "lucide-react"
+import { Menu, X, Zap, User, LogOut, ShoppingCart as ShoppingCartIcon } from "lucide-react"
 import { AuthModal } from "@/components/auth-modal"
+import { ShoppingCart } from "@/components/shopping-cart"
 import { useAuth } from "@/contexts/auth-context"
+import { useCart } from "@/contexts/cart-context"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
 
 export function Navigation() {
@@ -16,6 +18,7 @@ export function Navigation() {
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut } = useAuth()
+  const { toggleCart, getTotalItems } = useCart()
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true
@@ -35,7 +38,7 @@ export function Navigation() {
 
   return (
     <>
-      <nav className={`fixed top-0 w-full z-50 bg-black/95 backdrop-blur-md border-b ${siteConfig.styles.modal.border}`}>
+      <nav className="fixed top-0 w-full z-50 bg-black/95 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 md:h-20">
             {/* Logo and Brand */}
@@ -124,6 +127,32 @@ export function Navigation() {
 
             {/* Desktop CTA and Login */}
             <div className="hidden md:flex items-center space-x-4">
+              {/* Shopping Cart */}
+              <button
+                onClick={() => {
+                  console.log('🛒 Cart button clicked in navigation')
+                  console.log('🛒 toggleCart function:', toggleCart)
+                  console.log('🛒 getTotalItems function:', getTotalItems)
+                  try {
+                    toggleCart()
+                    console.log('✅ toggleCart executed successfully')
+                  } catch (error) {
+                    console.error('❌ Error calling toggleCart:', error)
+                  }
+                }}
+                className="text-white/90 hover:text-orange-400 transition-colors duration-300 p-3 rounded-full hover:bg-white/10 group"
+                title="Shopping Cart"
+              >
+                <div className="relative">
+                  <ShoppingCartIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                  {getTotalItems() > 0 && (
+                    <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {getTotalItems()}
+                    </div>
+                  )}
+                </div>
+              </button>
+              
               {user ? (
                 // User is logged in
                 <div className="flex items-center space-x-3">
@@ -246,6 +275,27 @@ export function Navigation() {
                 Contact
               </Link>
               
+              {/* Mobile Shopping Cart */}
+              <button
+                onClick={() => {
+                  toggleCart()
+                  setIsOpen(false)
+                }}
+                className={`block w-full text-left transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                  isActive("/services") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <ShoppingCartIcon className="w-5 h-5" />
+                  Shopping Cart
+                  {getTotalItems() > 0 && (
+                    <div className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {getTotalItems()}
+                    </div>
+                  )}
+                </span>
+              </button>
+              
               {/* Mobile Login/Register or User Info */}
               {user ? (
                 <div className="pt-2 space-y-2">
@@ -325,10 +375,14 @@ export function Navigation() {
       </nav>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-      />
+              <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          redirectTo={pathname}
+        />
+      
+      {/* Shopping Cart */}
+      <ShoppingCart />
     </>
   )
 }
