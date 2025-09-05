@@ -74,11 +74,11 @@ export function ShoppingCart() {
                       <Image
                         src={
                           item.name.includes("All Levels Knot Roller") 
-                            ? "/roller/roller 5.jpeg"
+                            ? "/roller/roller7.jpg"
                             : item.name.includes("Body Tension Reset Course")
                             ? "/gymTools.jpg"
                             : item.name.includes("Complete Bundle")
-                            ? "/roller.jpg"
+                            ? "/roller/roller12.jpg"
                             : item.image
                         }
                         alt={item.name}

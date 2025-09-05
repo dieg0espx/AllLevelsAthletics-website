@@ -25,6 +25,16 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    if (!profiles || profiles.length === 0) {
+      console.log('⚠️ No profiles found')
+      return NextResponse.json({ 
+        clients: [],
+        success: true 
+      })
+    }
+
+    console.log('📊 Found profiles:', profiles.length)
+
     // Get all orders for all users
     const { data: orders, error: ordersError } = await supabaseAdmin
       .from('orders')
@@ -33,6 +43,7 @@ export async function GET(request: NextRequest) {
         user_id,
         total_amount,
         created_at,
+        shipping_address,
         order_items (
           product_name,
           quantity,
@@ -48,15 +59,29 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user emails from auth.users (we'll need to do this differently)
-    // For now, we'll use mock email data since we can't directly query auth.users
-    const mockEmails: { [key: string]: string } = {
-      // This would be populated from actual user data
+    console.log('📊 Orders data:', orders?.length || 0, 'orders found')
+    console.log('📊 Profiles data:', profiles?.length || 0, 'profiles found')
+
+    // Create a map of user_id to email from shipping addresses in orders
+    const userEmails: { [key: string]: string } = {}
+    if (orders && orders.length > 0) {
+      orders.forEach((order: any) => {
+        if (order.shipping_address && order.user_id) {
+          try {
+            const shippingAddress = JSON.parse(order.shipping_address)
+            if (shippingAddress.email) {
+              userEmails[order.user_id] = shippingAddress.email
+            }
+          } catch (error) {
+            console.log('⚠️ Error parsing shipping address for order:', order.id)
+          }
+        }
+      })
     }
 
     // Transform the data to match the expected format
     const clients = profiles.map((profile: any) => {
-      const userOrders = orders.filter((order: any) => order.user_id === profile.user_id)
+      const userOrders = orders ? orders.filter((order: any) => order.user_id === profile.user_id) : []
       
       const totalSpent = userOrders.reduce((sum: number, order: any) => sum + order.total_amount, 0)
       const lastOrder = userOrders.length > 0 ? userOrders.sort((a: any, b: any) => 
@@ -73,10 +98,15 @@ export async function GET(request: NextRequest) {
         }))
       )
 
+      // Get the real email from shipping addresses, fallback to placeholder if no orders exist
+      const realEmail = userEmails[profile.user_id] || `user-${profile.user_id.slice(0, 8)}@example.com`
+      
+      console.log(`👤 Processing client: ${profile.full_name || 'Unknown'} (${profile.user_id}) - Email: ${realEmail}`)
+
       return {
         id: profile.id,
         userId: profile.user_id,
-        email: mockEmails[profile.user_id] || 'user@example.com', // TODO: Get actual email
+        email: realEmail,
         fullName: profile.full_name || 'Unknown',
         phone: profile.phone || null,
         role: profile.role || 'client',

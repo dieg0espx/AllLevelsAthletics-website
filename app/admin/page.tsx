@@ -622,11 +622,11 @@ export default function AdminDashboard() {
                           <img
                             src={
                               item.name.includes("All Levels Knot Roller") 
-                                ? "/roller/roller 5.jpeg"
+                                ? "/roller/roller7.jpg"
                                 : item.name.includes("Body Tension Reset Course")
                                 ? "/gymTools.jpg"
                                 : item.name.includes("Complete Bundle")
-                                ? "/roller.jpg"
+                                ? "/roller/roller12.jpg"
                                 : item.name.includes("MF Roller")
                                 ? "/roller2.png"
                                 : item.name.includes("Tension Reset")

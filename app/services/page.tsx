@@ -6,19 +6,89 @@ import { Badge } from "@/components/ui/badge"
 import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award, Play, Mail, Trophy, Star, Info, ShoppingCart, MessageCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 import AddToCart from "@/components/stripe-checkout"
+import { useCart } from "@/contexts/cart-context"
+import { useAuth } from "@/contexts/auth-context"
+import { AuthModal } from "@/components/auth-modal"
 
 export default function ServicesPage() {
-  const [selectedImage, setSelectedImage] = useState("/roller/roller 5.jpeg")
+  const [selectedImage, setSelectedImage] = useState("/roller/roller7.jpg")
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [bundleCurrentSlide, setBundleCurrentSlide] = useState(0)
+  const [showMessage, setShowMessage] = useState("")
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const { user } = useAuth()
   
   const rollerImages = [
-    "/roller/roller 5.jpeg",
-    "/roller/roller4.jpg",
-    "/roller2.png",
-    "/roller/roller6.jpeg"
+    "/roller/roller7.jpg",
+    "/roller/roller8.jpg",
+    "/roller/roller9.jpg",
+    "/roller/roller10.jpg",
+    "/roller/roller11.jpg",
+    "/roller/roller12.jpg",
+    "/roller/roller13.jpg",
+    "/roller/roller14.jpg",
+    "/roller/roller15.jpg"
   ]
 
-  // Auto-advance slideshow
+  const bundleImages = [
+    "/roller/roller12.jpg",
+    "/roller/roller13.jpg",
+    "/roller/roller14.jpg",
+    "/roller/roller15.jpg"
+  ]
+
+  // Function to handle plan checkout
+  const handlePlanCheckout = async (plan: any, planName: string) => {
+    // Check if user is logged in
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    setIsProcessing(true)
+    setShowMessage("Processing checkout...")
+    
+    try {
+      // Store plan data in localStorage for success page
+      localStorage.setItem('planData', JSON.stringify(plan))
+      
+      // Create checkout session for the plan
+      const response = await fetch('/api/create-plan-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+      }
+
+      const { sessionUrl } = await response.json()
+
+      if (!sessionUrl) {
+        throw new Error('No checkout URL received from server')
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = sessionUrl
+      
+    } catch (error) {
+      console.error('Error creating plan checkout:', error)
+      setIsProcessing(false)
+      setShowMessage(`Error: ${error instanceof Error ? error.message : 'Failed to start checkout'}`)
+      
+      // Hide error message after 5 seconds
+      setTimeout(() => {
+        setShowMessage("")
+      }, 5000)
+    }
+  }
+
+  // Auto-advance slideshow for roller
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % rollerImages.length)
@@ -26,6 +96,15 @@ export default function ServicesPage() {
 
     return () => clearInterval(interval)
   }, [rollerImages.length])
+
+  // Auto-advance slideshow for bundle
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBundleCurrentSlide((prev) => (prev + 1) % bundleImages.length)
+    }, 3000) // Change slide every 3 seconds
+
+    return () => clearInterval(interval)
+  }, [bundleImages.length])
 
   // Handle scroll to products section from query parameter
   useEffect(() => {
@@ -404,15 +483,107 @@ export default function ServicesPage() {
                            </div>
                          </td>
                        </tr>
+                       
+                       {/* Purchase Buttons Row */}
+                       <tr className="border-t-2 border-orange-500/30">
+                         <td className="py-6 px-6 font-semibold">
+                           <div className="flex items-center gap-3">
+                             <ShoppingCart className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                             <div>
+                               <div>Get Started</div>
+                               <div className="text-sm text-muted-foreground">Choose your plan</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-6 px-6 text-center">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
+                             onClick={() => {
+                               const foundationPlan = {
+                                 id: 'foundation-plan',
+                                 name: 'Foundation Training Plan',
+                                 price: 197,
+                                 quantity: 1,
+                                 image: '/gymTrainer.jpg',
+                                 description: 'Perfect for beginners ready to start their fitness journey'
+                               }
+                               handlePlanCheckout(foundationPlan, 'Foundation Plan')
+                             }}
+                             disabled={isProcessing}
+                           >
+                             {isProcessing ? "Processing..." : "Choose Foundation"}
+                           </Button>
+                         </td>
+                         <td className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
+                             onClick={() => {
+                               const acceleratedPlan = {
+                                 id: 'accelerated-plan',
+                                 name: 'Accelerated Training Plan',
+                                 price: 297,
+                                 quantity: 1,
+                                 image: '/gymTrainer.jpg',
+                                 description: 'Ideal for committed individuals seeking faster results'
+                               }
+                               handlePlanCheckout(acceleratedPlan, 'Accelerated Plan')
+                             }}
+                             disabled={isProcessing}
+                           >
+                             {isProcessing ? "Processing..." : "Choose Accelerated"}
+                           </Button>
+                         </td>
+                         <td className="py-6 px-6 text-center">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
+                             onClick={() => {
+                               const premiumPlan = {
+                                 id: 'premium-plan',
+                                 name: 'Premium Training Plan',
+                                 price: 497,
+                                 quantity: 1,
+                                 image: '/gymTrainer.jpg',
+                                 description: 'Maximum support for serious athletes and professionals'
+                               }
+                               handlePlanCheckout(premiumPlan, 'Premium Plan')
+                             }}
+                             disabled={isProcessing}
+                           >
+                             {isProcessing ? "Processing..." : "Choose Premium"}
+                           </Button>
+                         </td>
+                       </tr>
                      </tbody>
                    </table>
                  </div>
                  
                </CardContent>
             </Card>
+            
+            {/* Status Message */}
+            {showMessage && (
+              <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-in slide-in-from-right duration-300 ${
+                showMessage.includes('Error') 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-blue-500 text-white'
+              }`}>
+                {showMessage.includes('Error') ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                )}
+                <span className="font-semibold">{showMessage}</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
       
                    <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 overflow-hidden">
             {/* Enhanced Gradient Background */}
@@ -924,13 +1095,28 @@ export default function ServicesPage() {
                    {/* Bundle Image - Center */}
                    <div className="lg:col-span-1">
                      <div className="space-y-3 sm:space-y-4">
-                       <div className="relative overflow-hidden rounded-xl">
+                       <div className="relative overflow-hidden rounded-xl group">
                          <img
-                           src="/roller.jpg"
+                           src={bundleImages[bundleCurrentSlide]}
                            alt="Complete Bundle - Knot Roller + Course Package"
-                           className="w-full h-48 sm:h-64 object-cover object-center"
+                           className="w-full h-48 sm:h-64 object-cover object-center transition-all duration-500 ease-in-out"
                          />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                         
+                         {/* Bundle Image Gallery Indicators */}
+                         <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2">
+                           {bundleImages.map((_, index) => (
+                             <button
+                               key={index}
+                               onClick={() => setBundleCurrentSlide(index)}
+                               className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                 index === bundleCurrentSlide 
+                                   ? 'bg-orange-500 scale-125' 
+                                   : 'bg-white/50 hover:bg-white/70'
+                               }`}
+                             />
+                           ))}
+                         </div>
                        </div>
                        
                                                {/* Perfect For */}
