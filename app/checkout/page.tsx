@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
 import { ShoppingCart, ArrowLeft, CreditCard, Truck, CheckCircle, Lock, User } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -49,6 +50,8 @@ export default function CheckoutPage() {
     zipCode: "",
     country: "United States"
   })
+  const [useProfileInfo, setUseProfileInfo] = useState(false)
+  const [profileData, setProfileData] = useState<any>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [step, setStep] = useState<'cart' | 'shipping' | 'payment' | 'confirmation'>('cart')
 
@@ -81,6 +84,63 @@ export default function CheckoutPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
+
+  // Fetch user profile data when user is available
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserProfile()
+    }
+  }, [user])
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch(`/api/user-profile?userId=${user?.id}`)
+      const data = await response.json()
+      
+      if (response.ok && data.profile) {
+        setProfileData(data.profile)
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+    }
+  }
+
+  const handleUseProfileInfo = (useProfile: boolean) => {
+    setUseProfileInfo(useProfile)
+    
+    if (useProfile && profileData) {
+      // Parse full name into first and last name
+      const nameParts = (profileData.full_name || "").split(" ")
+      const firstName = nameParts[0] || ""
+      const lastName = nameParts.slice(1).join(" ") || ""
+      
+      // Parse phone number (remove country code if present)
+      const phone = profileData.phone?.replace(/^\+\d{1,3}\s?/, "") || ""
+      
+      setShippingInfo({
+        firstName,
+        lastName,
+        phone,
+        address: profileData.address || "",
+        city: profileData.city || "",
+        state: profileData.state || "",
+        zipCode: profileData.zip_code || "",
+        country: profileData.country || "United States"
+      })
+    } else {
+      // Reset to empty form
+      setShippingInfo({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        country: "United States"
+      })
+    }
+  }
 
      const handleCheckout = async () => {
      setIsProcessing(true)
@@ -417,6 +477,45 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleShippingSubmit} className="space-y-6">
+                    {/* Use Profile Information Option */}
+                    {profileData && (profileData.address || profileData.city || profileData.state) && (
+                      <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20 p-6 rounded-xl">
+                        <div className="flex items-start gap-4">
+                          <Checkbox
+                            id="useProfileInfo"
+                            checked={useProfileInfo}
+                            onCheckedChange={handleUseProfileInfo}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor="useProfileInfo" className="text-orange-300 font-semibold cursor-pointer">
+                              Use my profile information
+                            </Label>
+                            <p className="text-gray-300 text-sm mt-1">
+                              Use the address and contact information from your profile
+                            </p>
+                            {useProfileInfo && (
+                              <div className="mt-3 p-3 bg-white/5 rounded-lg">
+                                <div className="text-white text-sm">
+                                  <div className="font-medium">{profileData.full_name}</div>
+                                  <div className="text-gray-300">
+                                    {profileData.address && <div>{profileData.address}</div>}
+                                    {profileData.city && profileData.state && (
+                                      <div>{profileData.city}, {profileData.state} {profileData.zip_code}</div>
+                                    )}
+                                    {profileData.country && <div>{profileData.country}</div>}
+                                    {profileData.phone && <div className="mt-1">{profileData.phone}</div>}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Manual Entry Form */}
+                    <div className={`space-y-6 ${useProfileInfo ? 'opacity-50 pointer-events-none' : ''}`}>
                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div className="space-y-2">
                          <Label htmlFor="firstName" className="text-white font-medium">First Name</Label>
@@ -504,6 +603,20 @@ export default function CheckoutPage() {
                         />
                       </div>
                     </div>
+
+                    </div>
+
+                    {/* Profile Information Note */}
+                    {!profileData || (!profileData.address && !profileData.city && !profileData.state) && (
+                      <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-lg">
+                        <p className="text-blue-300 text-sm">
+                          💡 <strong>Tip:</strong> You can save time by adding your address information to your profile. 
+                          <Link href="/dashboard/profile" className="text-blue-400 hover:text-blue-300 underline ml-1">
+                            Update your profile
+                          </Link> to use it for future purchases.
+                        </p>
+                      </div>
+                    )}
 
                     <div className="flex gap-4 pt-4">
                       <Button

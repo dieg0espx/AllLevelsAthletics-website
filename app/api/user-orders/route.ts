@@ -88,6 +88,9 @@ export async function GET(request: NextRequest) {
       trackingNumber: order.tracking_number || 'N/A',
       estimatedDelivery: order.estimated_delivery || 'TBD',
       actualDelivery: order.actual_delivery || null,
+      shippingMethod: order.shipping_method || null,
+      carrier: order.carrier || null,
+      comment: order.comment || null,
       shippingAddress: order.shipping_address ? JSON.parse(order.shipping_address) : {},
       items: order.order_items.map((item: any) => ({
         name: item.product_name,

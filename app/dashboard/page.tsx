@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
+import { AdminRedirect } from "@/components/admin-redirect"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,7 +13,8 @@ import {
   Dumbbell,
   Users,
   ShoppingBag,
-  Package
+  Package,
+  User
 } from "lucide-react"
 
 export default function ClientDashboard() {
@@ -72,7 +74,8 @@ export default function ClientDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <AdminRedirect>
+      <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,6 +127,7 @@ export default function ClientDashboard() {
               Purchased Products
             </Link>
             <Link href="/dashboard/profile" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
+              <User className="w-5 h-5 inline mr-2" />
               My Information
             </Link>
           </div>
@@ -212,6 +216,7 @@ export default function ClientDashboard() {
           </Card>
         </div>
       </main>
-    </div>
+      </div>
+    </AdminRedirect>
   )
 }

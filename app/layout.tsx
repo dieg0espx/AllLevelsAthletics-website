@@ -109,19 +109,19 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon-16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/icon-32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/logoAllLevels.png', sizes: 'any' },
+      { url: '/logoAllLevels.png', sizes: '16x16', type: 'image/png' },
+      { url: '/logoAllLevels.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logoAllLevels.png', sizes: '48x48', type: 'image/png' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/logoAllLevels.png',
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/logoAllLevels.png', sizes: '180x180', type: 'image/png' },
     ],
     other: [
       {
         rel: 'mask-icon',
-        url: '/safari-pinned-tab.svg',
+        url: '/logoAllLevels.png',
         color: '#f97316',
       },
     ],
@@ -135,7 +135,7 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-title': 'All Levels Athletics',
     'mobile-web-app-capable': 'yes',
     'application-name': 'All Levels Athletics',
-    'msapplication-TileImage': '/icon-192.png',
+    'msapplication-TileImage': '/logoAllLevels.png',
   },
 }
 
@@ -156,7 +156,7 @@ export default function RootLayout({
         
         {/* Windows Tile */}
         <meta name="msapplication-TileColor" content="#f97316" />
-        <meta name="msapplication-TileImage" content="/icon-192.png" />
+        <meta name="msapplication-TileImage" content="/logoAllLevels.png" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         
         {/* Additional Open Graph tags */}
@@ -198,7 +198,7 @@ export default function RootLayout({
               "name": "All Levels Athletics",
               "description": "Elite Online Personal Training and Fitness Coaching",
               "url": "https://alllevelsathletics.com",
-              "logo": "https://alllevelsathletics.com/logo.png",
+              "logo": "https://alllevelsathletics.com/logoAllLevels.png",
               "image": "https://alllevelsathletics.com/og-image.png",
               "telephone": "+1-760-585-8832",
               "email": "AllLevelsAthletics@gmail.com",

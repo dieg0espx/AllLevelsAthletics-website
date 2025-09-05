@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
+import { AdminRedirect } from "@/components/admin-redirect"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +17,8 @@ import {
   MapPin,
   Calendar,
   DollarSign,
-  Search
+  Search,
+  X
 } from "lucide-react"
 
 export default function ProductsPage() {
@@ -84,6 +86,8 @@ export default function ProductsPage() {
         return "bg-blue-500/20 text-blue-400 border-blue-500/30"
       case "processing":
         return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+      case "cancelled":
+        return "bg-red-500/20 text-red-400 border-red-500/30"
       default:
         return "bg-gray-500/20 text-gray-400 border-gray-500/30"
     }
@@ -97,6 +101,8 @@ export default function ProductsPage() {
         return <Truck className="w-4 h-4" />
       case "processing":
         return <Clock className="w-4 h-4" />
+      case "cancelled":
+        return <X className="w-4 h-4" />
       default:
         return <Package className="w-4 h-4" />
     }
@@ -122,7 +128,8 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <AdminRedirect>
+      <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,20 +170,32 @@ export default function ProductsPage() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container mx-auto px-6 sm:px-8 lg:px-12 xl:px-16 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-            <ShoppingBag className="w-6 h-6 text-orange-400" />
-            Track Your Orders
-          </h2>
-          <p className="text-white/70">Monitor your purchases, shipping status, and delivery information</p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                <ShoppingBag className="w-6 h-6 text-orange-400" />
+                Track Your Orders
+              </h2>
+              <p className="text-white/70">Monitor your purchases, shipping status, and delivery information</p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </div>
         </div>
 
         {/* Filter Tabs */}
         <div className="mb-6">
           <div className="flex space-x-2 border-b border-white/10">
-            {["all", "processing", "shipped", "delivered"].map((status) => (
+            {["all", "processing", "shipped", "delivered", "cancelled"].map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
@@ -194,116 +213,301 @@ export default function ProductsPage() {
 
         {/* Products List */}
         {filteredProducts.length > 0 ? (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="bg-white/5 border-orange-500/30">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="text-white">{product.name}</CardTitle>
-                      <CardDescription className="text-white/70">
-                        Order #{product.orderNumber}
-                      </CardDescription>
-                    </div>
-                    <Badge className={getStatusColor(product.status)}>
-                      <div className="flex items-center gap-1">
-                        {getStatusIcon(product.status)}
-                        {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+              <Card key={product.id} className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 shadow-xl hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                      {/* Product Images - Show all products in order */}
+                      <div className="flex gap-2">
+                        {product.items.map((item, index) => (
+                          <div key={index} className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-orange-500/30 shadow-lg">
+                            <img
+                              src={
+                                item.name.includes("All Levels Knot Roller") 
+                                  ? "/roller/roller 5.jpeg"
+                                  : item.name.includes("Body Tension Reset Course")
+                                  ? "/gymTools.jpg"
+                                  : item.name.includes("Complete Bundle")
+                                  ? "/roller.jpg"
+                                  : item.name.includes("MF Roller")
+                                  ? "/roller2.png"
+                                  : item.name.includes("Tension Reset")
+                                  ? "/tension-reset-coaching.png"
+                                  : item.name.includes("Body Tension Reset")
+                                  ? "/body-tension-reset-course.png"
+                                  : item.name.includes("MF Roller Course")
+                                  ? "/mfroller-course-bundle.png"
+                                  : "/placeholder.jpg"
+                              }
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                            {item.quantity > 1 && (
+                              <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">{item.quantity}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    </Badge>
+                      
+                      <div className="flex-1">
+                        <CardTitle className="text-white text-xl mb-1">
+                          {product.items.length === 1 
+                            ? product.items[0].name 
+                            : `${product.items.length} Products`
+                          }
+                        </CardTitle>
+                        <CardDescription className="text-white/70 text-base">
+                          Order #{product.orderNumber}
+                        </CardDescription>
+                        <div className="mt-2 text-2xl font-bold text-orange-400">
+                          ${product.price}
+                        </div>
+                        {product.items.length > 1 && (
+                          <div className="mt-1 text-sm text-white/60">
+                            {product.items.map((item, index) => (
+                              <span key={index}>
+                                {item.name} {item.quantity > 1 && `(x${item.quantity})`}
+                                {index < product.items.length - 1 && ', '}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-end gap-3">
+                      <Badge className={`${getStatusColor(product.status)} px-4 py-2 text-sm font-semibold`}>
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(product.status)}
+                          {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+                        </div>
+                      </Badge>
+                      
+                      {/* Progress Tracking */}
+                      <div className="flex items-center space-x-3 text-sm">
+                        <div className={`flex items-center gap-1 ${product.status === 'processing' || product.status === 'shipped' || product.status === 'delivered' ? 'text-orange-400' : 'text-white/30'}`}>
+                          <Clock className="w-4 h-4" />
+                          <span className="font-medium">Processing</span>
+                        </div>
+                        <div className={`w-6 h-0.5 ${product.status === 'shipped' || product.status === 'delivered' ? 'bg-orange-400' : 'bg-white/20'}`}></div>
+                        <div className={`flex items-center gap-1 ${product.status === 'shipped' || product.status === 'delivered' ? 'text-orange-400' : 'text-white/30'}`}>
+                          <Truck className="w-4 h-4" />
+                          <span className="font-medium">Shipped</span>
+                        </div>
+                        <div className={`w-6 h-0.5 ${product.status === 'delivered' ? 'bg-orange-400' : 'bg-white/20'}`}></div>
+                        <div className={`flex items-center gap-1 ${product.status === 'delivered' ? 'text-orange-400' : 'text-white/30'}`}>
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="font-medium">Delivered</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <CardContent className="pt-0">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Order Details */}
-                    <div className="space-y-4">
-                      <h4 className="text-lg font-semibold text-white">Order Details</h4>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-white/70">Purchase Date:</span>
-                          <span className="text-white">{new Date(product.purchaseDate).toLocaleDateString()}</span>
-                        </div>
+                    <div className="space-y-6">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                          <Package className="w-5 h-5 text-orange-400" />
+                          Order Details
+                        </h4>
                         
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-white/70">Total Amount:</span>
-                          <span className="text-2xl font-bold text-orange-400">${product.price}</span>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-white/70">Purchase Date:</span>
+                            <span className="text-white font-medium">{new Date(product.purchaseDate).toLocaleDateString()}</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className="text-white/70">Tracking Number:</span>
+                            <span className="text-white font-mono text-sm bg-white/10 px-2 py-1 rounded">{product.trackingNumber}</span>
+                          </div>
                         </div>
-                        
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-white/70">Tracking Number:</span>
-                          <span className="text-white font-mono">{product.trackingNumber}</span>
-                        </div>
-                      </div>
 
-                      {/* Items List */}
-                      <div className="mt-4">
-                        <h5 className="text-sm font-medium text-white mb-2">Items:</h5>
-                        <div className="space-y-2">
-                          {product.items.map((item, index) => (
-                            <div key={index} className="flex items-center justify-between text-sm">
-                              <span className="text-white/80">
-                                {item.name} x{item.quantity}
-                              </span>
-                              <span className="text-white">${item.price}</span>
-                            </div>
-                          ))}
+                        {/* Items List */}
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                          <h5 className="text-sm font-medium text-white mb-3">Items Purchased:</h5>
+                          <div className="space-y-2">
+                            {product.items.map((item, index) => (
+                              <div key={index} className="flex items-center justify-between text-sm bg-white/5 p-2 rounded">
+                                <span className="text-white/80">
+                                  {item.name} x{item.quantity}
+                                </span>
+                                <span className="text-orange-400 font-medium">${item.price}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Shipping Information */}
-                    <div className="space-y-4">
-                      <h4 className="text-lg font-semibold text-white">Shipping Information</h4>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2 text-sm">
-                          <MapPin className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
-                          <div className="text-white/80">
-                            <div>{product.shippingAddress?.firstName} {product.shippingAddress?.lastName}</div>
-                            <div>{product.shippingAddress?.address}</div>
-                            <div>{product.shippingAddress?.city}, {product.shippingAddress?.state} {product.shippingAddress?.zipCode}</div>
-                            <div>{product.shippingAddress?.country}</div>
-                            <div className="text-orange-400">{product.shippingAddress?.email}</div>
-                          </div>
-                        </div>
+                    <div className="space-y-6">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                          <MapPin className="w-5 h-5 text-orange-400" />
+                          Shipping Information
+                        </h4>
                         
-                        <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="w-4 h-4 text-orange-400" />
-                          <span className="text-white/80">
-                            Estimated: {new Date(product.estimatedDelivery).toLocaleDateString()}
-                          </span>
-                        </div>
-                        
-                        {product.actualDelivery && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <CheckCircle className="w-4 h-4 text-green-400" />
-                            <span className="text-green-400">
-                              Delivered: {new Date(product.actualDelivery).toLocaleDateString()}
-                            </span>
+                        <div className="space-y-4">
+                          {/* Shipping Address */}
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <MapPin className="w-4 h-4 text-orange-400" />
+                            </div>
+                            <div className="text-white/80 space-y-1">
+                              <div className="font-medium text-white text-lg">{product.shippingAddress?.firstName} {product.shippingAddress?.lastName}</div>
+                              {product.shippingAddress?.address && (
+                                <div className="text-white/70">{product.shippingAddress.address}</div>
+                              )}
+                              <div className="text-white/70">{product.shippingAddress?.city}, {product.shippingAddress?.state} {product.shippingAddress?.zipCode}</div>
+                              {product.shippingAddress?.country && (
+                                <div className="text-white/70">{product.shippingAddress.country}</div>
+                              )}
+                              <div className="text-orange-400 mt-2 font-medium">{product.shippingAddress?.email}</div>
+                              {product.shippingAddress?.phone && (
+                                <div className="text-white/70">{product.shippingAddress.phone}</div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
 
-                      {/* Action Buttons */}
-                      <div className="mt-6 space-y-2">
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                        >
-                          <Truck className="w-4 h-4 mr-2" />
-                          Track Package
-                        </Button>
+                          {/* Shipping Details */}
+                          {(product.carrier || product.shippingMethod) && (
+                            <div className="pt-4 border-t border-white/10">
+                              <h5 className="text-sm font-medium text-white mb-3">Shipping Details:</h5>
+                              <div className="space-y-2">
+                                {product.carrier && (
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-white/70">Carrier:</span>
+                                    <span className="text-white font-medium">{product.carrier}</span>
+                                  </div>
+                                )}
+                                {product.shippingMethod && (
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-white/70">Method:</span>
+                                    <span className="text-white font-medium">{product.shippingMethod}</span>
+                                  </div>
+                                )}
+                                {product.trackingNumber && product.trackingNumber !== 'N/A' && (
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-white/70">Tracking:</span>
+                                    <span className="text-orange-400 font-mono text-xs bg-white/10 px-2 py-1 rounded">{product.trackingNumber}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Order Comments */}
+                          {product.comment && (
+                            <div className="pt-4 border-t border-white/10">
+                              <h5 className="text-sm font-medium text-white mb-3">Order Notes:</h5>
+                              <div className="bg-white/10 rounded-lg p-3 border border-white/20">
+                                <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+                                  {product.comment}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Delivery Timeline */}
+                    <div className="space-y-6">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-orange-400" />
+                          Delivery Timeline
+                        </h4>
                         
-                        {product.status === "delivered" && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                          >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Mark as Received
-                          </Button>
-                        )}
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center">
+                              <Calendar className="w-4 h-4 text-orange-400" />
+                            </div>
+                            <div>
+                              <div className="text-white/70 text-sm">Estimated Delivery</div>
+                              <div className="text-white font-medium">{new Date(product.estimatedDelivery).toLocaleDateString()}</div>
+                            </div>
+                          </div>
+                          
+                          {product.actualDelivery && (
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-green-400" />
+                              </div>
+                              <div>
+                                <div className="text-white/70 text-sm">Delivered</div>
+                                <div className="text-green-400 font-medium">{new Date(product.actualDelivery).toLocaleDateString()}</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="mt-6 space-y-3">
+                          {product.status === "delivered" ? (
+                            <Button 
+                              variant="outline" 
+                              className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300"
+                              onClick={() => window.open('mailto:AllLevelsAthletics@gmail.com?subject=Order Support - ' + product.orderNumber, '_blank')}
+                            >
+                              <Package className="w-4 h-4 mr-2" />
+                              Need Help with This Order?
+                            </Button>
+                          ) : (
+                            <>
+                              <Button 
+                                variant="outline" 
+                                className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300"
+                                onClick={() => {
+                                  if (product.carrier && product.trackingNumber && product.trackingNumber !== 'N/A') {
+                                    // Open carrier tracking page based on carrier
+                                    let trackingUrl = ''
+                                    switch (product.carrier.toLowerCase()) {
+                                      case 'ups':
+                                        trackingUrl = `https://www.ups.com/track?track=yes&trackNums=${product.trackingNumber}`
+                                        break
+                                      case 'fedex':
+                                        trackingUrl = `https://www.fedex.com/fedextrack/?trknbr=${product.trackingNumber}`
+                                        break
+                                      case 'usps':
+                                        trackingUrl = `https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=${product.trackingNumber}`
+                                        break
+                                      case 'dhl':
+                                        trackingUrl = `https://www.dhl.com/us-en/home/tracking.html?trackingNumber=${product.trackingNumber}`
+                                        break
+                                      default:
+                                        trackingUrl = `https://www.google.com/search?q=track+${product.trackingNumber}+${product.carrier}`
+                                    }
+                                    window.open(trackingUrl, '_blank')
+                                  } else {
+                                    alert('Tracking information is not available yet. Please check back later.')
+                                  }
+                                }}
+                              >
+                                <Truck className="w-4 h-4 mr-2" />
+                                Track Package
+                              </Button>
+                              
+                              <Button 
+                                variant="outline" 
+                                className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300"
+                                onClick={() => window.open('mailto:AllLevelsAthletics@gmail.com?subject=Order Support - ' + product.orderNumber, '_blank')}
+                              >
+                                <Package className="w-4 h-4 mr-2" />
+                                Need Help with This Order?
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -312,20 +516,24 @@ export default function ProductsPage() {
             ))}
           </div>
         ) : (
-          <Card className="bg-white/5 border-orange-500/30">
-            <CardContent className="text-center py-12">
-              <div className="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag className="w-10 h-10 text-orange-400" />
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 shadow-xl">
+            <CardContent className="text-center py-16">
+              <div className="w-24 h-24 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <ShoppingBag className="w-12 h-12 text-orange-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No Products Found</h3>
-              <p className="text-white/70 mb-6">
+              <h3 className="text-2xl font-bold text-white mb-3">No Products Found</h3>
+              <p className="text-white/70 mb-8 text-lg">
                 {filterStatus === "all" 
                   ? "You haven't purchased any products yet" 
                   : `No products with status "${filterStatus}" found`
                 }
               </p>
               {filterStatus === "all" && (
-                <Button onClick={() => router.push('/shop')} className="bg-orange-500 hover:bg-orange-600">
+                <Button 
+                  onClick={() => router.push('/services?scrollTo=products')} 
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 text-lg font-semibold shadow-xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105"
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
                   Browse Products
                 </Button>
               )}
@@ -334,42 +542,55 @@ export default function ProductsPage() {
         )}
 
         {/* Quick Stats */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-white/5 border-orange-500/30 text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-400">{purchasedProducts.length}</div>
-              <p className="text-white/70 text-sm">Total Orders</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/5 border-orange-500/30 text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-400">
-                ${purchasedProducts.reduce((sum, p) => sum + p.price, 0).toFixed(2)}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 text-center shadow-xl hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300">
+            <CardContent className="pt-6 pb-6">
+              <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <ShoppingBag className="w-6 h-6 text-orange-400" />
               </div>
-              <p className="text-white/70 text-sm">Total Spent</p>
+              <div className="text-3xl font-bold text-orange-400 mb-1">{purchasedProducts.length}</div>
+              <p className="text-white/70 text-sm font-medium">Total Orders</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/5 border-orange-500/30 text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-400">
-                {purchasedProducts.filter(p => p.status === "delivered").length}
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 text-center shadow-xl hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300">
+            <CardContent className="pt-6 pb-6">
+              <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Clock className="w-6 h-6 text-orange-400" />
               </div>
-              <p className="text-white/70 text-sm">Delivered</p>
+              <div className="text-3xl font-bold text-orange-400 mb-1">
+                {purchasedProducts.filter(p => p.status === "processing").length}
+              </div>
+              <p className="text-white/70 text-sm font-medium">Processing</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/5 border-orange-500/30 text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-400">
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 text-center shadow-xl hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300">
+            <CardContent className="pt-6 pb-6">
+              <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Truck className="w-6 h-6 text-orange-400" />
+              </div>
+              <div className="text-3xl font-bold text-orange-400 mb-1">
                 {purchasedProducts.filter(p => p.status === "shipped").length}
               </div>
-              <p className="text-white/70 text-sm">In Transit</p>
+              <p className="text-white/70 text-sm font-medium">In Transit</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 text-center shadow-xl hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300">
+            <CardContent className="pt-6 pb-6">
+              <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="w-6 h-6 text-orange-400" />
+              </div>
+              <div className="text-3xl font-bold text-orange-400 mb-1">
+                {purchasedProducts.filter(p => p.status === "delivered").length}
+              </div>
+              <p className="text-white/70 text-sm font-medium">Delivered</p>
             </CardContent>
           </Card>
         </div>
       </main>
-    </div>
+      </div>
+    </AdminRedirect>
   )
 }
