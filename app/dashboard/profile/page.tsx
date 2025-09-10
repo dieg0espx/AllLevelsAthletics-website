@@ -30,7 +30,8 @@ export default function ProfilePage() {
 
   // Profile data from Supabase
   const [profileData, setProfileData] = useState({
-    fullName: user?.user_metadata?.full_name || "",
+    firstName: "",
+    lastName: "",
     email: user?.email || "",
     phoneCountryCode: "+1",
     phone: "",
@@ -43,7 +44,8 @@ export default function ProfilePage() {
   })
 
   const [originalData, setOriginalData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phoneCountryCode: "+1",
     phone: "",
@@ -70,17 +72,25 @@ export default function ProfilePage() {
 
   const fetchProfileData = async () => {
     try {
+      console.log('🔄 Fetching profile data for user:', user?.id)
+      
       const response = await fetch(`/api/user-profile?userId=${user?.id}`)
       const data = await response.json()
       
+      console.log('📡 Profile fetch response:', { status: response.status, data })
+      
       if (response.ok) {
         if (data.profile) {
+          console.log('📊 Profile data received:', data.profile)
+          
           // Parse phone number if it includes country code
           const phoneData = parsePhoneNumber(data.profile.phone || "")
+          console.log('📞 Parsed phone data:', phoneData)
           
           const newProfileData = {
-            fullName: data.profile.full_name || user?.user_metadata?.full_name || "",
-            email: user?.email || "",
+            firstName: data.profile.first_name || "",
+            lastName: data.profile.last_name || "",
+            email: data.profile.email || user?.email || "",
             phoneCountryCode: phoneData.countryCode,
             phone: phoneData.number,
             address: data.profile.address || "",
@@ -91,14 +101,17 @@ export default function ProfilePage() {
             dateOfBirth: data.profile.date_of_birth || ""
           }
           
+          console.log('📝 Setting profile data:', newProfileData)
           setProfileData(newProfileData)
           setOriginalData(newProfileData)
+        } else {
+          console.log('⚠️ No profile data found in response')
         }
       } else {
-        console.error('Failed to fetch profile:', data)
+        console.error('❌ Failed to fetch profile:', data)
       }
     } catch (error) {
-      console.error('Error fetching profile data:', error)
+      console.error('💥 Error fetching profile data:', error)
     }
   }
 
@@ -145,13 +158,17 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
+      console.log('🔄 Saving profile data...')
+      
       // Combine country code and phone number
       const fullPhoneNumber = profileData.phoneCountryCode + " " + profileData.phone
       
       const requestData = {
         userId: user?.id,
         profileData: {
-          full_name: profileData.fullName,
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          email: profileData.email,
           phone: fullPhoneNumber,
           address: profileData.address,
           city: profileData.city,
@@ -162,6 +179,8 @@ export default function ProfilePage() {
         }
       }
       
+      console.log('📤 Sending profile data:', requestData)
+      
       const response = await fetch('/api/user-profile', {
         method: 'PUT',
         headers: {
@@ -171,19 +190,23 @@ export default function ProfilePage() {
       })
 
       const responseData = await response.json()
+      console.log('📡 Profile save response:', responseData)
 
       if (response.ok) {
-    setOriginalData(profileData)
-    setIsEditing(false)
+        console.log('✅ Profile saved successfully')
+        setOriginalData(profileData)
+        setIsEditing(false)
         // Refresh profile data after successful save
         await fetchProfileData()
+        alert('Profile saved successfully!')
       } else {
-        console.error('Failed to save profile:', responseData)
-        alert('Failed to save profile. Please try again.')
+        console.error('❌ Failed to save profile:', responseData)
+        const errorMessage = responseData.details || responseData.error || 'Unknown error occurred'
+        alert(`Failed to save profile: ${errorMessage}`)
       }
     } catch (error) {
-      console.error('Error saving profile:', error)
-      alert('Error saving profile. Please try again.')
+      console.error('💥 Error saving profile:', error)
+      alert('Error saving profile. Please check your internet connection and try again.')
     }
     setIsSaving(false)
   }
@@ -495,15 +518,28 @@ export default function ProfilePage() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName" className="text-white/90">Full Name</Label>
+                    <Label htmlFor="firstName" className="text-white/90">First Name</Label>
                     <Input
-                      id="fullName"
-                      value={profileData.fullName}
-                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      id="firstName"
+                      value={profileData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
                       disabled={!isEditing}
                       className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName" className="text-white/90">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      value={profileData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      disabled={!isEditing}
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-white/90">Email</Label>
                     <Input
@@ -513,6 +549,17 @@ export default function ProfilePage() {
                       className="bg-white/5 border-gray-500/30 text-white/50"
                     />
                     <p className="text-xs text-white/50 mt-1">Email cannot be changed</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dateOfBirth" className="text-white/90">Date of Birth</Label>
+                    <Input
+                      id="dateOfBirth"
+                      type="date"
+                      value={profileData.dateOfBirth}
+                      onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                      disabled={!isEditing}
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                    />
                   </div>
                 </div>
                 

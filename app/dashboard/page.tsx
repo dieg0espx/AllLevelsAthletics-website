@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { AdminRedirect } from "@/components/admin-redirect"
+import { SubscriptionManagement } from "@/components/subscription-management"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -214,6 +215,11 @@ export default function ClientDashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Subscription Management */}
+        <div className="mb-8">
+          <SubscriptionManagement />
         </div>
       </main>
       </div>

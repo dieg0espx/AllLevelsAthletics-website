@@ -95,6 +95,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get base URL from environment or fallback to localhost
+    baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    
+    console.log('=== URL DEBUGGING ===')
+    console.log('Using baseUrl from env:', baseUrl)
+
     // Create line items from cart items
     const lineItems = items.map((item: any) => {
       console.log('Processing item:', item)
@@ -138,9 +144,6 @@ export async function POST(request: NextRequest) {
         console.log(`Item ${index + 1} image:`, item.price_data.product_data.images[0])
       }
     })
-
-    // Get base URL from environment or fallback to localhost
-    baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
     
     console.log('=== URL DEBUGGING ===')
     console.log('Using baseUrl from env:', baseUrl)

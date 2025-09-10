@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,7 +29,9 @@ import {
   BarChart3,
   Mail,
   Phone,
-  Star
+  Star,
+  Shield,
+  Lock
 } from "lucide-react"
 
 interface Order {
@@ -102,6 +105,7 @@ interface Program {
 
 export default function AdminDashboard() {
   const router = useRouter()
+  const { user, userRole, loading } = useAuth()
   const [activeTab, setActiveTab] = useState("clients")
   
   // Orders state
@@ -133,6 +137,22 @@ export default function AdminDashboard() {
   // Programs state
   const [programs, setPrograms] = useState<Program[]>([])
   const [programsLoading, setProgramsLoading] = useState(false)
+
+  // Authorization check
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        // User is not logged in, redirect to home page
+        router.push('/')
+        return
+      }
+      if (userRole !== 'admin') {
+        // User is logged in but not an admin, redirect to home page
+        router.push('/')
+        return
+      }
+    }
+  }, [user, userRole, loading, router])
 
   useEffect(() => {
     fetchAllOrders()
@@ -325,12 +345,47 @@ export default function AdminDashboard() {
     totalRevenue: orders.reduce((sum, o) => sum + o.price, 0)
   }
 
-  if (isLoading) {
+  // Show loading while checking authentication
+  if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <h1 className="text-2xl font-bold text-white">Loading Admin Dashboard...</h1>
+        </div>
+      </div>
+    )
+  }
+
+  // Show unauthorized access screen if user is not admin
+  if (!user || userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-12 h-12 text-red-400" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-4">Access Denied</h1>
+          <p className="text-white/70 text-lg mb-8">
+            You don't have permission to access the admin dashboard. Only administrators can view this page.
+          </p>
+          <div className="space-y-4">
+            <Button
+              onClick={() => router.push('/')}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 text-lg font-semibold"
+            >
+              Return to Home
+            </Button>
+            {!user && (
+              <Button
+                onClick={() => router.push('/auth')}
+                variant="outline"
+                className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10 py-3 text-lg"
+              >
+                Sign In
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -370,7 +425,7 @@ export default function AdminDashboard() {
       <main className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-12">
         {/* Tabs Navigation */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-white/5 border-orange-500/30 mb-8">
+          <TabsList className="grid w-full grid-cols-5 bg-white/5 border-orange-500/30 mb-8">
             <TabsTrigger 
               value="clients" 
               className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400 text-white/70 hover:text-orange-400"
@@ -398,6 +453,13 @@ export default function AdminDashboard() {
             >
               <BookOpen className="w-4 h-4 mr-2" />
               Programs
+            </TabsTrigger>
+            <TabsTrigger 
+              value="subscriptions" 
+              className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400 text-white/70 hover:text-orange-400"
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              Subscriptions
             </TabsTrigger>
           </TabsList>
 
@@ -1077,6 +1139,19 @@ export default function AdminDashboard() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* Subscriptions Tab */}
+          <TabsContent value="subscriptions" className="space-y-8">
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <DollarSign className="w-16 h-16 text-orange-400 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Subscription Management</h2>
+                <p className="text-white/70">
+                  View and manage user subscriptions. This feature will be implemented in the next update.
+                </p>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </main>

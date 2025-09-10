@@ -6,6 +6,8 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { AuthProvider } from "@/contexts/auth-context"
 import { CartProvider } from "@/contexts/cart-context"
+import { SubscriptionProvider } from "@/contexts/subscription-context"
+import { AdminRedirect } from "@/components/admin-redirect"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -253,11 +255,16 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <CartProvider>
-            <Navigation />
-            <main>{children}</main>
-            <Footer />
-          </CartProvider>
+          <SubscriptionProvider>
+            <CartProvider>
+              {/* Temporarily disable AdminRedirect to fix redirect loop */}
+              {/* <AdminRedirect> */}
+                <Navigation />
+                <main>{children}</main>
+                <Footer />
+              {/* </AdminRedirect> */}
+            </CartProvider>
+          </SubscriptionProvider>
         </AuthProvider>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </body>

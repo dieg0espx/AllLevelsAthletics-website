@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { AdminRedirect } from "@/components/admin-redirect"
+import { supabase } from "@/lib/supabase"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -52,7 +53,25 @@ export default function ProductsPage() {
       console.log('👤 User ID:', user.id)
       
       setIsLoadingOrders(true)
-      const response = await fetch(`/api/user-orders?userId=${user.id}`)
+      
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      
+      if (!token) {
+        console.error('❌ No access token available')
+        alert('Authentication error: No access token. Please log out and log back in.')
+        return
+      }
+      
+      console.log('🔐 Using token for API call')
+      
+      const response = await fetch(`/api/user-orders?userId=${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
       
       console.log('📡 API response status:', response.status)
       console.log('📡 API response ok:', response.ok)
@@ -62,12 +81,25 @@ export default function ProductsPage() {
         console.log('📦 Orders data received:', data)
         console.log('📦 Orders count:', data.orders?.length || 0)
         setPurchasedProducts(data.orders || [])
+        
+        if (!data.orders || data.orders.length === 0) {
+          console.log('ℹ️ No orders found for this user')
+        }
       } else {
-        const errorData = await response.json().catch(() => 'Failed to parse error')
+        const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
         console.error('❌ Failed to fetch orders:', errorData)
+        
+        // Show user-friendly error message
+        const errorMessage = errorData.details || errorData.error || 'Unknown error occurred'
+        if (errorData.error?.includes('Database table') || errorData.error?.includes('does not exist')) {
+          alert('Database setup required: Please contact support to set up the database tables.')
+        } else {
+          alert(`Failed to load your orders: ${errorMessage}`)
+        }
       }
     } catch (error) {
       console.error('💥 Error fetching orders:', error)
+      alert('Network error: Please check your internet connection and try again.')
     } finally {
       setIsLoadingOrders(false)
     }

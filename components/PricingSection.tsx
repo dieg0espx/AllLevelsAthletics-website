@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { CheckIcon, StarIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline"
+import { useAuth } from "@/contexts/auth-context"
+import { useSubscription } from "@/contexts/subscription-context"
+import { AuthModal } from "@/components/auth-modal"
+import { loadStripe } from "@stripe/stripe-js"
 
 // Custom hook for billing period management
 const useBillingPeriod = () => {
@@ -152,8 +156,83 @@ const PlanCard = ({
   isAnnual: boolean; 
   isPopular?: boolean;
 }) => {
+  const { user } = useAuth()
+  const { hasActiveSubscription } = useSubscription()
+  const [isLoading, setIsLoading] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  
   const price = isAnnual ? plan.annualPrice : plan.monthlyPrice
   const savings = isAnnual ? Math.round(plan.monthlyPrice * 0.15) : 0
+
+  const handleSubscribe = async () => {
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    if (hasActiveSubscription) {
+      // Redirect to customer portal for existing subscribers
+      try {
+        const response = await fetch('/api/create-customer-portal-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create portal session')
+        }
+
+        window.location.href = data.sessionUrl
+      } catch (error) {
+        console.error('Error opening customer portal:', error)
+      }
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/create-subscription-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: plan.id,
+          billingPeriod: isAnnual ? 'annual' : 'monthly',
+          userId: user.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      // Redirect to Stripe checkout
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        })
+
+        if (error) {
+          console.error('Stripe checkout error:', error)
+        }
+      }
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <article
@@ -198,14 +277,35 @@ const PlanCard = ({
           ))}
         </ul>
         <button
-          onClick={() => handleAnalytics(plan.id, isAnnual ? 'annual' : 'monthly', isPopular ? 'popular' : 'standard')}
+          onClick={() => {
+            handleAnalytics(plan.id, isAnnual ? 'annual' : 'monthly', isPopular ? 'popular' : 'standard')
+            handleSubscribe()
+          }}
+          disabled={isLoading}
           data-plan={plan.id}
           data-billing={isAnnual ? 'annual' : 'monthly'}
           data-variant={isPopular ? 'popular' : 'standard'}
-          className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base py-3 sm:py-4 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
+          className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base py-3 sm:py-4 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Start 7-Day Free Trial
+          {isLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+              Processing...
+            </>
+          ) : hasActiveSubscription ? (
+            'Manage Subscription'
+          ) : (
+            'Subscribe Now'
+          )}
         </button>
+        
+        {showAuthModal && (
+          <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)} 
+            redirectTo="/services"
+          />
+        )}
       </div>
     </article>
   )
@@ -315,7 +415,7 @@ export default function PricingSection() {
             Choose Your Coaching Plan
           </h2>
           <p className="text-lg text-muted max-w-2xl mx-auto">
-            7-day free trial. No credit card required. Cancel anytime.
+            Cancel anytime. No long-term contracts.
           </p>
         </header>
 

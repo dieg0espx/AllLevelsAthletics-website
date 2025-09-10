@@ -1,44 +1,85 @@
-# PowerShell script to help set up environment variables for AllLevelsAthletics website
+# PowerShell script to help set up environment variables
+# Run this script in PowerShell as Administrator
 
-Write-Host "🚀 Setting up environment variables for AllLevelsAthletics website..." -ForegroundColor Green
-Write-Host ""
+Write-Host "🔧 All Levels Athletics - Environment Setup" -ForegroundColor Green
+Write-Host "===========================================" -ForegroundColor Green
 
 # Check if .env.local exists
 if (Test-Path ".env.local") {
     Write-Host "✅ .env.local file already exists" -ForegroundColor Green
-    Write-Host "📝 Please add SUPABASE_SERVICE_ROLE_KEY to your existing .env.local file" -ForegroundColor Yellow
-} else {
-    Write-Host "📝 Creating .env.local file..." -ForegroundColor Yellow
-    
-    # Create .env.local with template
-    @"
-# Supabase Configuration
-# Get these values from your Supabase project dashboard
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-
-# Stripe Configuration
-# Get these values from your Stripe dashboard
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-
-# Site URL (for Stripe checkout redirects)
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-"@ | Out-File -FilePath ".env.local" -Encoding UTF8
-    
-    Write-Host "✅ .env.local file created!" -ForegroundColor Green
+    $overwrite = Read-Host "Do you want to overwrite it? (y/n)"
+    if ($overwrite -ne "y") {
+        Write-Host "❌ Setup cancelled" -ForegroundColor Red
+        exit
+    }
 }
 
-Write-Host ""
-Write-Host "🔑 NEXT STEPS:" -ForegroundColor Cyan
-Write-Host "1. Go to https://supabase.com/dashboard" -ForegroundColor White
-Write-Host "2. Select your project" -ForegroundColor White
-Write-Host "3. Go to Settings → API" -ForegroundColor White
-Write-Host "4. Copy the 'service_role' key (NOT the anon key)" -ForegroundColor White
-Write-Host "5. Replace 'your-service-role-key-here' in .env.local with your actual key" -ForegroundColor White
-Write-Host "6. Restart your development server" -ForegroundColor White
-Write-Host ""
-Write-Host "⚠️  IMPORTANT: Never commit .env.local to version control!" -ForegroundColor Red
-Write-Host ""
-Write-Host "Setup complete! Follow the steps above to configure your service role key." -ForegroundColor Green
+Write-Host "`n📝 Please provide your Supabase credentials:" -ForegroundColor Yellow
+
+# Get Supabase URL
+$supabaseUrl = Read-Host "Enter your Supabase Project URL"
+if ([string]::IsNullOrWhiteSpace($supabaseUrl)) {
+    Write-Host "❌ Supabase URL is required" -ForegroundColor Red
+    exit
+}
+
+# Get Supabase Anon Key
+$supabaseAnonKey = Read-Host "Enter your Supabase Anon Key"
+if ([string]::IsNullOrWhiteSpace($supabaseAnonKey)) {
+    Write-Host "❌ Supabase Anon Key is required" -ForegroundColor Red
+    exit
+}
+
+# Get Supabase Service Role Key
+$supabaseServiceKey = Read-Host "Enter your Supabase Service Role Key"
+if ([string]::IsNullOrWhiteSpace($supabaseServiceKey)) {
+    Write-Host "❌ Supabase Service Role Key is required" -ForegroundColor Red
+    exit
+}
+
+# Get Stripe keys (optional)
+Write-Host "`n💳 Stripe Configuration (optional):" -ForegroundColor Yellow
+$stripePublishableKey = Read-Host "Enter your Stripe Publishable Key (or press Enter to skip)"
+$stripeSecretKey = Read-Host "Enter your Stripe Secret Key (or press Enter to skip)"
+$stripeWebhookSecret = Read-Host "Enter your Stripe Webhook Secret (or press Enter to skip)"
+
+# Get Email configuration (optional)
+Write-Host "`n📧 Email Configuration (optional):" -ForegroundColor Yellow
+$emailHost = Read-Host "Enter your Email Host (or press Enter to skip)"
+$emailPort = Read-Host "Enter your Email Port (or press Enter to skip)"
+$emailUser = Read-Host "Enter your Email User (or press Enter to skip)"
+$emailPass = Read-Host "Enter your Email Password (or press Enter to skip)"
+
+# Create .env.local file
+$envContent = @"
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=$supabaseUrl
+NEXT_PUBLIC_SUPABASE_ANON_KEY=$supabaseAnonKey
+SUPABASE_SERVICE_ROLE_KEY=$supabaseServiceKey
+
+# Stripe Configuration
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$stripePublishableKey
+STRIPE_SECRET_KEY=$stripeSecretKey
+STRIPE_WEBHOOK_SECRET=$stripeWebhookSecret
+
+# Email Configuration (for order confirmations)
+EMAIL_HOST=$emailHost
+EMAIL_PORT=$emailPort
+EMAIL_USER=$emailUser
+EMAIL_PASS=$emailPass
+
+# App Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+"@
+
+try {
+    $envContent | Out-File -FilePath ".env.local" -Encoding UTF8
+    Write-Host "`n✅ .env.local file created successfully!" -ForegroundColor Green
+    Write-Host "🔒 Remember to keep your service role key secret!" -ForegroundColor Yellow
+    Write-Host "`n📋 Next steps:" -ForegroundColor Cyan
+    Write-Host "1. Run the database schema: database-schema.sql in Supabase SQL Editor" -ForegroundColor White
+    Write-Host "2. Start your development server: npm run dev" -ForegroundColor White
+    Write-Host "3. Test the profile saving functionality" -ForegroundColor White
+} catch {
+    Write-Host "❌ Error creating .env.local file: $($_.Exception.Message)" -ForegroundColor Red
+}

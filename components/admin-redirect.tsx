@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 
@@ -11,22 +11,33 @@ interface AdminRedirectProps {
 export function AdminRedirect({ children }: AdminRedirectProps) {
   const { user, userRole, loading } = useAuth()
   const router = useRouter()
+  const [hasRedirected, setHasRedirected] = useState(false)
 
   useEffect(() => {
     // Only redirect if user is loaded and authenticated
-    if (!loading && user && userRole === 'admin') {
+    if (!loading && user && userRole === 'admin' && !hasRedirected) {
       // Check if we're already on an admin page
       const currentPath = window.location.pathname
       const isAdminPage = currentPath.startsWith('/admin')
       
+      console.log('🔍 AdminRedirect check:', { currentPath, isAdminPage, hasRedirected })
+      
       if (!isAdminPage) {
-        router.push('/admin')
+        console.log('🔄 Redirecting admin to /admin')
+        setHasRedirected(true)
+        // Use window.location.href for a hard redirect
+        window.location.href = '/admin'
       }
     }
-  }, [user, userRole, loading, router])
+  }, [user, userRole, loading, hasRedirected])
 
-  // Don't render children if user is admin and not on admin page
-  if (!loading && user && userRole === 'admin') {
+  // Reset redirect flag when user changes
+  useEffect(() => {
+    setHasRedirected(false)
+  }, [user])
+
+  // Show loading screen only briefly during redirect
+  if (!loading && user && userRole === 'admin' && hasRedirected) {
     const currentPath = window.location.pathname
     const isAdminPage = currentPath.startsWith('/admin')
     

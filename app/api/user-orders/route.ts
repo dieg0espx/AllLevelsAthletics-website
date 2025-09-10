@@ -5,45 +5,68 @@ export async function GET(request: NextRequest) {
   try {
     console.log('🔄 Fetching user orders...')
     
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
+    // Get the authorization header
+    const authHeader = request.headers.get('authorization')
+    console.log('🔐 Auth header:', authHeader ? 'Present' : 'Missing')
     
-    console.log('👤 User ID received:', userId)
-    console.log('🔍 User ID type:', typeof userId)
-    console.log('🔍 User ID length:', userId?.length)
-    console.log('🔍 User ID value:', JSON.stringify(userId))
-
-    if (!userId) {
-      console.log('❌ No user ID provided')
+    // Create a Supabase client with the user's session
+    const supabaseClient = supabase
+    
+    // Try to get the current user from the session
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+    
+    if (authError || !user) {
+      console.error('❌ Authentication error:', authError)
       return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
+        { error: 'Authentication required', details: authError?.message },
+        { status: 401 }
+      )
+    }
+    
+    console.log('👤 Authenticated user:', user.id)
+    
+    const { searchParams } = new URL(request.url)
+    const requestedUserId = searchParams.get('userId')
+    
+    // Verify the user is requesting their own orders
+    if (requestedUserId && requestedUserId !== user.id) {
+      console.error('❌ User trying to access other user orders')
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 403 }
+      )
+    }
+    
+    const userId = requestedUserId || user.id
+    console.log('🔍 Querying orders for user:', userId)
+
+    // First, check if the orders table exists by trying a simple query
+    console.log('🔍 Testing database connection...')
+    const { data: testData, error: testError } = await supabase
+      .from('orders')
+      .select('id')
+      .limit(1)
+
+    if (testError) {
+      console.error('❌ Database connection error:', testError)
+      if (testError.code === '42P01') {
+        return NextResponse.json(
+          { 
+            error: 'Database table "orders" does not exist. Please run the database schema setup.',
+            details: 'Run the SQL commands in database-schema.sql in your Supabase SQL Editor'
+          },
+          { status: 500 }
+        )
+      }
+      return NextResponse.json(
+        { error: 'Database connection failed', details: testError.message },
+        { status: 500 }
       )
     }
 
-    console.log('🔍 Querying Supabase for orders...')
-    console.log('🔍 Query: SELECT * FROM orders WHERE user_id = ?', userId)
-    
-    // First, let's check if the orders table exists and has any data
-    const { data: allOrders, error: allOrdersError } = await supabase
-      .from('orders')
-      .select('id, user_id, created_at')
-      .limit(5)
-    
-    console.log('📊 All orders check (first 5):', allOrders)
-    console.log('📊 All orders error:', allOrdersError)
-    
-    // Check if there are any orders for this specific user
-    const { data: userOrdersCheck, error: userOrdersCheckError } = await supabase
-      .from('orders')
-      .select('id, user_id, created_at')
-      .eq('user_id', userId)
-      .limit(1)
-    
-    console.log('📊 User orders check:', userOrdersCheck)
-    console.log('📊 User orders check error:', userOrdersCheckError)
-    
-    // Fetch orders with items for the user
+    console.log('✅ Database connection successful')
+
+    // Fetch orders with items for the user using RLS
     const { data: orders, error: ordersError } = await supabase
       .from('orders')
       .select(`
@@ -58,15 +81,9 @@ export async function GET(request: NextRequest) {
     console.log('- Orders error:', ordersError)
     console.log('- Orders count:', orders?.length || 0)
     
-    // If no orders found, let's check if there are any orders at all
+    // If no orders found, log it
     if (!orders || orders.length === 0) {
-      console.log('🔍 No orders found for user, checking if any orders exist...')
-      const { data: totalOrders, error: totalOrdersError } = await supabase
-        .from('orders')
-        .select('count')
-      
-      console.log('📊 Total orders in table:', totalOrders)
-      console.log('📊 Total orders error:', totalOrdersError)
+      console.log('🔍 No orders found for user:', userId)
     }
 
     if (ordersError) {
@@ -80,7 +97,7 @@ export async function GET(request: NextRequest) {
     // Transform the data to match the expected format
     const transformedOrders = orders.map((order: any) => ({
       id: order.id,
-      name: order.order_items[0]?.product_name || 'Product',
+      name: order.order_items?.[0]?.product_name || 'Product',
       orderNumber: `ORD-${order.id.toString().padStart(6, '0')}`,
       purchaseDate: order.created_at,
       price: order.total_amount,
@@ -91,12 +108,15 @@ export async function GET(request: NextRequest) {
       shippingMethod: order.shipping_method || null,
       carrier: order.carrier || null,
       comment: order.comment || null,
-      shippingAddress: order.shipping_address ? JSON.parse(order.shipping_address) : {},
-      items: order.order_items.map((item: any) => ({
+      shippingAddress: order.shipping_address ? 
+        (typeof order.shipping_address === 'string' ? 
+          JSON.parse(order.shipping_address) : 
+          order.shipping_address) : {},
+      items: order.order_items?.map((item: any) => ({
         name: item.product_name,
         quantity: item.quantity,
         price: item.unit_price
-      }))
+      })) || []
     }))
 
     console.log('✅ Transformed orders:', transformedOrders)
@@ -107,9 +127,12 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error fetching user orders:', error)
+    console.error('💥 Error fetching user orders:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

@@ -32,8 +32,14 @@ export function Navigation() {
   }
 
   const handleSignOut = async () => {
-    await signOut()
-    setIsOpen(false) // Close mobile menu
+    console.log('🔘 Logout button clicked')
+    try {
+      await signOut()
+      console.log('✅ SignOut completed')
+      setIsOpen(false) // Close mobile menu
+    } catch (error) {
+      console.error('❌ Error in handleSignOut:', error)
+    }
   }
 
   return (
@@ -193,7 +199,7 @@ export function Navigation() {
                      // Determine user role and redirect accordingly
                      const userRole = user.user_metadata?.role || 'client'
                      if (userRole === 'admin') {
-                       router.push('/admin/dashboard')
+                       router.push('/admin')
                      } else {
                        router.push('/dashboard')
                      }
@@ -344,7 +350,7 @@ export function Navigation() {
                        // Determine user role and redirect accordingly
                        const userRole = user.user_metadata?.role || 'client'
                        if (userRole === 'admin') {
-                         router.push('/admin/dashboard')
+                         router.push('/admin')
                        } else {
                          router.push('/dashboard')
                        }

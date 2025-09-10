@@ -84,11 +84,17 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
             onClose();
             setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
             setMessage(null);
-            // Smart redirect: if redirectTo is provided, go there; otherwise go to dashboard
+            // Smart redirect: if redirectTo is provided, go there; otherwise check user role
             if (redirectTo) {
               router.push(redirectTo);
             } else {
-              router.push('/dashboard');
+              // Check user role and redirect accordingly
+              const userRole = user?.user_metadata?.role || 'client'
+              if (userRole === 'admin') {
+                router.push('/admin');
+              } else {
+                router.push('/dashboard');
+              }
             }
           }, 1500);
         }

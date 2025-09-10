@@ -8,7 +8,9 @@ import { useState, useEffect } from "react"
 import AddToCart from "@/components/stripe-checkout"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
+import { useSubscription } from "@/contexts/subscription-context"
 import { AuthModal } from "@/components/auth-modal"
+import { loadStripe } from "@stripe/stripe-js"
 
 export default function ServicesPage() {
   const [selectedImage, setSelectedImage] = useState("/roller/roller7.jpg")
@@ -17,7 +19,10 @@ export default function ServicesPage() {
   const [showMessage, setShowMessage] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isAnnual, setIsAnnual] = useState(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const { user } = useAuth()
+  const { hasActiveSubscription } = useSubscription()
   
   const rollerImages = [
     "/roller/roller7.jpg",
@@ -38,7 +43,78 @@ export default function ServicesPage() {
     "/roller/roller15.jpg"
   ]
 
-  // Function to handle plan checkout
+  // Function to handle subscription checkout
+  const handleSubscriptionCheckout = async (planId: string, planName: string) => {
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    if (hasActiveSubscription) {
+      // Redirect to customer portal for existing subscribers
+      try {
+        const response = await fetch('/api/create-customer-portal-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create portal session')
+        }
+
+        window.location.href = data.sessionUrl
+      } catch (error) {
+        console.error('Error opening customer portal:', error)
+      }
+      return
+    }
+
+    setSubscriptionLoading(true)
+    try {
+      const response = await fetch('/api/create-subscription-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: planId,
+          billingPeriod: isAnnual ? 'annual' : 'monthly',
+          userId: user.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      // Redirect to Stripe checkout
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        })
+
+        if (error) {
+          console.error('Stripe checkout error:', error)
+        }
+      }
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }
+
+  // Function to handle plan checkout (keep for backward compatibility)
   const handlePlanCheckout = async (plan: any, planName: string) => {
     // Check if user is logged in
     if (!user) {
@@ -193,9 +269,40 @@ export default function ServicesPage() {
                   <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
                     Compare <span className="gradient-text">Training Tiers</span>
                   </CardTitle>
-                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-6">
                     Find the perfect level of support for your fitness journey
                   </CardDescription>
+                  
+                  {/* Billing Toggle */}
+                  <div className="flex items-center justify-center gap-4 mb-6">
+                    <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
+                      Monthly
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isAnnual}
+                      aria-label="Toggle billing period"
+                      onClick={() => setIsAnnual(!isAnnual)}
+                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-surface border border-stroke transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-bg"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          isAnnual ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
+                        Annual
+                      </span>
+                      {isAnnual && (
+                        <span className="inline-flex items-center rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
+                          Save 15%
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </CardHeader>
                <CardContent className="p-0">
                  <div className="overflow-x-auto">
@@ -212,24 +319,39 @@ export default function ServicesPage() {
                            <div className="space-y-2">
                              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
                              <div className="text-xl font-bold text-orange-400">Foundation</div>
-                             <div className="text-3xl font-bold gradient-text">$197</div>
+                             <div className="text-3xl font-bold gradient-text">
+                               ${isAnnual ? '167' : '197'}
+                             </div>
                              <div className="text-sm text-muted-foreground">/month</div>
+                             {isAnnual && (
+                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                             )}
                            </div>
                          </th>
                          <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
                            <div className="space-y-2">
                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
                              <div className="text-xl font-bold text-yellow-400">Accelerated</div>
-                             <div className="text-3xl font-bold gradient-text">$297</div>
+                             <div className="text-3xl font-bold gradient-text">
+                               ${isAnnual ? '252' : '297'}
+                             </div>
                              <div className="text-sm text-muted-foreground">/month</div>
+                             {isAnnual && (
+                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                             )}
                            </div>
                          </th>
                          <th className="py-6 px-6 text-center">
                            <div className="space-y-2">
                              <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
                              <div className="text-xl font-bold text-orange-300">Premium</div>
-                             <div className="text-3xl font-bold gradient-text">$497</div>
+                             <div className="text-3xl font-bold gradient-text">
+                               ${isAnnual ? '422' : '497'}
+                             </div>
                              <div className="text-sm text-muted-foreground">/month</div>
+                             {isAnnual && (
+                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                             )}
                            </div>
                          </th>
                        </tr>
@@ -498,58 +620,55 @@ export default function ServicesPage() {
                          <td className="py-6 px-6 text-center">
                            <Button 
                              className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
-                             onClick={() => {
-                               const foundationPlan = {
-                                 id: 'foundation-plan',
-                                 name: 'Foundation Training Plan',
-                                 price: 197,
-                                 quantity: 1,
-                                 image: '/gymTrainer.jpg',
-                                 description: 'Perfect for beginners ready to start their fitness journey'
-                               }
-                               handlePlanCheckout(foundationPlan, 'Foundation Plan')
-                             }}
-                             disabled={isProcessing}
+                             onClick={() => handleSubscriptionCheckout('foundation', 'Foundation Plan')}
+                             disabled={subscriptionLoading}
                            >
-                             {isProcessing ? "Processing..." : "Choose Foundation"}
+                             {subscriptionLoading ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                                 Processing...
+                               </>
+                             ) : hasActiveSubscription ? (
+                               'Manage Subscription'
+                             ) : (
+                               'Subscribe Now'
+                             )}
                            </Button>
                          </td>
                          <td className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
                            <Button 
                              className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
-                             onClick={() => {
-                               const acceleratedPlan = {
-                                 id: 'accelerated-plan',
-                                 name: 'Accelerated Training Plan',
-                                 price: 297,
-                                 quantity: 1,
-                                 image: '/gymTrainer.jpg',
-                                 description: 'Ideal for committed individuals seeking faster results'
-                               }
-                               handlePlanCheckout(acceleratedPlan, 'Accelerated Plan')
-                             }}
-                             disabled={isProcessing}
+                             onClick={() => handleSubscriptionCheckout('growth', 'Growth Plan')}
+                             disabled={subscriptionLoading}
                            >
-                             {isProcessing ? "Processing..." : "Choose Accelerated"}
+                             {subscriptionLoading ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                                 Processing...
+                               </>
+                             ) : hasActiveSubscription ? (
+                               'Manage Subscription'
+                             ) : (
+                               'Subscribe Now'
+                             )}
                            </Button>
                          </td>
                          <td className="py-6 px-6 text-center">
                            <Button 
                              className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
-                             onClick={() => {
-                               const premiumPlan = {
-                                 id: 'premium-plan',
-                                 name: 'Premium Training Plan',
-                                 price: 497,
-                                 quantity: 1,
-                                 image: '/gymTrainer.jpg',
-                                 description: 'Maximum support for serious athletes and professionals'
-                               }
-                               handlePlanCheckout(premiumPlan, 'Premium Plan')
-                             }}
-                             disabled={isProcessing}
+                             onClick={() => handleSubscriptionCheckout('elite', 'Elite Plan')}
+                             disabled={subscriptionLoading}
                            >
-                             {isProcessing ? "Processing..." : "Choose Premium"}
+                             {subscriptionLoading ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                                 Processing...
+                               </>
+                             ) : hasActiveSubscription ? (
+                               'Manage Subscription'
+                             ) : (
+                               'Subscribe Now'
+                             )}
                            </Button>
                          </td>
                        </tr>
@@ -1405,17 +1524,36 @@ export default function ServicesPage() {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => handleSubscriptionCheckout('foundation', 'Foundation Plan')}
+                  disabled={subscriptionLoading}
                 >
                   <span className="flex items-center gap-2 sm:gap-3">
                     <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-                    Start Free 7-Day Trial
+                    {subscriptionLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                        Processing...
+                      </>
+                    ) : hasActiveSubscription ? (
+                      'Manage Subscription'
+                    ) : (
+                      'Start Free 7-Day Trial'
+                    )}
                   </span>
                 </Button>
               </div>
             </div>
           </div>
         </section>
+        
+        {/* Auth Modal */}
+        {showAuthModal && (
+          <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)} 
+            redirectTo="/services"
+          />
+        )}
      </div>
    )
  }
