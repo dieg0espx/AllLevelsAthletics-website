@@ -5,19 +5,166 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award, Play, Mail, Trophy, Star, Info, ShoppingCart, MessageCircle } from "lucide-react"
 import { useState, useEffect } from "react"
+import AddToCart from "@/components/stripe-checkout"
+import { useCart } from "@/contexts/cart-context"
+import { useAuth } from "@/contexts/auth-context"
+import { useSubscription } from "@/contexts/subscription-context"
+import { AuthModal } from "@/components/auth-modal"
+import { loadStripe } from "@stripe/stripe-js"
 
 export default function ServicesPage() {
-  const [selectedImage, setSelectedImage] = useState("/roller/roller 5.jpeg")
+  const [selectedImage, setSelectedImage] = useState("/roller/roller7.jpg")
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [bundleCurrentSlide, setBundleCurrentSlide] = useState(0)
+  const [showMessage, setShowMessage] = useState("")
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isAnnual, setIsAnnual] = useState(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+  const { user } = useAuth()
+  const { hasActiveSubscription } = useSubscription()
   
   const rollerImages = [
-    "/roller/roller 5.jpeg",
-    "/roller/roller4.jpg",
-    "/roller2.png",
-    "/roller/roller6.jpeg"
+    "/roller/roller7.jpg",
+    "/roller/roller8.jpg",
+    "/roller/roller9.jpg",
+    "/roller/roller10.jpg",
+    "/roller/roller11.jpg",
+    "/roller/roller12.jpg",
+    "/roller/roller13.jpg",
+    "/roller/roller14.jpg",
+    "/roller/roller15.jpg"
   ]
 
-  // Auto-advance slideshow
+  const bundleImages = [
+    "/roller/roller12.jpg",
+    "/roller/roller13.jpg",
+    "/roller/roller14.jpg",
+    "/roller/roller15.jpg"
+  ]
+
+  // Function to handle subscription checkout
+  const handleSubscriptionCheckout = async (planId: string, planName: string) => {
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    if (hasActiveSubscription) {
+      // Redirect to customer portal for existing subscribers
+      try {
+        const response = await fetch('/api/create-customer-portal-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create portal session')
+        }
+
+        window.location.href = data.sessionUrl
+      } catch (error) {
+        console.error('Error opening customer portal:', error)
+      }
+      return
+    }
+
+    setSubscriptionLoading(true)
+    try {
+      const response = await fetch('/api/create-subscription-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: planId,
+          billingPeriod: isAnnual ? 'annual' : 'monthly',
+          userId: user.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      // Redirect to Stripe checkout
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        })
+
+        if (error) {
+          console.error('Stripe checkout error:', error)
+        }
+      }
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }
+
+  // Function to handle plan checkout (keep for backward compatibility)
+  const handlePlanCheckout = async (plan: any, planName: string) => {
+    // Check if user is logged in
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    setIsProcessing(true)
+    setShowMessage("Processing checkout...")
+    
+    try {
+      // Store plan data in localStorage for success page
+      localStorage.setItem('planData', JSON.stringify(plan))
+      
+      // Create checkout session for the plan
+      const response = await fetch('/api/create-plan-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+      }
+
+      const { sessionUrl } = await response.json()
+
+      if (!sessionUrl) {
+        throw new Error('No checkout URL received from server')
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = sessionUrl
+      
+    } catch (error) {
+      console.error('Error creating plan checkout:', error)
+      setIsProcessing(false)
+      setShowMessage(`Error: ${error instanceof Error ? error.message : 'Failed to start checkout'}`)
+      
+      // Hide error message after 5 seconds
+      setTimeout(() => {
+        setShowMessage("")
+      }, 5000)
+    }
+  }
+
+  // Auto-advance slideshow for roller
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % rollerImages.length)
@@ -25,6 +172,31 @@ export default function ServicesPage() {
 
     return () => clearInterval(interval)
   }, [rollerImages.length])
+
+  // Auto-advance slideshow for bundle
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBundleCurrentSlide((prev) => (prev + 1) % bundleImages.length)
+    }, 3000) // Change slide every 3 seconds
+
+    return () => clearInterval(interval)
+  }, [bundleImages.length])
+
+  // Handle scroll to products section from query parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const scrollTo = urlParams.get('scrollTo')
+    
+    if (scrollTo === 'products') {
+      // Wait for the page to fully load, then scroll to products section
+      setTimeout(() => {
+        const productsSection = document.getElementById('products')
+        if (productsSection) {
+          productsSection.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 1000) // Wait 1 second for page to load
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -97,9 +269,40 @@ export default function ServicesPage() {
                   <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
                     Compare <span className="gradient-text">Training Tiers</span>
                   </CardTitle>
-                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-6">
                     Find the perfect level of support for your fitness journey
                   </CardDescription>
+                  
+                  {/* Billing Toggle */}
+                  <div className="flex items-center justify-center gap-4 mb-6">
+                    <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
+                      Monthly
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isAnnual}
+                      aria-label="Toggle billing period"
+                      onClick={() => setIsAnnual(!isAnnual)}
+                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-surface border border-stroke transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-bg"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          isAnnual ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
+                        Annual
+                      </span>
+                      {isAnnual && (
+                        <span className="inline-flex items-center rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
+                          Save 15%
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </CardHeader>
                <CardContent className="p-0">
                  <div className="overflow-x-auto">
@@ -116,24 +319,39 @@ export default function ServicesPage() {
                            <div className="space-y-2">
                              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
                              <div className="text-xl font-bold text-orange-400">Foundation</div>
-                             <div className="text-3xl font-bold gradient-text">$197</div>
+                             <div className="text-3xl font-bold gradient-text">
+                               ${isAnnual ? '167' : '197'}
+                             </div>
                              <div className="text-sm text-muted-foreground">/month</div>
+                             {isAnnual && (
+                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                             )}
                            </div>
                          </th>
                          <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
                            <div className="space-y-2">
                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
                              <div className="text-xl font-bold text-yellow-400">Accelerated</div>
-                             <div className="text-3xl font-bold gradient-text">$297</div>
+                             <div className="text-3xl font-bold gradient-text">
+                               ${isAnnual ? '252' : '297'}
+                             </div>
                              <div className="text-sm text-muted-foreground">/month</div>
+                             {isAnnual && (
+                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                             )}
                            </div>
                          </th>
                          <th className="py-6 px-6 text-center">
                            <div className="space-y-2">
                              <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
                              <div className="text-xl font-bold text-orange-300">Premium</div>
-                             <div className="text-3xl font-bold gradient-text">$497</div>
+                             <div className="text-3xl font-bold gradient-text">
+                               ${isAnnual ? '422' : '497'}
+                             </div>
                              <div className="text-sm text-muted-foreground">/month</div>
+                             {isAnnual && (
+                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                             )}
                            </div>
                          </th>
                        </tr>
@@ -387,15 +605,104 @@ export default function ServicesPage() {
                            </div>
                          </td>
                        </tr>
+                       
+                       {/* Purchase Buttons Row */}
+                       <tr className="border-t-2 border-orange-500/30">
+                         <td className="py-6 px-6 font-semibold">
+                           <div className="flex items-center gap-3">
+                             <ShoppingCart className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                             <div>
+                               <div>Get Started</div>
+                               <div className="text-sm text-muted-foreground">Choose your plan</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-6 px-6 text-center">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
+                             onClick={() => handleSubscriptionCheckout('foundation', 'Foundation Plan')}
+                             disabled={subscriptionLoading}
+                           >
+                             {subscriptionLoading ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                                 Processing...
+                               </>
+                             ) : hasActiveSubscription ? (
+                               'Manage Subscription'
+                             ) : (
+                               'Subscribe Now'
+                             )}
+                           </Button>
+                         </td>
+                         <td className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
+                             onClick={() => handleSubscriptionCheckout('growth', 'Growth Plan')}
+                             disabled={subscriptionLoading}
+                           >
+                             {subscriptionLoading ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                                 Processing...
+                               </>
+                             ) : hasActiveSubscription ? (
+                               'Manage Subscription'
+                             ) : (
+                               'Subscribe Now'
+                             )}
+                           </Button>
+                         </td>
+                         <td className="py-6 px-6 text-center">
+                           <Button 
+                             className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all cursor-pointer"
+                             onClick={() => handleSubscriptionCheckout('elite', 'Elite Plan')}
+                             disabled={subscriptionLoading}
+                           >
+                             {subscriptionLoading ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                                 Processing...
+                               </>
+                             ) : hasActiveSubscription ? (
+                               'Manage Subscription'
+                             ) : (
+                               'Subscribe Now'
+                             )}
+                           </Button>
+                         </td>
+                       </tr>
                      </tbody>
                    </table>
                  </div>
                  
                </CardContent>
             </Card>
+            
+            {/* Status Message */}
+            {showMessage && (
+              <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-in slide-in-from-right duration-300 ${
+                showMessage.includes('Error') 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-blue-500 text-white'
+              }`}>
+                {showMessage.includes('Error') ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                )}
+                <span className="font-semibold">{showMessage}</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
       
                    <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 overflow-hidden">
             {/* Enhanced Gradient Background */}
@@ -646,18 +953,22 @@ export default function ServicesPage() {
                    <div className="lg:col-span-1">
                      <Card className="bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border-2 border-orange-500/30 p-4 sm:p-6">
                        <div className="text-center mb-4 sm:mb-6">
-                         <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
-                         <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">+ shipping</p>
+                        <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Free Shipping</p>
                          <div className="space-y-2 sm:space-y-3">
-                           <Button 
+                           <AddToCart
+                             productId="knot-roller"
+                             productName="All Levels Knot Roller"
+                             price={99}
+                             image="/roller/roller5.jpeg"
+                             description="Professional myofascial release tool for athletes and fitness enthusiasts"
                              className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                             onClick={() => window.location.href = '/contact#contact-form'}
                            >
                              <span className="flex items-center gap-2">
                                <ShoppingCart className="w-4 h-4" />
-                               Order Now
+                               Add to Cart
                              </span>
-                           </Button>
+                           </AddToCart>
                          </div>
                        </div>
                        
@@ -790,12 +1101,19 @@ export default function ServicesPage() {
                          <p className="text-xs sm:text-sm text-muted-foreground line-through mb-1">$99</p>
                          <p className="text-xs sm:text-sm text-green-400 font-semibold mb-3 sm:mb-4">50% OFF</p>
                          <div className="space-y-2 sm:space-y-3">
-                           <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                           <AddToCart
+                             productId="tension-reset-course"
+                             productName="Body Tension Reset Course"
+                             price={49}
+                             image="/roller/roller5.jpeg"
+                             description="30-day self-guided program to reduce body tension and pain"
+                             className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                           >
                              <span className="flex items-center gap-2">
                                <ShoppingCart className="w-4 h-4" />
-                               Get Course
+                               Add to Cart
                              </span>
-                           </Button>
+                           </AddToCart>
                            <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
                              <span className="flex items-center gap-2">
                                <Play className="w-4 h-4" />
@@ -896,13 +1214,28 @@ export default function ServicesPage() {
                    {/* Bundle Image - Center */}
                    <div className="lg:col-span-1">
                      <div className="space-y-3 sm:space-y-4">
-                       <div className="relative overflow-hidden rounded-xl">
+                       <div className="relative overflow-hidden rounded-xl group">
                          <img
-                           src="/roller.jpg"
+                           src={bundleImages[bundleCurrentSlide]}
                            alt="Complete Bundle - Knot Roller + Course Package"
-                           className="w-full h-48 sm:h-64 object-cover object-center"
+                           className="w-full h-48 sm:h-64 object-cover object-center transition-all duration-500 ease-in-out"
                          />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                         
+                         {/* Bundle Image Gallery Indicators */}
+                         <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2">
+                           {bundleImages.map((_, index) => (
+                             <button
+                               key={index}
+                               onClick={() => setBundleCurrentSlide(index)}
+                               className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                 index === bundleCurrentSlide 
+                                   ? 'bg-orange-500 scale-125' 
+                                   : 'bg-white/50 hover:bg-white/70'
+                               }`}
+                             />
+                           ))}
+                         </div>
                        </div>
                        
                                                {/* Perfect For */}
@@ -938,12 +1271,19 @@ export default function ServicesPage() {
                           <p className="text-xs sm:text-sm text-muted-foreground line-through mb-1">$199</p>
                           <p className="text-xs sm:text-sm text-orange-400 font-semibold mb-3 sm:mb-4">Save $50!</p>
                           <div className="space-y-2 sm:space-y-3">
-                            <Button className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all">
+                            <AddToCart
+                              productId="complete-bundle"
+                              productName="Complete Bundle - Knot Roller + Course"
+                              price={149}
+                              image="/roller/roller5.jpeg"
+                              description="Complete recovery system with Knot Roller and Body Tension Reset Course"
+                              className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
+                            >
                               <span className="flex items-center gap-2">
                                 <ShoppingCart className="w-4 h-4" />
-                                Get Bundle
+                                Add to Cart
                               </span>
-                            </Button>
+                            </AddToCart>
                             <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
                               <span className="flex items-center gap-2">
                                 <Info className="w-4 h-4" />
@@ -1184,17 +1524,36 @@ export default function ServicesPage() {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => handleSubscriptionCheckout('foundation', 'Foundation Plan')}
+                  disabled={subscriptionLoading}
                 >
                   <span className="flex items-center gap-2 sm:gap-3">
                     <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-                    Start Free 7-Day Trial
+                    {subscriptionLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                        Processing...
+                      </>
+                    ) : hasActiveSubscription ? (
+                      'Manage Subscription'
+                    ) : (
+                      'Start Free 7-Day Trial'
+                    )}
                   </span>
                 </Button>
               </div>
             </div>
           </div>
         </section>
+        
+        {/* Auth Modal */}
+        {showAuthModal && (
+          <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)} 
+            redirectTo="/services"
+          />
+        )}
      </div>
    )
  }

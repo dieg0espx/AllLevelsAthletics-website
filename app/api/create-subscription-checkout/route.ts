@@ -1,0 +1,236 @@
+import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+})
+
+// Define the subscription plans with their Stripe price IDs
+const SUBSCRIPTION_PLANS = {
+  foundation: {
+    name: 'Foundation',
+    monthlyPriceId: process.env.STRIPE_FOUNDATION_MONTHLY_PRICE_ID,
+    annualPriceId: process.env.STRIPE_FOUNDATION_ANNUAL_PRICE_ID,
+    monthlyPrice: 197,
+    annualPrice: 167,
+  },
+  growth: {
+    name: 'Growth',
+    monthlyPriceId: process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID,
+    annualPriceId: process.env.STRIPE_GROWTH_ANNUAL_PRICE_ID,
+    monthlyPrice: 297,
+    annualPrice: 252,
+  },
+  elite: {
+    name: 'Elite',
+    monthlyPriceId: process.env.STRIPE_ELITE_MONTHLY_PRICE_ID,
+    annualPriceId: process.env.STRIPE_ELITE_ANNUAL_PRICE_ID,
+    monthlyPrice: 497,
+    annualPrice: 422,
+  },
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { planId, billingPeriod, userId } = await request.json()
+    
+    console.log('=== SUBSCRIPTION CHECKOUT CREATION ===')
+    console.log('Plan ID:', planId)
+    console.log('Billing Period:', billingPeriod)
+    console.log('User ID:', userId)
+
+    // Validate required fields
+    if (!planId || !billingPeriod || !userId) {
+      return NextResponse.json(
+        { error: 'Plan ID, billing period, and user ID are required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate plan exists
+    const plan = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS]
+    if (!plan) {
+      return NextResponse.json(
+        { error: 'Invalid plan ID' },
+        { status: 400 }
+      )
+    }
+
+    // Get the appropriate price ID based on billing period
+    const priceId = billingPeriod === 'annual' ? plan.annualPriceId : plan.monthlyPriceId
+    if (!priceId) {
+      return NextResponse.json(
+        { error: `Price ID not configured for ${plan.name} ${billingPeriod} plan` },
+        { status: 500 }
+      )
+    }
+
+    // Get base URL
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    
+    // Create URLs for subscription checkout
+    const successUrl = `${baseUrl}/subscription-success?session_id={CHECKOUT_SESSION_ID}`
+    const cancelUrl = `${baseUrl}/services`
+
+    // Get or create Stripe customer
+    let stripeCustomerId: string
+
+    // First, get user's email from Supabase auth
+    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId)
+    if (authError) {
+      console.error('Error fetching auth user:', authError)
+      return NextResponse.json(
+        { error: 'Failed to fetch user information' },
+        { status: 500 }
+      )
+    }
+
+    const userEmail = authUser.user?.email
+    const userName = authUser.user?.user_metadata?.full_name
+
+    // Check if user already has a Stripe customer ID in their profile
+    const { data: userProfile, error: profileError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('stripe_customer_id, full_name, email')
+      .eq('user_id', userId)
+      .single()
+
+    // If profile doesn't exist, that's okay - we'll create a Stripe customer anyway
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error('Error fetching user profile:', profileError)
+      // Continue anyway - we can still create a Stripe customer
+    }
+
+    if (userProfile?.stripe_customer_id) {
+      // User already has a Stripe customer ID
+      stripeCustomerId = userProfile.stripe_customer_id
+      console.log('Using existing Stripe customer ID:', stripeCustomerId)
+    } else {
+      // Create new Stripe customer
+      const customerData: any = {
+        metadata: {
+          userId: userId,
+        },
+      }
+
+      // Add email from Supabase auth (this is the primary source)
+      if (userEmail) {
+        customerData.email = userEmail
+      }
+
+      // Add name from Supabase auth or user profile
+      if (userName) {
+        customerData.name = userName
+      } else if (userProfile?.full_name) {
+        customerData.name = userProfile.full_name
+      }
+
+      const customer = await stripe.customers.create(customerData)
+      stripeCustomerId = customer.id
+      console.log('Created new Stripe customer:', stripeCustomerId)
+
+      // Try to update user profile with Stripe customer ID (if profile exists)
+      if (userProfile) {
+        const { error: updateError } = await supabaseAdmin
+          .from('user_profiles')
+          .update({ stripe_customer_id: stripeCustomerId })
+          .eq('user_id', userId)
+
+        if (updateError) {
+          console.error('Error updating user profile with Stripe customer ID:', updateError)
+          // Don't fail the checkout, just log the error
+        }
+      } else {
+        // If no profile exists, create one with the Stripe customer ID
+        const { error: createError } = await supabaseAdmin
+          .from('user_profiles')
+          .insert([{
+            user_id: userId,
+            stripe_customer_id: stripeCustomerId,
+            role: 'client',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }])
+
+        if (createError) {
+          console.error('Error creating user profile:', createError)
+          // Don't fail the checkout, just log the error
+        } else {
+          console.log('✅ Created user profile with role: client')
+        }
+      }
+    }
+
+    // Check if user already has an active subscription
+    const { data: existingSubscription, error: subscriptionError } = await supabaseAdmin
+      .from('user_subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .single()
+
+    if (subscriptionError && subscriptionError.code !== 'PGRST116') {
+      console.error('Error checking existing subscription:', subscriptionError)
+      return NextResponse.json(
+        { error: 'Failed to check existing subscription' },
+        { status: 500 }
+      )
+    }
+
+    if (existingSubscription) {
+      return NextResponse.json(
+        { error: 'User already has an active subscription. Please manage it through the customer portal.' },
+        { status: 400 }
+      )
+    }
+
+    // Create Stripe checkout session for subscription
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      customer: stripeCustomerId,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      subscription_data: {
+        metadata: {
+          userId: userId,
+          planId: planId,
+          planName: plan.name,
+          billingPeriod: billingPeriod,
+        },
+      },
+      metadata: {
+        userId: userId,
+        planId: planId,
+        planName: plan.name,
+        billingPeriod: billingPeriod,
+        type: 'subscription',
+      },
+      allow_promotion_codes: true,
+    })
+
+    console.log('✅ Stripe subscription checkout session created successfully')
+    console.log('Session ID:', session.id)
+    console.log('Session URL:', session.url)
+
+    return NextResponse.json({ 
+      sessionId: session.id,
+      sessionUrl: session.url,
+      success: true 
+    })
+
+  } catch (error) {
+    console.error('❌ Error creating subscription checkout session:', error)
+    return NextResponse.json(
+      { error: 'Failed to create subscription checkout session' },
+      { status: 500 }
+    )
+  }
+}
