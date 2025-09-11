@@ -47,19 +47,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    let items: any[]
-    let shippingInfo: any
-    
-    try {
-      const requestBody = await request.json()
-      items = requestBody.items
-      shippingInfo = requestBody.shippingInfo
+  let items: any[]
+  let shippingInfo: any
+  let userEmail: string
+  
+  try {
+    const requestBody = await request.json()
+    items = requestBody.items
+    shippingInfo = requestBody.shippingInfo
+    userEmail = requestBody.userEmail
       
-      console.log('Request body parsed successfully')
-      console.log('API received items:', items)
-      console.log('API received shippingInfo:', shippingInfo)
     } catch (parseError) {
-      console.error('Failed to parse request body:', parseError)
       return NextResponse.json(
         { error: 'Invalid request body format' },
         { status: 400 }
@@ -68,7 +66,6 @@ export async function POST(request: NextRequest) {
 
     // Validate required data
     if (!items || !Array.isArray(items) || items.length === 0) {
-      console.error('Validation failed: items array is invalid or empty')
       return NextResponse.json(
         { error: 'Invalid or empty items array' },
         { status: 400 }
@@ -206,13 +203,12 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
+      customer_email: userEmail, // Use the logged-in user's email
       metadata: {
         items: JSON.stringify(items.map((item: any) => ({ id: item.id, name: item.name }))),
         shippingInfo: JSON.stringify(shippingInfo),
       },
-      shipping_address_collection: {
-        allowed_countries: ['US', 'CA', 'GB', 'AU'], // Add more countries as needed
-      },
+      // Removed shipping_address_collection - using registered user's address
       shipping_options: [
         {
           shipping_rate_data: {

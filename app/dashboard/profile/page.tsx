@@ -77,20 +77,21 @@ export default function ProfilePage() {
       const response = await fetch(`/api/user-profile?userId=${user?.id}`)
       const data = await response.json()
       
-      console.log('📡 Profile fetch response:', { status: response.status, data })
-      
       if (response.ok) {
         if (data.profile) {
-          console.log('📊 Profile data received:', data.profile)
-          
           // Parse phone number if it includes country code
           const phoneData = parsePhoneNumber(data.profile.phone || "")
-          console.log('📞 Parsed phone data:', phoneData)
+          
+          // Parse full_name back into first and last name
+          const fullName = data.profile.full_name || ""
+          const nameParts = fullName.trim().split(" ")
+          const firstName = nameParts[0] || ""
+          const lastName = nameParts.slice(1).join(" ") || ""
           
           const newProfileData = {
-            firstName: data.profile.first_name || "",
-            lastName: data.profile.last_name || "",
-            email: data.profile.email || user?.email || "",
+            firstName: firstName,
+            lastName: lastName,
+            email: user?.email || "", // Get email from auth user, not profile
             phoneCountryCode: phoneData.countryCode,
             phone: phoneData.number,
             address: data.profile.address || "",
@@ -101,14 +102,10 @@ export default function ProfilePage() {
             dateOfBirth: data.profile.date_of_birth || ""
           }
           
-          console.log('📝 Setting profile data:', newProfileData)
           setProfileData(newProfileData)
           setOriginalData(newProfileData)
-        } else {
-          console.log('⚠️ No profile data found in response')
         }
       } else {
-        console.error('❌ Failed to fetch profile:', data)
       }
     } catch (error) {
       console.error('💥 Error fetching profile data:', error)
@@ -611,17 +608,6 @@ export default function ProfilePage() {
                         Please enter a valid phone number for {profileData.phoneCountryCode}
                       </p>
                     )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dateOfBirth" className="text-white/90">Date of Birth</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={profileData.dateOfBirth}
-                      onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                      disabled={!isEditing}
-                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
-                    />
                   </div>
                 </div>
                 

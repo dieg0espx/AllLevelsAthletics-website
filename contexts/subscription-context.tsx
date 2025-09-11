@@ -62,7 +62,6 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     
     // Prevent multiple simultaneous calls and rapid successive calls (unless forced)
     if (fetching || (!forceRefresh && (now - lastFetchTime < 2000))) {
-      console.log('⏳ Subscription fetch already in progress or too recent, skipping...')
       return
     }
 
@@ -71,7 +70,6 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setError(null)
 
-      console.log('🔄 Fetching subscription for user:', user.id)
       const response = await fetch(`/api/user-subscription?userId=${user.id}`)
       
       const data = await response.json()
@@ -80,7 +78,6 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         throw new Error(data.error || 'Failed to fetch subscription')
       }
 
-      console.log('✅ Subscription data fetched successfully')
       setSubscription(data.subscription)
       setUserProfile(data.userProfile)
     } catch (err) {

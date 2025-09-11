@@ -953,8 +953,8 @@ export default function ServicesPage() {
                    <div className="lg:col-span-1">
                      <Card className="bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border-2 border-orange-500/30 p-4 sm:p-6">
                        <div className="text-center mb-4 sm:mb-6">
-                         <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
-                         <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">+ shipping</p>
+                        <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Free Shipping</p>
                          <div className="space-y-2 sm:space-y-3">
                            <AddToCart
                              productId="knot-roller"

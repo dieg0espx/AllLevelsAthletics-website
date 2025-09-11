@@ -27,41 +27,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // Prevent multiple simultaneous calls and rapid successive calls
     if (fetchingRole || (now - lastFetchTime < 1000)) {
-      console.log('⏳ Role fetch already in progress or too recent, skipping...')
       return
     }
 
     try {
       setFetchingRole(true)
-      console.log('🔍 Fetching user role for:', userId)
       
       // First try to get role from user metadata
       const { data: { user } } = await supabase.auth.getUser()
-      console.log('👤 Current user:', user?.email, 'Metadata:', user?.user_metadata)
       
       if (user?.user_metadata?.role) {
-        console.log('✅ Found role in metadata:', user.user_metadata.role)
         setUserRole(user.user_metadata.role)
         return
       }
 
       // Fallback to API call
-      console.log('🔄 Trying API call for role...')
       const response = await fetch(`/api/user-profile?userId=${userId}`)
       const data = await response.json()
-      console.log('📡 API response status:', response.status)
-      console.log('📡 API response data:', JSON.stringify(data, null, 2))
       
       if (response.ok && data.profile) {
-        console.log('✅ Found role in profile:', data.profile.role)
         setUserRole(data.profile.role || 'client')
       } else {
-        console.log('❌ No role found, defaulting to client')
-        console.log('❌ Response ok:', response.ok, 'Profile exists:', !!data.profile)
         setUserRole('client') // Default role
       }
     } catch (error) {
-      console.error('❌ Error fetching user role:', error)
       setUserRole('client') // Default role
     } finally {
       setFetchingRole(false)

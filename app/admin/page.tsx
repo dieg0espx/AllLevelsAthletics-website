@@ -1192,12 +1192,6 @@ export default function AdminDashboard() {
                         <div className="text-white font-semibold">{selectedClient.phone}</div>
                       </div>
                     )}
-                    <div>
-                      <Label className="text-white/70 text-sm">Role</Label>
-                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-                        {selectedClient.role}
-                      </Badge>
-                    </div>
                   </CardContent>
                 </Card>
 

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { AdminRedirect } from "@/components/admin-redirect"
-import { SubscriptionManagement } from "@/components/subscription-management"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,7 +14,8 @@ import {
   Users,
   ShoppingBag,
   Package,
-  User
+  User,
+  CheckCircle
 } from "lucide-react"
 
 export default function ClientDashboard() {
@@ -23,6 +23,7 @@ export default function ClientDashboard() {
   const { user, signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [purchasedProductsCount, setPurchasedProductsCount] = useState(0)
+  const [recentActivity, setRecentActivity] = useState<any[]>([])
 
   useEffect(() => {
     // Check if user is authenticated
@@ -34,9 +35,10 @@ export default function ClientDashboard() {
     // Simulate loading
     const timer = setTimeout(() => setIsLoading(false), 1000)
     
-    // Fetch purchased products count
+    // Fetch purchased products count and recent activity
     if (user) {
       fetchPurchasedProductsCount()
+      fetchRecentActivity()
     }
     
     return () => clearTimeout(timer)
@@ -54,9 +56,79 @@ export default function ClientDashboard() {
     }
   }
 
+  const fetchRecentActivity = async () => {
+    if (!user?.id) return
+
+    try {
+      // Fetch recent orders
+      const ordersResponse = await fetch(`/api/user-orders?userId=${user.id}`)
+      const ordersData = await ordersResponse.json()
+      
+      // Fetch subscription data
+      const subscriptionResponse = await fetch(`/api/user-subscription?userId=${user.id}`)
+      const subscriptionData = await subscriptionResponse.json()
+
+      const activities: any[] = []
+
+      // Add recent orders as activities
+      if (ordersData.orders && ordersData.orders.length > 0) {
+        ordersData.orders.slice(0, 3).forEach((order: any) => {
+          activities.push({
+            id: order.id,
+            type: 'purchase',
+            title: `Purchased ${order.name}`,
+            description: `Order #${order.orderNumber}`,
+            date: order.purchaseDate,
+            icon: <Package className="w-4 h-4 text-yellow-400" />,
+            color: 'yellow'
+          })
+        })
+      }
+
+      // Add subscription activity if exists
+      if (subscriptionData.subscription) {
+        const sub = subscriptionData.subscription
+        activities.push({
+          id: `sub-${sub.id}`,
+          type: 'subscription',
+          title: `Started ${sub.plan_name} Plan`,
+          description: sub.status === 'active' ? 'Active subscription' : `Status: ${sub.status}`,
+          date: sub.created_at,
+          icon: <CheckCircle className="w-4 h-4 text-green-400" />,
+          color: 'green'
+        })
+      }
+
+      // Sort by date (most recent first) and limit to 3
+      activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      setRecentActivity(activities.slice(0, 3))
+
+    } catch (error) {
+      console.error('Error fetching recent activity:', error)
+    }
+  }
+
   const handleSignOut = async () => {
     await signOut()
     router.push('/')
+  }
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    
+    if (diffInHours < 1) return 'Just now'
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
+    
+    const diffInDays = Math.floor(diffInHours / 24)
+    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
+    
+    const diffInWeeks = Math.floor(diffInDays / 7)
+    if (diffInWeeks < 4) return `${diffInWeeks} week${diffInWeeks > 1 ? 's' : ''} ago`
+    
+    const diffInMonths = Math.floor(diffInDays / 30)
+    return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`
   }
 
   if (isLoading) {
@@ -134,15 +206,36 @@ export default function ClientDashboard() {
           </div>
         </nav>
 
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-white mb-2">
-            Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Athlete'}!
-          </h2>
-          <p className="text-white/70 text-lg">
-            Ready to crush your fitness goals today?
-          </p>
+        {/* Hero Section */}
+        <div className="relative mb-8 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-yellow-500/10 to-orange-500/20 rounded-2xl"></div>
+          <div className="relative p-8 text-center">
+            <div className="mb-4">
+              <div className="w-20 h-20 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Dumbbell className="w-10 h-10 text-black" />
+              </div>
+            </div>
+            <h2 className="text-4xl font-bold text-white mb-3">
+              Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Athlete'}!
+            </h2>
+            <p className="text-white/80 text-xl mb-4">
+              Ready to crush your fitness goals today?
+            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full border border-orange-500/30">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-sm text-white/90">Active Member</span>
+            </div>
+          </div>
         </div>
+
+        {/* Motivational Quote */}
+        <div className="mb-8 text-center">
+          <blockquote className="text-lg text-white/70 italic">
+            "Success is the sum of small efforts repeated day in and day out."
+          </blockquote>
+          <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent mx-auto mt-3"></div>
+        </div>
+
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -217,10 +310,38 @@ export default function ClientDashboard() {
           </Card>
         </div>
 
-        {/* Subscription Management */}
+        {/* Recent Activity */}
         <div className="mb-8">
-          <SubscriptionManagement />
+          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+            Recent Activity
+          </h3>
+          <div className="space-y-3">
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-orange-500/20">
+                  <div className={`w-8 h-8 ${activity.color === 'green' ? 'bg-green-500/20' : activity.color === 'yellow' ? 'bg-yellow-500/20' : 'bg-blue-500/20'} rounded-full flex items-center justify-center`}>
+                    {activity.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-white">{activity.title}</p>
+                    <p className="text-xs text-white/60">{activity.description}</p>
+                    <p className="text-xs text-white/50">{formatTimeAgo(activity.date)}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-white/40" />
+                </div>
+                <p className="text-white/60">No recent activity</p>
+                <p className="text-sm text-white/40">Your activity will appear here</p>
+              </div>
+            )}
+          </div>
         </div>
+
       </main>
       </div>
     </AdminRedirect>

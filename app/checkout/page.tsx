@@ -18,10 +18,7 @@ import { usePathname, useRouter } from "next/navigation"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
 
-// Debug: Log the Stripe key
-console.log('Stripe publishable key loaded:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'Yes' : 'No')
-console.log('Stripe key length:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.length || 0)
-console.log('Stripe key starts with pk_:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_') || false)
+
 
 interface ShippingInfo {
   firstName: string
@@ -159,9 +156,6 @@ export default function CheckoutPage() {
           throw new Error('Please fill in all required shipping information')
         }
 
-       // Debug: Log the data being sent
-       console.log('Cart items:', state.items)
-       console.log('Shipping info:', shippingInfo)
 
        // Store cart items and shipping info in localStorage for order saving
        localStorage.setItem('cartItems', JSON.stringify(state.items))
@@ -173,10 +167,11 @@ export default function CheckoutPage() {
          headers: {
            'Content-Type': 'application/json',
          },
-         body: JSON.stringify({
-           items: state.items,
-           shippingInfo,
-         }),
+        body: JSON.stringify({
+          items: state.items,
+          shippingInfo,
+          userEmail: user?.email,
+        }),
        })
 
        if (!response.ok) {
@@ -194,7 +189,6 @@ export default function CheckoutPage() {
        // Redirect to Stripe checkout
        const stripe = await stripePromise
        if (stripe) {
-         console.log('Stripe loaded successfully, redirecting to checkout...')
          const { error } = await stripe.redirectToCheckout({ sessionId })
          if (error) {
            console.error('Stripe redirect error:', error)

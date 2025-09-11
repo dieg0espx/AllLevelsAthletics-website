@@ -4,7 +4,7 @@
 -- Create user_profiles table
 CREATE TABLE IF NOT EXISTS user_profiles (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
     first_name TEXT,
     last_name TEXT,
     full_name TEXT,
@@ -79,15 +79,23 @@ ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
 DROP POLICY IF EXISTS "Users can insert own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Service role can manage all profiles" ON user_profiles;
 
+-- Allow users to view their own profile
 CREATE POLICY "Users can view own profile" ON user_profiles
     FOR SELECT USING (auth.uid() = user_id);
 
+-- Allow users to update their own profile
 CREATE POLICY "Users can update own profile" ON user_profiles
     FOR UPDATE USING (auth.uid() = user_id);
 
+-- Allow users to insert their own profile
 CREATE POLICY "Users can insert own profile" ON user_profiles
     FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Allow service role to manage all profiles (for API operations)
+CREATE POLICY "Service role can manage all profiles" ON user_profiles
+    FOR ALL USING (auth.role() = 'service_role');
 
 -- Create RLS policies for orders (drop existing first)
 DROP POLICY IF EXISTS "Users can view own orders" ON orders;

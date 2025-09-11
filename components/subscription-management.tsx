@@ -202,16 +202,17 @@ export function SubscriptionManagement({ onUpgrade }: SubscriptionManagementProp
     )
   }
 
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <CreditCard className="h-5 w-5" />
+          <Crown className="h-5 w-5 text-orange-400" />
           Subscription
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Current Plan */}
+        {/* Current Plan Preview */}
         <div className="flex items-center justify-between p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
           <div className="flex items-center gap-3">
             {getPlanIcon(subscription?.plan_id || '')}
@@ -229,16 +230,17 @@ export function SubscriptionManagement({ onUpgrade }: SubscriptionManagementProp
 
         {/* Trial Information */}
         {isTrialing && subscription?.trial_end && (
-          <Alert>
-            <Clock className="h-4 w-4" />
-            <AlertDescription>
-              Your free trial ends on {formatDate(subscription.trial_end)}. 
+          <Alert className="border-blue-500/30 bg-blue-500/10">
+            <Clock className="h-4 w-4 text-blue-400" />
+            <AlertDescription className="text-blue-300">
+              <strong>Free Trial Active</strong><br />
+              Your trial ends on {formatDate(subscription.trial_end)}. 
               You'll be charged automatically unless you cancel.
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Subscription Details */}
+        {/* Subscription Details Preview */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
@@ -304,16 +306,6 @@ export function SubscriptionManagement({ onUpgrade }: SubscriptionManagementProp
             </Button>
           )}
         </div>
-
-        {/* Refresh Button */}
-        <Button 
-          onClick={refreshSubscription}
-          variant="ghost"
-          size="sm"
-          className="w-full"
-        >
-          Refresh Status
-        </Button>
       </CardContent>
     </Card>
   )

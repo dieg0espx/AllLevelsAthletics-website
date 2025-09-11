@@ -124,16 +124,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const toggleCart = () => {
-    console.log('🔄 toggleCart called in context')
-    console.log('🔄 Current isOpen:', state.isOpen)
-    const newIsOpen = !state.isOpen
-    console.log('🔄 Setting isOpen to:', newIsOpen)
     dispatch({ type: 'TOGGLE_CART' })
-    console.log('🔄 isOpen updated to:', newIsOpen)
   }
 
   const closeCart = () => {
-    console.log('❌ closeCart called in context')
     dispatch({ type: 'CLOSE_CART' })
   }
 

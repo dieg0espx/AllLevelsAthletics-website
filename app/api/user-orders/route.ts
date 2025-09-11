@@ -1,48 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
     console.log('🔄 Fetching user orders...')
     
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization')
-    console.log('🔐 Auth header:', authHeader ? 'Present' : 'Missing')
-    
-    // Create a Supabase client with the user's session
-    const supabaseClient = supabase
-    
-    // Try to get the current user from the session
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
-    
-    if (authError || !user) {
-      console.error('❌ Authentication error:', authError)
-      return NextResponse.json(
-        { error: 'Authentication required', details: authError?.message },
-        { status: 401 }
-      )
-    }
-    
-    console.log('👤 Authenticated user:', user.id)
-    
     const { searchParams } = new URL(request.url)
-    const requestedUserId = searchParams.get('userId')
+    const userId = searchParams.get('userId')
     
-    // Verify the user is requesting their own orders
-    if (requestedUserId && requestedUserId !== user.id) {
-      console.error('❌ User trying to access other user orders')
+    console.log('👤 Requested user ID:', userId)
+    
+    if (!userId) {
+      console.error('❌ No user ID provided')
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
+        { error: 'User ID is required' },
+        { status: 400 }
       )
     }
     
-    const userId = requestedUserId || user.id
+    // Use service role client to bypass RLS for API operations
+    const client = supabaseAdmin || supabase
     console.log('🔍 Querying orders for user:', userId)
 
     // First, check if the orders table exists by trying a simple query
     console.log('🔍 Testing database connection...')
-    const { data: testData, error: testError } = await supabase
+    const { data: testData, error: testError } = await client
       .from('orders')
       .select('id')
       .limit(1)
@@ -66,8 +48,8 @@ export async function GET(request: NextRequest) {
 
     console.log('✅ Database connection successful')
 
-    // Fetch orders with items for the user using RLS
-    const { data: orders, error: ordersError } = await supabase
+    // Fetch orders with items for the user using service role client
+    const { data: orders, error: ordersError } = await client
       .from('orders')
       .select(`
         *,

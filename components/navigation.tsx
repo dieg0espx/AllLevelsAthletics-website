@@ -32,10 +32,8 @@ export function Navigation() {
   }
 
   const handleSignOut = async () => {
-    console.log('🔘 Logout button clicked')
     try {
       await signOut()
-      console.log('✅ SignOut completed')
       setIsOpen(false) // Close mobile menu
     } catch (error) {
       console.error('❌ Error in handleSignOut:', error)
@@ -136,14 +134,9 @@ export function Navigation() {
               {/* Shopping Cart */}
               <button
                 onClick={() => {
-                  console.log('🛒 Cart button clicked in navigation')
-                  console.log('🛒 toggleCart function:', toggleCart)
-                  console.log('🛒 getTotalItems function:', getTotalItems)
                   try {
                     toggleCart()
-                    console.log('✅ toggleCart executed successfully')
                   } catch (error) {
-                    console.error('❌ Error calling toggleCart:', error)
                   }
                 }}
                 className="text-white/90 hover:text-orange-400 transition-colors duration-300 p-3 rounded-full hover:bg-white/10 group"
