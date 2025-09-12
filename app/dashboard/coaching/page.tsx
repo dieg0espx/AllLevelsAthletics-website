@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ProgressPanel } from "@/components/ProgressPanel"
 import { 
   ArrowLeft,
   Users,
@@ -16,13 +17,16 @@ import {
   Video,
   Target,
   Zap,
-  Star
+  Star,
+  Calendar,
+  TrendingUp
 } from "lucide-react"
 
 export default function CoachingPage() {
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'overview' | 'progress'>('overview')
 
   // Mock data - replace with real data from your backend
   const [currentPlan] = useState({
@@ -78,20 +82,56 @@ export default function CoachingPage() {
   ])
 
   useEffect(() => {
-    if (!user) {
+    // Wait for auth to finish loading before checking user
+    if (authLoading) {
+      return // Still loading auth, don't do anything
+    }
+    
+    if (user === null) {
+      // User is explicitly not authenticated, redirect
       router.push('/')
       return
     }
-    const timer = setTimeout(() => setIsLoading(false), 1000)
-    return () => clearTimeout(timer)
-  }, [user, router])
+    
+    if (user) {
+      // User is authenticated, proceed
+      const timer = setTimeout(() => setIsLoading(false), 1000)
+      
+      // Auto-schedule check-ins based on current plan
+      scheduleCheckIns()
+      
+      return () => clearTimeout(timer)
+    }
+  }, [user, authLoading, router])
+
+  const scheduleCheckIns = async () => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch('/api/coaching/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          planType: currentPlan.name
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Check-ins scheduled:', data.message)
+      }
+    } catch (error) {
+      console.error('Error scheduling check-ins:', error)
+    }
+  }
 
   const handleSignOut = async () => {
     await signOut()
     router.push('/')
   }
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
@@ -114,10 +154,10 @@ export default function CoachingPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => router.push('/dashboard')}
-                className="text-white/90 hover:text-orange-400 hover:bg-white/10"
+                className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-400/50 transition-all duration-300"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
@@ -149,6 +189,50 @@ export default function CoachingPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Button - Prominent */}
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={() => router.push('/dashboard')}
+            className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-400/50 transition-all duration-300"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-white/5 p-1 rounded-lg border border-orange-500/30">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all duration-300 ${
+                activeTab === 'overview'
+                  ? 'bg-orange-500 text-black font-medium'
+                  : 'text-white/70 hover:text-orange-400 hover:bg-white/10'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('progress')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all duration-300 ${
+                activeTab === 'progress'
+                  ? 'bg-orange-500 text-black font-medium'
+                  : 'text-white/70 hover:text-orange-400 hover:bg-white/10'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              Progress Panel
+            </button>
+          </div>
+        </div>
+
+        {activeTab === 'progress' ? (
+          <ProgressPanel userId={user?.id || ''} currentPlan={currentPlan.name} />
+        ) : (
+          <>
         {/* Current Plan */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
@@ -299,6 +383,8 @@ export default function CoachingPage() {
             </Card>
           </div>
         </div>
+          </>
+        )}
       </main>
     </div>
   )

@@ -138,6 +138,15 @@ export default function AdminDashboard() {
   const [programs, setPrograms] = useState<Program[]>([])
   const [programsLoading, setProgramsLoading] = useState(false)
 
+  // Check-ins state
+  const [checkIns, setCheckIns] = useState<any[]>([])
+  const [checkInsLoading, setCheckInsLoading] = useState(false)
+  const [editingCheckIn, setEditingCheckIn] = useState<string | null>(null)
+  const [editCheckInForm, setEditCheckInForm] = useState({
+    notes: '',
+    status: ''
+  })
+
   // Authorization check
   useEffect(() => {
     if (!loading) {
@@ -227,6 +236,23 @@ export default function AdminDashboard() {
     }
   }
 
+  const fetchCheckIns = async () => {
+    try {
+      setCheckInsLoading(true)
+      const response = await fetch('/api/admin/check-ins')
+      if (response.ok) {
+        const data = await response.json()
+        setCheckIns(data.checkIns || [])
+      } else {
+        console.error('Failed to fetch check-ins')
+      }
+    } catch (error) {
+      console.error('Error fetching check-ins:', error)
+    } finally {
+      setCheckInsLoading(false)
+    }
+  }
+
   const handleTabChange = (value: string) => {
     setActiveTab(value)
     
@@ -240,6 +266,9 @@ export default function AdminDashboard() {
         break
       case 'programs':
         if (programs.length === 0) fetchPrograms()
+        break
+      case 'checkins':
+        if (checkIns.length === 0) fetchCheckIns()
         break
     }
   }
@@ -425,7 +454,7 @@ export default function AdminDashboard() {
       <main className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-12">
         {/* Tabs Navigation */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-white/5 border-orange-500/30 mb-8">
+          <TabsList className="grid w-full grid-cols-6 bg-white/5 border-orange-500/30 mb-8">
             <TabsTrigger 
               value="clients" 
               className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400 text-white/70 hover:text-orange-400"
@@ -460,6 +489,13 @@ export default function AdminDashboard() {
             >
               <DollarSign className="w-4 h-4 mr-2" />
               Subscriptions
+            </TabsTrigger>
+            <TabsTrigger 
+              value="checkins" 
+              className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400 text-white/70 hover:text-orange-400"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Check-ins
             </TabsTrigger>
           </TabsList>
 
@@ -1152,6 +1188,167 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
+          </TabsContent>
+
+          {/* Check-ins Tab */}
+          <TabsContent value="checkins" className="space-y-8">
+            {checkInsLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-white">Check-ins Management</h2>
+                  <div className="text-sm text-white/70">
+                    {checkIns.length} total check-ins
+                  </div>
+                </div>
+
+                <div className="grid gap-4">
+                  {checkIns.map((checkIn) => (
+                    <Card key={checkIn.id} className="bg-white/5 border-orange-500/20">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-3">
+                              <Calendar className="w-5 h-5 text-orange-400" />
+                              <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                  {new Date(checkIn.scheduled_date).toLocaleDateString()} at {new Date(checkIn.scheduled_date).toLocaleTimeString('en-US', {
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                    hour12: true
+                                  })}
+                                </h3>
+                                <p className="text-white/70 text-sm">
+                                  Client: {checkIn.user?.raw_user_meta_data?.full_name || checkIn.user?.email || 'Unknown'}
+                                </p>
+                                <p className="text-white/70 text-sm capitalize">
+                                  Type: {checkIn.check_in_type.replace('_', ' ')}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="mb-4">
+                              <Badge className={
+                                checkIn.status === 'completed' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                                checkIn.status === 'cancelled' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                                checkIn.status === 'rescheduled' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                                'bg-orange-500/20 text-orange-400 border-orange-500/30'
+                              }>
+                                {checkIn.status === 'scheduled' ? 'Scheduled' : checkIn.status}
+                              </Badge>
+                            </div>
+
+                            {editingCheckIn === checkIn.id ? (
+                              <div className="space-y-4">
+                                <div>
+                                  <Label htmlFor="notes" className="text-white">Meeting Link & Notes</Label>
+                                  <textarea
+                                    id="notes"
+                                    value={editCheckInForm.notes}
+                                    onChange={(e) => setEditCheckInForm({ ...editCheckInForm, notes: e.target.value })}
+                                    placeholder="Add meeting link (Zoom, Google Meet, etc.) and any additional notes..."
+                                    className="w-full p-3 bg-white/5 border border-orange-500/30 rounded-lg text-white placeholder-white/50 resize-none"
+                                    rows={4}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="status" className="text-white">Status</Label>
+                                  <Select
+                                    value={editCheckInForm.status}
+                                    onValueChange={(value) => setEditCheckInForm({ ...editCheckInForm, status: value })}
+                                  >
+                                    <SelectTrigger className="w-full bg-white/5 border-orange-500/30 text-white">
+                                      <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-black/95 border-orange-500/20 text-white">
+                                      <SelectItem value="scheduled" className="text-white hover:bg-orange-500/20">Scheduled</SelectItem>
+                                      <SelectItem value="completed" className="text-white hover:bg-green-500/20">Completed</SelectItem>
+                                      <SelectItem value="cancelled" className="text-white hover:bg-red-500/20">Cancelled</SelectItem>
+                                      <SelectItem value="rescheduled" className="text-white hover:bg-yellow-500/20">Rescheduled</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={async () => {
+                                      try {
+                                        const response = await fetch('/api/admin/check-ins', {
+                                          method: 'PUT',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({
+                                            checkInId: checkIn.id,
+                                            notes: editCheckInForm.notes,
+                                            status: editCheckInForm.status
+                                          })
+                                        })
+                                        if (response.ok) {
+                                          setEditingCheckIn(null)
+                                          fetchCheckIns()
+                                        }
+                                      } catch (error) {
+                                        console.error('Error updating check-in:', error)
+                                      }
+                                    }}
+                                    className="bg-orange-500 hover:bg-orange-600 text-white"
+                                  >
+                                    <Save className="w-4 h-4 mr-2" />
+                                    Save
+                                  </Button>
+                                  <Button
+                                    onClick={() => setEditingCheckIn(null)}
+                                    variant="outline"
+                                    className="border-orange-500/30 text-white hover:bg-orange-500/10"
+                                  >
+                                    <X className="w-4 h-4 mr-2" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                {checkIn.notes && (
+                                  <div>
+                                    <Label className="text-white/70 text-sm">Notes & Meeting Link:</Label>
+                                    <p className="text-white bg-white/5 p-3 rounded-lg mt-1 whitespace-pre-wrap">
+                                      {checkIn.notes}
+                                    </p>
+                                  </div>
+                                )}
+                                <Button
+                                  onClick={() => {
+                                    setEditingCheckIn(checkIn.id)
+                                    setEditCheckInForm({
+                                      notes: checkIn.notes || '',
+                                      status: checkIn.status
+                                    })
+                                  }}
+                                  variant="outline"
+                                  className="border-orange-500/30 text-white hover:bg-orange-500/10"
+                                >
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  
+                  {checkIns.length === 0 && (
+                    <div className="text-center py-16">
+                      <Calendar className="w-16 h-16 text-orange-400 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-white mb-2">No Check-ins Found</h3>
+                      <p className="text-white/70">No check-ins have been scheduled yet.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </main>

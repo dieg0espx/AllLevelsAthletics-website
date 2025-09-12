@@ -20,29 +20,34 @@ import {
 
 export default function ClientDashboard() {
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [purchasedProductsCount, setPurchasedProductsCount] = useState(0)
   const [recentActivity, setRecentActivity] = useState<any[]>([])
 
   useEffect(() => {
-    // Check if user is authenticated
-    if (!user) {
+    // Wait for auth to finish loading before checking user
+    if (authLoading) {
+      return // Still loading auth, don't do anything
+    }
+    
+    if (user === null) {
+      // User is explicitly not authenticated, redirect
       router.push('/')
       return
     }
-
-    // Simulate loading
-    const timer = setTimeout(() => setIsLoading(false), 1000)
     
-    // Fetch purchased products count and recent activity
     if (user) {
+      // User is authenticated, proceed
+      const timer = setTimeout(() => setIsLoading(false), 1000)
+      
+      // Fetch purchased products count and recent activity
       fetchPurchasedProductsCount()
       fetchRecentActivity()
+      
+      return () => clearTimeout(timer)
     }
-    
-    return () => clearTimeout(timer)
-  }, [user, router])
+  }, [user, authLoading, router])
 
   const fetchPurchasedProductsCount = async () => {
     try {
@@ -131,7 +136,7 @@ export default function ClientDashboard() {
     return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`
   }
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
@@ -221,10 +226,6 @@ export default function ClientDashboard() {
             <p className="text-white/80 text-xl mb-4">
               Ready to crush your fitness goals today?
             </p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full border border-orange-500/30">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm text-white/90">Active Member</span>
-            </div>
           </div>
         </div>
 
