@@ -15,6 +15,7 @@ import { siteConfig, replacePlaceholders } from "@/lib/config"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut } = useAuth()
@@ -33,10 +34,13 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
+      setIsSigningOut(true)
       await signOut()
       setIsOpen(false) // Close mobile menu
     } catch (error) {
       console.error('❌ Error in handleSignOut:', error)
+    } finally {
+      setIsSigningOut(false)
     }
   }
 
@@ -164,9 +168,14 @@ export function Navigation() {
                     variant="ghost" 
                     size="icon"
                     onClick={handleSignOut}
-                    className={`text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 rounded-full p-3 group`}
+                    disabled={isSigningOut}
+                    className={`text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 rounded-full p-3 group disabled:opacity-50`}
                   >
-                    <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    {isSigningOut ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    )}
                   </Button>
                 </div>
               ) : (
@@ -308,11 +317,16 @@ export function Navigation() {
                   <Button 
                     variant="ghost" 
                     onClick={handleSignOut}
-                    className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-3 rounded-lg group`}
+                    disabled={isSigningOut}
+                    className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-3 rounded-lg group disabled:opacity-50`}
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                      {siteConfig.labels.navigation.signOut}
+                      {isSigningOut ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                      )}
+                      {isSigningOut ? 'Signing out...' : siteConfig.labels.navigation.signOut}
                     </span>
                   </Button>
                 </div>
