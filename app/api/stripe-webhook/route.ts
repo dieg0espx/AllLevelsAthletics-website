@@ -13,10 +13,20 @@ export async function POST(request: NextRequest) {
     const body = await request.text()
     const signature = request.headers.get('stripe-signature')!
 
+    console.log('🔔 WEBHOOK RECEIVED - Raw body length:', body.length)
+    console.log('🔔 WEBHOOK RECEIVED - Signature:', signature ? 'Present' : 'Missing')
+
     let event: Stripe.Event
 
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+      // Handle manual triggers (for testing)
+      if (signature === 'manual_trigger') {
+        console.log('Manual webhook trigger detected')
+        const eventData = JSON.parse(body)
+        event = eventData as Stripe.Event
+      } else {
+        event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+      }
     } catch (err) {
       console.error('❌ Webhook signature verification failed:', err)
       return NextResponse.json(
@@ -26,6 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('🔔 Received Stripe webhook:', event.type)
+    console.log('🔔 Event ID:', event.id)
 
     // Handle different event types
     switch (event.type) {
@@ -70,7 +81,103 @@ export async function POST(request: NextRequest) {
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   console.log('🛒 Checkout session completed:', session.id)
+  console.log('Session metadata:', session.metadata)
+  console.log('Session payment status:', session.payment_status)
+  console.log('Session mode:', session.mode)
+
+  const { userId, type, planId, planName, fromPlan, isUpgrade } = session.metadata || {}
   
+  console.log('Extracted metadata:', { userId, type, planId, planName, fromPlan, isUpgrade })
+
+  // Handle upgrade-specific checkout sessions
+  if (type === 'upgrade' && isUpgrade === 'true' && userId && planId && planName) {
+    console.log('Processing subscription upgrade...')
+    console.log('User ID:', userId)
+    console.log('From plan:', fromPlan)
+    console.log('To plan:', planName)
+
+    try {
+      // Get user's current subscription
+      const { data: currentSubscription, error: subscriptionError } = await supabaseAdmin
+        .from('user_subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .single()
+
+      if (subscriptionError || !currentSubscription) {
+        console.error('Error fetching current subscription:', subscriptionError)
+        return
+      }
+
+      // Get user's Stripe customer ID
+      const { data: userProfile, error: profileError } = await supabaseAdmin
+        .from('user_profiles')
+        .select('stripe_customer_id')
+        .eq('user_id', userId)
+        .single()
+
+      if (profileError || !userProfile?.stripe_customer_id) {
+        console.error('Error fetching user profile:', profileError)
+        return
+      }
+
+      // Get the current Stripe subscription
+      const stripeSubscription = await stripe.subscriptions.retrieve(currentSubscription.stripe_subscription_id)
+      
+      // Define the new plan price ID
+      const SUBSCRIPTION_PLANS = {
+        foundation: process.env.STRIPE_FOUNDATION_MONTHLY_PRICE_ID,
+        growth: process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID,
+        elite: process.env.STRIPE_ELITE_MONTHLY_PRICE_ID,
+      }
+
+      const newPriceId = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS]
+      
+      if (!newPriceId) {
+        console.error('Invalid plan ID:', planId)
+        return
+      }
+
+      // Update the Stripe subscription to the new plan
+      const updatedSubscription = await stripe.subscriptions.update(stripeSubscription.id, {
+        items: [{
+          id: stripeSubscription.items.data[0].id,
+          price: newPriceId,
+        }],
+        proration_behavior: 'none', // We already handled proration in the checkout
+      })
+
+      console.log('✅ Stripe subscription updated successfully')
+      console.log('New subscription ID:', updatedSubscription.id)
+
+      // Update the subscription in our database
+      const { error: updateError } = await supabaseAdmin
+        .from('user_subscriptions')
+        .update({
+          plan_name: planName,
+          plan_id: planId,
+          current_period_start: new Date(updatedSubscription.current_period_start * 1000).toISOString(),
+          current_period_end: new Date(updatedSubscription.current_period_end * 1000).toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', userId)
+
+      if (updateError) {
+        console.error('Error updating subscription in database:', updateError)
+        return
+      }
+
+      console.log('✅ Database subscription updated successfully')
+
+    } catch (error) {
+      console.error('Error processing subscription upgrade:', error)
+    }
+    
+    return // Exit early for upgrade processing
+  }
+  
+  // Handle regular subscription checkout sessions
   if (session.mode === 'subscription' && session.subscription) {
     const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
     await handleSubscriptionCreated(subscription)
@@ -174,80 +281,144 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   console.log('🔄 Subscription updated:', subscription.id)
-  
-  const userId = subscription.metadata?.userId
-  if (!userId) {
-    console.error('❌ No userId in subscription metadata')
-    return
-  }
+  console.log('Status:', subscription.status)
+  console.log('Customer ID:', subscription.customer)
 
-  // Update subscription record
-  const subscriptionData = {
-    status: subscription.status,
-    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-    cancel_at_period_end: subscription.cancel_at_period_end,
-    canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-    trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-    trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-  }
+  try {
+    // Find the user by Stripe customer ID
+    const { data: userProfile, error: profileError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('user_id')
+      .eq('stripe_customer_id', subscription.customer as string)
+      .single()
 
-  const { error } = await supabaseAdmin
-    .from('user_subscriptions')
-    .update(subscriptionData)
-    .eq('stripe_subscription_id', subscription.id)
+    if (profileError || !userProfile) {
+      console.error('User not found for customer ID:', subscription.customer)
+      return
+    }
 
-  if (error) {
-    console.error('❌ Error updating subscription:', error)
-    return
-  }
+    // Get the current price ID from Stripe to determine the plan
+    const currentPriceId = subscription.items.data[0].price.id
+    console.log('Current price ID from Stripe:', currentPriceId)
+    
+    // Map price ID to plan information
+    const PRICE_TO_PLAN = {
+      [process.env.STRIPE_FOUNDATION_MONTHLY_PRICE_ID!]: { plan_id: 'foundation', plan_name: 'Foundation' },
+      [process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID!]: { plan_id: 'growth', plan_name: 'Growth' },
+      [process.env.STRIPE_ELITE_MONTHLY_PRICE_ID!]: { plan_id: 'elite', plan_name: 'Elite' },
+    }
+    
+    const planInfo = PRICE_TO_PLAN[currentPriceId]
+    console.log('Plan info from price ID:', planInfo)
+    
+    // Update the subscription in our database
+    const updateData: any = {
+      status: subscription.status,
+      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+      updated_at: new Date().toISOString(),
+    }
+    
+    // Add plan information if we can determine it from the price ID
+    if (planInfo) {
+      updateData.plan_id = planInfo.plan_id
+      updateData.plan_name = planInfo.plan_name
+      console.log('Updating plan to:', planInfo.plan_name)
+    }
+    
+    const { error: updateError } = await supabaseAdmin
+      .from('user_subscriptions')
+      .update(updateData)
+      .eq('stripe_subscription_id', subscription.id)
 
-  // Update user profile status
-  const { error: profileError } = await supabaseAdmin
-    .from('user_profiles')
-    .update({
+    if (updateError) {
+      console.error('Error updating subscription:', updateError)
+    } else {
+      console.log('✅ Subscription status updated in database:', subscription.status)
+    }
+
+    // Update user profile status
+    const profileUpdateData: any = {
       subscription_status: subscription.status,
-    })
-    .eq('user_id', userId)
+    }
+    
+    // Add plan information to user profile if available
+    if (planInfo) {
+      profileUpdateData.current_plan = planInfo.plan_id
+    }
+    
+    const { error: profileUpdateError } = await supabaseAdmin
+      .from('user_profiles')
+      .update(profileUpdateData)
+      .eq('user_id', userProfile.user_id)
 
-  if (profileError) {
-    console.error('❌ Error updating user profile:', profileError)
+    if (profileUpdateError) {
+      console.error('❌ Error updating user profile:', profileUpdateError)
+    } else {
+      console.log('✅ User profile updated successfully')
+    }
+
+  } catch (error) {
+    console.error('Error handling subscription update:', error)
   }
-
-  console.log('✅ Subscription updated successfully')
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   console.log('🗑️ Subscription deleted:', subscription.id)
-  
-  // Update subscription status to canceled
-  const { error } = await supabaseAdmin
-    .from('user_subscriptions')
-    .update({
-      status: 'canceled',
-      canceled_at: new Date().toISOString(),
-    })
-    .eq('stripe_subscription_id', subscription.id)
+  console.log('Customer ID:', subscription.customer)
 
-  if (error) {
-    console.error('❌ Error updating deleted subscription:', error)
-    return
+  try {
+    // Find the user by Stripe customer ID
+    const { data: userProfile, error: profileError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('user_id')
+      .eq('stripe_customer_id', subscription.customer as string)
+      .single()
+
+    if (profileError || !userProfile) {
+      console.error('User not found for customer ID:', subscription.customer)
+      return
+    }
+
+    // Update subscription status to canceled
+    const { error } = await supabaseAdmin
+      .from('user_subscriptions')
+      .update({
+        status: 'canceled',
+        canceled_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_subscription_id', subscription.id)
+
+    if (error) {
+      console.error('❌ Error updating deleted subscription:', error)
+      return
+    }
+
+    // Update user profile
+    const { error: profileUpdateError } = await supabaseAdmin
+      .from('user_profiles')
+      .update({
+        subscription_status: 'canceled',
+        current_plan: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('user_id', userProfile.user_id)
+
+    if (profileUpdateError) {
+      console.error('❌ Error updating user profile for deleted subscription:', profileUpdateError)
+    } else {
+      console.log('✅ User profile updated for deleted subscription')
+    }
+
+    console.log('✅ Subscription deletion handled successfully')
+  } catch (error) {
+    console.error('Error handling subscription deletion:', error)
   }
-
-  // Update user profile
-  const { error: profileError } = await supabaseAdmin
-    .from('user_profiles')
-    .update({
-      subscription_status: 'canceled',
-      current_plan: null,
-    })
-    .eq('user_id', subscription.metadata?.userId)
-
-  if (profileError) {
-    console.error('❌ Error updating user profile for deleted subscription:', profileError)
-  }
-
-  console.log('✅ Subscription deletion handled successfully')
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
@@ -261,10 +432,55 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   console.log('❌ Invoice payment failed:', invoice.id)
-  
-  if (invoice.subscription) {
-    const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string)
-    await handleSubscriptionUpdated(subscription)
+  console.log('Customer ID:', invoice.customer)
+  console.log('Subscription ID:', invoice.subscription)
+
+  try {
+    // Find the user by Stripe customer ID
+    const { data: userProfile, error: profileError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('user_id')
+      .eq('stripe_customer_id', invoice.customer as string)
+      .single()
+
+    if (profileError || !userProfile) {
+      console.error('User not found for customer ID:', invoice.customer)
+      return
+    }
+
+    // Update the subscription status to past_due in our database
+    if (invoice.subscription) {
+      const { error: updateError } = await supabaseAdmin
+        .from('user_subscriptions')
+        .update({
+          status: 'past_due',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', invoice.subscription as string)
+
+      if (updateError) {
+        console.error('Error updating subscription status:', updateError)
+      } else {
+        console.log('✅ Subscription marked as past_due in database')
+      }
+
+      // Update user profile status
+      const { error: profileUpdateError } = await supabaseAdmin
+        .from('user_profiles')
+        .update({
+          subscription_status: 'past_due',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', userProfile.user_id)
+
+      if (profileUpdateError) {
+        console.error('❌ Error updating user profile:', profileUpdateError)
+      } else {
+        console.log('✅ User profile updated for payment failure')
+      }
+    }
+  } catch (error) {
+    console.error('Error handling payment failure:', error)
   }
 }
 

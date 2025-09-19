@@ -79,7 +79,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           setMessage({ type: 'error', text: error.message })
         } else {
           setMessage({ type: 'success', text: 'Successfully logged in!' })
-          // Close modal after successful login
+          // Close modal after successful login with shorter delay
           setTimeout(() => {
             onClose();
             setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
@@ -96,7 +96,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
                 router.push('/dashboard');
               }
             }
-          }, 1500);
+          }, 800); // Reduced from 1500ms to 800ms
         }
       } else {
         const { user, error } = await authService.register({

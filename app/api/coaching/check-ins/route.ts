@@ -29,7 +29,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch check-ins' }, { status: 500 })
     }
 
-    return NextResponse.json({ checkIns })
+    // Transform check-ins to sessions format for the component
+    const sessions = checkIns?.map(checkIn => ({
+      id: checkIn.id,
+      date: checkIn.scheduled_date?.split('T')[0] || '',
+      time: checkIn.scheduled_date?.split('T')[1]?.substring(0, 5) || '00:00',
+      type: checkIn.check_in_type === 'video' ? 'video' : 
+            checkIn.check_in_type === 'phone' ? 'phone' : 'in-person',
+      status: checkIn.status === 'completed' ? 'completed' :
+              checkIn.status === 'cancelled' ? 'cancelled' : 'scheduled',
+      notes: checkIn.notes || '',
+      duration: 60 // Default duration, could be made configurable
+    })) || []
+
+    return NextResponse.json({ 
+      checkIns,
+      sessions 
+    })
   } catch (error) {
     console.error('Error in check-ins API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -80,7 +96,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { checkInId, status, feedback, goalsAchieved, nextGoals, progressMetrics } = body
+    const { checkInId, status, feedback, goalsAchieved, nextGoals, progressMetrics, notes } = body
     
     if (!checkInId) {
       return NextResponse.json({ error: 'Check-in ID is required' }, { status: 400 })
@@ -96,6 +112,7 @@ export async function PUT(request: NextRequest) {
     if (goalsAchieved) updateData.goals_achieved = goalsAchieved
     if (nextGoals) updateData.next_goals = nextGoals
     if (progressMetrics) updateData.progress_metrics = progressMetrics
+    if (notes !== undefined) updateData.notes = notes
     
     if (status === 'completed') {
       updateData.completed_date = new Date().toISOString()

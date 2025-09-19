@@ -24,6 +24,8 @@ export default function ClientDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [purchasedProductsCount, setPurchasedProductsCount] = useState(0)
   const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [subscriptionData, setSubscriptionData] = useState<any>(null)
+  const [hasCoachingSubscription, setHasCoachingSubscription] = useState(false)
 
   useEffect(() => {
     // Wait for auth to finish loading before checking user
@@ -44,6 +46,7 @@ export default function ClientDashboard() {
       // Fetch purchased products count and recent activity
       fetchPurchasedProductsCount()
       fetchRecentActivity()
+      fetchSubscriptionData()
       
       return () => clearTimeout(timer)
     }
@@ -58,6 +61,25 @@ export default function ClientDashboard() {
       }
     } catch (error) {
       console.error('Error fetching products count:', error)
+    }
+  }
+
+  const fetchSubscriptionData = async () => {
+    if (!user?.id) return
+
+    try {
+      const response = await fetch(`/api/user-subscription?userId=${user.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setSubscriptionData(data)
+        
+        // Check if user has an active coaching subscription
+        if (data.subscription && data.subscription.status === 'active') {
+          setHasCoachingSubscription(true)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching subscription data:', error)
     }
   }
 
@@ -275,10 +297,14 @@ export default function ClientDashboard() {
                 <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Users className="w-6 h-6 text-orange-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Foundation Plan</h3>
-                <p className="text-white/70 text-sm mb-3">Monthly check-ins</p>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {hasCoachingSubscription ? (subscriptionData?.subscription?.plan_name || 'Foundation') : 'No Active Plan'}
+                </h3>
+                <p className="text-white/70 text-sm mb-3">
+                  {hasCoachingSubscription ? 'Active coaching subscription' : 'Start your coaching journey'}
+                </p>
                 <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
-                  View Details
+                  {hasCoachingSubscription ? 'View Details' : 'Get Started'}
                 </Button>
               </div>
             </CardContent>
@@ -310,6 +336,7 @@ export default function ClientDashboard() {
             </CardContent>
           </Card>
         </div>
+
 
         {/* Recent Activity */}
         <div className="mb-8">

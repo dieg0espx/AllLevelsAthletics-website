@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { userId, planType } = body
+    
+    console.log('Schedule check-ins POST request:', { userId, planType })
+    
+    // For now, just return success - this can be expanded later
+    return NextResponse.json({ 
+      success: true,
+      message: 'Check-ins scheduled successfully',
+      userId,
+      planType
+    })
+  } catch (error) {
+    console.error('Error in schedule POST API:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

@@ -7,28 +7,51 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
     
-    // Get all check-ins with user information
-    const { data: checkIns, error } = await supabaseAdmin
+    // First, get all check-ins
+    const { data: checkIns, error: checkInsError } = await supabaseAdmin
       .from('coaching_check_ins')
-      .select(`
-        *,
-        user:user_id (
-          id,
-          email,
-          raw_user_meta_data
-        )
-      `)
+      .select('*')
       .order('scheduled_date', { ascending: true })
 
-    if (error) {
-      console.error('Error fetching check-ins:', error)
-      return NextResponse.json({ error: 'Failed to fetch check-ins' }, { status: 500 })
+    if (checkInsError) {
+      console.error('Error fetching check-ins:', checkInsError)
+      return NextResponse.json({ error: 'Failed to fetch check-ins', details: checkInsError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ checkIns })
+    // Get unique user IDs from check-ins
+    const userIds = [...new Set(checkIns.map(checkIn => checkIn.user_id))]
+    
+    // Fetch user profiles for all users
+    const { data: userProfiles, error: usersError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('user_id, full_name')
+      .in('user_id', userIds)
+
+    if (usersError) {
+      console.error('Error fetching user profiles:', usersError)
+      // Continue without user data if profiles can't be fetched
+    }
+
+    // Combine check-ins with user data
+    const checkInsWithUsers = checkIns.map(checkIn => {
+      const userProfile = userProfiles?.find(profile => profile.user_id === checkIn.user_id)
+      return {
+        ...checkIn,
+        user: {
+          id: checkIn.user_id,
+          email: checkIn.user_id, // Use user_id as fallback
+          raw_user_meta_data: {
+            full_name: userProfile?.full_name || 'Unknown User'
+          }
+        }
+      }
+    })
+
+    console.log('Successfully fetched check-ins:', checkInsWithUsers.length)
+    return NextResponse.json({ checkIns: checkInsWithUsers })
   } catch (error) {
     console.error('Error in check-ins API:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
   }
 }
 

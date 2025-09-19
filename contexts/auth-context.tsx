@@ -18,43 +18,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userRole, setUserRole] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [fetchingRole, setFetchingRole] = useState(false)
-  const [lastFetchTime, setLastFetchTime] = useState(0)
+  const [roleCache, setRoleCache] = useState<Map<string, string>>(new Map())
 
-  // Function to fetch user role with debouncing
+  // Optimized function to fetch user role with caching
   const fetchUserRole = async (userId: string) => {
-    const now = Date.now()
-    
-    // Prevent multiple simultaneous calls and rapid successive calls
-    if (fetchingRole || (now - lastFetchTime < 1000)) {
+    // Check cache first
+    if (roleCache.has(userId)) {
+      setUserRole(roleCache.get(userId)!)
       return
     }
 
     try {
-      setFetchingRole(true)
-      
-      // First try to get role from user metadata
+      // First try to get role from user metadata (fastest)
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user?.user_metadata?.role) {
-        setUserRole(user.user_metadata.role)
+        const role = user.user_metadata.role
+        setUserRole(role)
+        setRoleCache(prev => new Map(prev).set(userId, role))
         return
       }
 
-      // Fallback to API call
+      // Fallback to API call only if needed
       const response = await fetch(`/api/user-profile?userId=${userId}`)
       const data = await response.json()
       
-      if (response.ok && data.profile) {
-        setUserRole(data.profile.role || 'client')
-      } else {
-        setUserRole('client') // Default role
-      }
+      const role = (response.ok && data.profile?.role) ? data.profile.role : 'client'
+      setUserRole(role)
+      setRoleCache(prev => new Map(prev).set(userId, role))
     } catch (error) {
-      setUserRole('client') // Default role
-    } finally {
-      setFetchingRole(false)
-      setLastFetchTime(Date.now())
+      console.error('Error fetching user role:', error)
+      const defaultRole = 'client'
+      setUserRole(defaultRole)
+      setRoleCache(prev => new Map(prev).set(userId, defaultRole))
     }
   }
 
@@ -89,7 +85,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setUser(session?.user ?? null)
         if (session?.user) {
-          await fetchUserRole(session.user.id)
+          // Only fetch role if we don't have it cached
+          if (!roleCache.has(session.user.id)) {
+            await fetchUserRole(session.user.id)
+          } else {
+            setUserRole(roleCache.get(session.user.id)!)
+          }
         } else {
           setUserRole(null)
         }
@@ -103,12 +104,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       console.log('🚪 Attempting to sign out...')
-      await supabase.auth.signOut()
-      console.log('✅ Sign out successful')
+      
+      // Clear local state immediately for better UX
       setUser(null)
       setUserRole(null)
+      setRoleCache(new Map())
+      
+      // Sign out from Supabase
+      await supabase.auth.signOut()
+      console.log('✅ Sign out successful')
+      
+      // Redirect to home page
+      if (typeof window !== 'undefined') {
+        window.location.href = '/'
+      }
     } catch (error) {
       console.error('❌ Error signing out:', error)
+      // Even if there's an error, we've already cleared local state
+      // Still redirect to home page
+      if (typeof window !== 'undefined') {
+        window.location.href = '/'
+      }
     }
   }
 

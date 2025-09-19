@@ -32,7 +32,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 })
     }
 
-    return NextResponse.json({ progress })
+    // Calculate metrics for dashboard
+    const sessionsCompleted = progress?.length || 0
+    const totalHours = progress?.reduce((sum, p) => sum + (p.duration_minutes || 0), 0) / 60 || 0
+    const goalsAchieved = progress?.filter(p => p.goal_achieved).length || 0
+    const progressScore = Math.min(100, Math.round((goalsAchieved / Math.max(1, sessionsCompleted)) * 100))
+
+    // Get next session from check-ins
+    const { data: nextCheckIn } = await supabaseAdmin
+      .from('coaching_check_ins')
+      .select('scheduled_date')
+      .eq('user_id', userId)
+      .eq('status', 'scheduled')
+      .gte('scheduled_date', new Date().toISOString())
+      .order('scheduled_date', { ascending: true })
+      .limit(1)
+      .single()
+
+    return NextResponse.json({ 
+      progress,
+      sessionsCompleted,
+      totalHours: Math.round(totalHours * 10) / 10, // Round to 1 decimal
+      goalsAchieved,
+      progressScore,
+      nextSession: nextCheckIn?.scheduled_date || null
+    })
   } catch (error) {
     console.error('Error in progress API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

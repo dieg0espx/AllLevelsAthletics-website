@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,7 +19,6 @@ import {
   Edit,
   Trash2,
   Video,
-  FileText
 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -78,10 +77,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
   const [showAddCheckIn, setShowAddCheckIn] = useState(false)
   const [showAddProgress, setShowAddProgress] = useState(false)
   const [showAllUpcoming, setShowAllUpcoming] = useState(false)
-  const [showAllRecent, setShowAllRecent] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [checkInToCancel, setCheckInToCancel] = useState<string | null>(null)
   const [userRegistrationDate, setUserRegistrationDate] = useState<Date | null>(null)
+  const checkInSectionRef = useRef<HTMLDivElement>(null)
   const [newCheckIn, setNewCheckIn] = useState({
     scheduled_date: '',
     check_in_type: 'regular' as const,
@@ -98,6 +97,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
   const [availableHours, setAvailableHours] = useState<string[]>([])
   const [isLoadingHours, setIsLoadingHours] = useState(false)
+  const [showNotesModal, setShowNotesModal] = useState(false)
+  const [selectedCheckInForNotes, setSelectedCheckInForNotes] = useState<CheckIn | null>(null)
+  const [notesText, setNotesText] = useState('')
+  const [isUpdatingNotes, setIsUpdatingNotes] = useState(false)
 
   useEffect(() => {
     fetchCheckIns()
@@ -415,6 +418,53 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
     }
   }
 
+  const handleUpdateNotes = async () => {
+    if (!selectedCheckInForNotes) return
+
+    if (isUpdatingNotes) return // Prevent multiple clicks
+
+    setIsUpdatingNotes(true)
+
+    try {
+      const response = await fetch('/api/coaching/check-ins', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          checkInId: selectedCheckInForNotes.id,
+          notes: notesText
+        })
+      })
+
+      if (response.ok) {
+        // Update the local state
+        setCheckIns(prev => prev.map(checkIn => 
+          checkIn.id === selectedCheckInForNotes.id 
+            ? { ...checkIn, notes: notesText }
+            : checkIn
+        ))
+        
+        setShowNotesModal(false)
+        setSelectedCheckInForNotes(null)
+        setNotesText('')
+      } else {
+        const errorData = await response.json()
+        console.error('Error response:', errorData)
+        alert('Failed to update notes. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error updating notes:', error)
+      alert('An error occurred. Please try again.')
+    } finally {
+      setIsUpdatingNotes(false)
+    }
+  }
+
+  const openNotesModal = (checkIn: CheckIn) => {
+    setSelectedCheckInForNotes(checkIn)
+    setNotesText(checkIn.notes || '')
+    setShowNotesModal(true)
+  }
+
   const getCheckInFrequency = () => {
     switch (currentPlan.toLowerCase()) {
       case 'starter':
@@ -499,6 +549,15 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       case 2: return 'nd'
       case 3: return 'rd'
       default: return 'th'
+    }
+  }
+
+  const scrollToCheckInSection = () => {
+    if (checkInSectionRef.current) {
+      checkInSectionRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
     }
   }
 
@@ -630,11 +689,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
     ci.status === 'scheduled' && new Date(ci.scheduled_date) >= new Date()
   )
 
-  const recentCheckIns = checkIns.filter(ci => 
-    ci.status === 'completed' || 
-    ci.status === 'cancelled' ||
-    (ci.status === 'scheduled' && new Date(ci.scheduled_date) < new Date())
-  )
+  const pastCheckIns = checkIns.filter(ci => 
+    ci.status === 'completed' || (ci.status === 'scheduled' && new Date(ci.scheduled_date) < new Date())
+  ).sort((a, b) => new Date(b.scheduled_date).getTime() - new Date(a.scheduled_date).getTime())
+
 
   if (isLoading) {
     return (
@@ -658,23 +716,53 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
-              <div className="text-2xl font-bold text-orange-400">{upcomingCheckIns.length}</div>
-              <div className="text-sm text-white/70">Upcoming Check-ins</div>
-              <div className="text-xs text-white/50">Total: {checkIns.length}</div>
-            </div>
-            <div className="text-center p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
-              <div className="text-2xl font-bold text-orange-400">{recentCheckIns.length}</div>
-              <div className="text-sm text-white/70">Completed Sessions</div>
-            </div>
-            <div className="text-center p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
-              <div className="text-2xl font-bold text-orange-400">{progressEntries.length}</div>
-              <div className="text-sm text-white/70">Progress Entries</div>
-            </div>
-          </div>
           
           
+          {/* Next Check-in */}
+          {upcomingCheckIns.length > 0 && (
+            <div className="mb-6 p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
+              <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-orange-400" />
+                Next Check-in
+              </h3>
+              {(() => {
+                const nextCheckIn = upcomingCheckIns.sort((a, b) => 
+                  new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime()
+                )[0]
+                return (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white font-medium text-lg">
+                        {new Date(nextCheckIn.scheduled_date).toLocaleDateString('en-US', { 
+                          weekday: 'long',
+                          month: 'long', 
+                          day: 'numeric',
+                          timeZone: 'America/Los_Angeles' 
+                        })} at {new Date(nextCheckIn.scheduled_date).toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true,
+                          timeZone: 'America/Los_Angeles'
+                        })}
+                      </p>
+                      <p className="text-white/70 text-sm capitalize">
+                        {nextCheckIn.check_in_type.replace('_', ' ')} Session
+                      </p>
+                      {nextCheckIn.notes && (
+                        <p className="text-orange-400 text-sm mt-1">
+                          Coach has added notes
+                        </p>
+                      )}
+                    </div>
+                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
+                      Scheduled
+                    </Badge>
+                  </div>
+                )
+              })()}
+            </div>
+          )}
+
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-white">Current Plan: {currentPlan}</h3>
             <div className="flex items-center gap-4 mt-2">
@@ -696,7 +784,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       {/* Two Column Layout: Upcoming Check-ins and Progress Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Check-in */}
-        <Card className="bg-white/5 border-orange-500/30">
+        <Card ref={checkInSectionRef} data-checkin-section className="bg-white/5 border-orange-500/30">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Clock className="w-5 h-5 text-orange-400" />
@@ -707,7 +795,13 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
             {/* Schedule Check-in Button */}
             <div className="mb-4">
               <Button
-                onClick={() => setShowAddCheckIn(true)}
+                onClick={() => {
+                  if (getRemainingCheckIns() > 0) {
+                    scrollToCheckInSection()
+                    // Open the modal after scrolling
+                    setTimeout(() => setShowAddCheckIn(true), 500)
+                  }
+                }}
                 disabled={getRemainingCheckIns() === 0}
                 className={`w-full ${
                   getRemainingCheckIns() === 0 
@@ -728,40 +822,57 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
             {upcomingCheckIns.length > 0 ? (
               <div className="space-y-3">
                 {(showAllUpcoming ? upcomingCheckIns : upcomingCheckIns.slice(0, 3)).map((checkIn) => (
-                  <div key={checkIn.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-orange-500/20">
-                    <div className="flex items-center gap-3">
-                      {getTypeIcon(checkIn.check_in_type)}
-                      <div>
-                        <p className="text-white font-medium">
-                          {new Date(checkIn.scheduled_date).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })} at {new Date(checkIn.scheduled_date).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                            timeZone: 'America/Los_Angeles'
-                          })}
-                        </p>
-                        <p className="text-white/70 text-sm capitalize">
-                          {checkIn.check_in_type.replace('_', ' ')} Session
-                        </p>
+                  <div key={checkIn.id} className="p-3 bg-white/5 rounded-lg border border-orange-500/20">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {getTypeIcon(checkIn.check_in_type)}
+                        <div>
+                          <p className="text-white font-medium">
+                            {new Date(checkIn.scheduled_date).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })} at {new Date(checkIn.scheduled_date).toLocaleTimeString('en-US', {
+                              hour: 'numeric',
+                              minute: '2-digit',
+                              hour12: true,
+                              timeZone: 'America/Los_Angeles'
+                            })}
+                          </p>
+                          <p className="text-white/70 text-sm capitalize">
+                            {checkIn.check_in_type.replace('_', ' ')} Session
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={getStatusColor(checkIn.status)}>
+                          {checkIn.status === 'scheduled' ? 'Scheduled' : 
+                           checkIn.status === 'cancelled' ? 'Cancelled' : 
+                           checkIn.status}
+                        </Badge>
+                        {checkIn.status === 'scheduled' && (
+                          <Button
+                            onClick={() => handleCancelCheckIn(checkIn.id)}
+                            variant="outline"
+                            size="sm"
+                            className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
+                          >
+                            Cancel
+                          </Button>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getStatusColor(checkIn.status)}>
-                        {checkIn.status === 'scheduled' ? 'Scheduled' : 
-                         checkIn.status === 'cancelled' ? 'Cancelled' : 
-                         checkIn.status}
-                      </Badge>
-                      {checkIn.status === 'scheduled' && (
-                        <Button
-                          onClick={() => handleCancelCheckIn(checkIn.id)}
-                          variant="outline"
-                          size="sm"
-                          className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                    </div>
+                    
+                    {/* Coach's Notes */}
+                    {checkIn.notes && (
+                      <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-6 h-6 bg-orange-500/20 rounded-full flex items-center justify-center">
+                            <MessageSquare className="w-3 h-3 text-orange-400" />
+                          </div>
+                          <span className="text-orange-400 text-sm font-medium">Coach's Notes</span>
+                        </div>
+                        <p className="text-white/80 text-sm whitespace-pre-wrap">
+                          {checkIn.notes}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
                 
@@ -854,83 +965,111 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
         </Card>
       </div>
 
-      {/* Recent Check-ins History */}
-      <Card className="bg-white/5 border-orange-500/30">
-        <CardHeader>
-          <div className="flex items-center justify-between">
+      {/* Past Check-ins Section */}
+      {pastCheckIns.length > 0 && (
+        <Card className="bg-white/5 border-orange-500/30">
+          <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-orange-400" />
-              Check-in History
+              <MessageSquare className="w-5 h-5 text-orange-400" />
+              Past Check-ins & Notes
             </CardTitle>
-            <Button
-              onClick={() => setShowAddCheckIn(true)}
-              variant="outline"
-              size="sm"
-              className="border-orange-500/30 text-white hover:bg-orange-500/10"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Entry
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {recentCheckIns.length > 0 ? (
-            <div className="space-y-3">
-              {(showAllRecent ? recentCheckIns : recentCheckIns.slice(0, 3)).map((checkIn) => (
+            <CardDescription className="text-white/70">
+              Review your completed check-ins and add notes for future reference
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {pastCheckIns.slice(0, 5).map((checkIn) => (
                 <div key={checkIn.id} className="p-4 bg-white/5 rounded-lg border border-orange-500/20">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(checkIn.status)}
-                      <span className="text-white font-medium">
-                        {new Date(checkIn.scheduled_date).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })} at {new Date(checkIn.scheduled_date).toLocaleTimeString('en-US', {
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          hour12: true,
-                          timeZone: 'America/Los_Angeles'
-                        })}
-                      </span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      {getTypeIcon(checkIn.check_in_type)}
+                      <div>
+                        <p className="text-white font-medium">
+                          {new Date(checkIn.scheduled_date).toLocaleDateString('en-US', { 
+                            timeZone: 'America/Los_Angeles',
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })} at {new Date(checkIn.scheduled_date).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true,
+                            timeZone: 'America/Los_Angeles'
+                          })}
+                        </p>
+                        <p className="text-white/70 text-sm capitalize">
+                          {checkIn.check_in_type.replace('_', ' ')} Session
+                        </p>
+                        {checkIn.completed_date && (
+                          <p className="text-green-400 text-xs">
+                            Completed: {new Date(checkIn.completed_date).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <Badge className={getStatusColor(checkIn.status)}>
-                      {checkIn.status === 'scheduled' ? 'Scheduled' : 
-                       checkIn.status === 'cancelled' ? 'Cancelled' : 
-                       checkIn.status}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getStatusColor(checkIn.status)}>
+                        {checkIn.status === 'completed' ? 'Completed' : 
+                         checkIn.status === 'cancelled' ? 'Cancelled' : 
+                         'Past Due'}
+                      </Badge>
+                      <Button
+                        onClick={() => openNotesModal(checkIn)}
+                        variant="outline"
+                        size="sm"
+                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        {checkIn.notes ? 'Edit Notes' : 'Add Notes'}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="text-white/70 text-sm mb-2">
-                    Type: {checkIn.check_in_type.replace('_', ' ')}
-                  </div>
-                  {checkIn.feedback && (
-                    <div className="text-white/80 text-sm">
-                      <strong>Feedback:</strong> {checkIn.feedback}
+                  
+                  {/* Existing Notes Display */}
+                  {checkIn.notes && (
+                    <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-orange-500/20 rounded-full flex items-center justify-center">
+                          <MessageSquare className="w-3 h-3 text-orange-400" />
+                        </div>
+                        <span className="text-orange-400 text-sm font-medium">Notes</span>
+                      </div>
+                      <p className="text-white/80 text-sm whitespace-pre-wrap">
+                        {checkIn.notes}
+                      </p>
                     </div>
                   )}
-                  {checkIn.notes && (
-                    <div className="text-white/80 text-sm mt-1">
-                      <strong>Notes:</strong> {checkIn.notes}
+
+                  {/* Feedback Display */}
+                  {checkIn.feedback && (
+                    <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
+                          <MessageSquare className="w-3 h-3 text-blue-400" />
+                        </div>
+                        <span className="text-blue-400 text-sm font-medium">Coach Feedback</span>
+                      </div>
+                      <p className="text-white/80 text-sm whitespace-pre-wrap">
+                        {checkIn.feedback}
+                      </p>
                     </div>
                   )}
                 </div>
               ))}
               
-              {recentCheckIns.length > 3 && (
-                <Button
-                  onClick={() => setShowAllRecent(!showAllRecent)}
-                  variant="outline"
-                  className="w-full border-orange-500/30 text-white hover:bg-orange-500/10"
-                >
-                  {showAllRecent ? 'Show Less' : `See More (${recentCheckIns.length - 3} more)`}
-                </Button>
+              {pastCheckIns.length > 5 && (
+                <div className="text-center pt-4">
+                  <p className="text-white/60 text-sm">
+                    Showing 5 of {pastCheckIns.length} past check-ins
+                  </p>
+                </div>
               )}
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-white/40 mx-auto mb-3" />
-              <p className="text-white/60">No completed check-ins yet</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add Check-in Modal */}
       {showAddCheckIn && (
@@ -1404,6 +1543,67 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
               </Button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Notes Modal */}
+      {showNotesModal && selectedCheckInForNotes && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="bg-black border-orange-500/30 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="text-white text-xl flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-orange-400" />
+                {selectedCheckInForNotes.notes ? 'Edit Notes' : 'Add Notes'}
+              </CardTitle>
+              <CardDescription className="text-white/70">
+                Add notes for your check-in on {new Date(selectedCheckInForNotes.scheduled_date).toLocaleDateString('en-US', { 
+                  timeZone: 'America/Los_Angeles',
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="notes-text" className="text-white text-sm font-medium">Notes</Label>
+                <Textarea
+                  id="notes-text"
+                  value={notesText}
+                  onChange={(e) => setNotesText(e.target.value)}
+                  placeholder="Add your notes about this check-in session..."
+                  className="bg-white/5 border-orange-500/30 text-white p-3 min-h-[200px]"
+                  rows={8}
+                />
+                <p className="text-white/60 text-xs">
+                  These notes will be saved and can be viewed by both you and your coach.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={handleUpdateNotes}
+                  disabled={isUpdatingNotes}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isUpdatingNotes ? 'Saving...' : 'Save Notes'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowNotesModal(false)
+                    setSelectedCheckInForNotes(null)
+                    setNotesText('')
+                  }}
+                  disabled={isUpdatingNotes}
+                  className="flex-1 border-orange-500/30 text-orange-400 hover:bg-orange-500/10 py-3 disabled:opacity-50"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
