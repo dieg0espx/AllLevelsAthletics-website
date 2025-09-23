@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { Navigation } from "@/components/navigation"
@@ -99,16 +99,6 @@ export const metadata: Metadata = {
   generator: "Next.js",
   applicationName: "All Levels Athletics",
   referrer: 'origin-when-cross-origin',
-  colorScheme: 'dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f97316' },
-    { media: '(prefers-color-scheme: dark)', color: '#f97316' },
-  ],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
   icons: {
     icon: [
       { url: '/logoAllLevels.png', sizes: 'any' },
@@ -139,6 +129,17 @@ export const metadata: Metadata = {
     'application-name': 'All Levels Athletics',
     'msapplication-TileImage': '/logoAllLevels.png',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  colorScheme: 'dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f97316' },
+    { media: '(prefers-color-scheme: dark)', color: '#f97316' },
+  ],
 }
 
 export default function RootLayout({
@@ -180,6 +181,9 @@ export default function RootLayout({
         {/* Contact information */}
         <meta name="contact" content="AllLevelsAthletics@gmail.com" />
         <meta name="phone" content="760-585-8832" />
+        
+        {/* Calendly CSS */}
+        <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
         
         {/* Business information */}
         <meta name="business:contact_data:street_address" content="Online Business" />

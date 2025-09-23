@@ -257,7 +257,7 @@ export default function ProductsPage() {
                           <div key={index} className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-orange-500/30 shadow-lg">
                             <img
                               src={
-                                item.name.includes("All Levels Knot Roller") 
+                                item.name.includes("MFRoller") 
                                   ? "/roller/roller7.jpg"
                                   : item.name.includes("Body Tension Reset Course")
                                   ? "/gymTools.jpg"

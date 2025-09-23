@@ -28,8 +28,11 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import { useEffect, useState } from "react"
+import CalendlyPopup from "@/components/calendly-popup"
 
 export default function HomePage() {
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-background">
 
@@ -116,11 +119,11 @@ export default function HomePage() {
                   <Button
                     size="lg"
                       className="bg-orange-500 text-white font-bold text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-full transition-all duration-300 ease-out shadow-lg group hover:bg-gradient-to-r hover:from-orange-500 hover:to-yellow-500 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      onClick={() => window.location.href = '/contact#contact-form'}
+                      onClick={() => setIsCalendlyOpen(true)}
                   >
                     <span className="flex items-center gap-2 sm:gap-3">
                       <Play className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Start Free 7-Day Trial
+                      Book 15-Min Session
                         <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
                     </span>
                   </Button>
@@ -1045,7 +1048,7 @@ export default function HomePage() {
                 Ready to <span className="gradient-text">Transform?</span>
               </h2>
               <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8">
-                Get started with your free 7-day trial today - no credit card required
+                Book a 15-minute session with Daniel to discover your personalized path to peak performance
               </p>
 
             </div>
@@ -1063,11 +1066,11 @@ export default function HomePage() {
                   <div className="space-y-4">
                     <Button 
                       className="w-full gradient-orange-yellow text-black font-bold text-lg sm:text-xl py-6 sm:py-8 hover:scale-105 transition-all shadow-2xl group"
-                      onClick={() => window.location.href = '/contact#contact-form'}
+                      onClick={() => setIsCalendlyOpen(true)}
                     >
                       <span className="flex items-center gap-2 sm:gap-3">
                         <Play className="w-5 h-5 sm:w-6 sm:h-6" />
-                        Start Free 7-Day Trial
+                        Book 15-Min Session
                         <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </Button>
@@ -1117,12 +1120,14 @@ export default function HomePage() {
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <Button
                           className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black hover:from-orange-600 hover:to-yellow-600 border-orange-500 shadow-lg text-sm sm:text-base py-2 sm:py-3"
+                          onClick={() => window.open('tel:+17605858832', '_self')}
                         >
                           <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                           Call Now
                         </Button>
                         <Button
                           className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-600 hover:to-orange-600 border-yellow-500 shadow-lg text-sm sm:text-base py-2 sm:py-3"
+                          onClick={() => window.open('mailto:AllLevelsAthletics@gmail.com?subject=Question about All Levels Athletics&body=Hi Daniel,%0D%0A%0D%0AI have a question about your training services.%0D%0A%0D%0A', '_self')}
                         >
                           <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                           Email Us
@@ -1166,7 +1171,11 @@ export default function HomePage() {
         </div>
       </section>
 
-
+      {/* Calendly Popup */}
+      <CalendlyPopup 
+        isOpen={isCalendlyOpen} 
+        onClose={() => setIsCalendlyOpen(false)} 
+      />
     </div>
   )
 }

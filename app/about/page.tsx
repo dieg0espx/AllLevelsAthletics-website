@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Target, Users, Award, Zap, Heart, Brain, ArrowRight, Instagram, MessageCircle, Play, Trophy } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
+import CalendlyPopup from "@/components/calendly-popup"
 
 // Extend Window interface for TikTok embed
 declare global {
@@ -66,6 +67,7 @@ function TikTokVideo({ videoId, url }: { videoId: string; url: string }) {
 
 
 export default function AboutPage() {
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,7 +104,7 @@ export default function AboutPage() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                onClick={() => window.location.href = '/programs#featured-programs'}
+                onClick={() => window.location.href = '/contact#calendly-booking'}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
                   <Zap className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform duration-300" />
@@ -451,7 +453,10 @@ export default function AboutPage() {
                         </div>
 
                         <div className="pt-4 sm:pt-6">
-                          <Button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105">
+                          <Button 
+                            className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105"
+                            onClick={() => setIsCalendlyOpen(true)}
+                          >
                             <span className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg">
                               <Users className="w-5 h-5 sm:w-6 sm:h-6" />
                               Start Your Transformation
@@ -567,7 +572,7 @@ export default function AboutPage() {
               Ready to Start Your <span className="gradient-text">Transformation?</span>
             </h2>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed">
-              Join the All Levels Athletics community and discover what you're truly capable of achieving.
+              Book a 15-minute session with Daniel to discover your personalized path to peak performance.
             </p>
             
             {/* Enhanced buttons with better styling */}
@@ -575,11 +580,11 @@ export default function AboutPage() {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
-                onClick={() => window.location.href = '/contact#contact-form'}
+                onClick={() => setIsCalendlyOpen(true)}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
                   <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-                  Start Free 7-Day Trial
+                  Book 15-Min Session
                 </span>
               </Button>
             </div>
@@ -590,6 +595,12 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Calendly Popup */}
+      <CalendlyPopup 
+        isOpen={isCalendlyOpen} 
+        onClose={() => setIsCalendlyOpen(false)} 
+      />
     </div>
   )
 }

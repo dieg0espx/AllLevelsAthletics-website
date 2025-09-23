@@ -3,71 +3,29 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
 import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap, ChevronLeft, ChevronRight } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import CalendlyPopup from "@/components/calendly-popup"
 
 export default function ContactPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    goals: '',
-    experience: '',
-    timeline: '',
-    questions: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
+  // Load Calendly script
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://assets.calendly.com/assets/external/widget.js'
+    script.async = true
+    document.body.appendChild(script)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitStatus('idle')
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        setSubmitStatus('success')
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          goals: '',
-          experience: '',
-          timeline: '',
-          questions: ''
-        })
-      } else {
-        setSubmitStatus('error')
+    return () => {
+      // Cleanup script on unmount
+      const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')
+      if (existingScript) {
+        document.body.removeChild(existingScript)
       }
-    } catch (error) {
-      console.error('Error submitting form:', error)
-      setSubmitStatus('error')
-    } finally {
-      setIsSubmitting(false)
     }
-  }
+  }, [])
 
   // Function to handle phone calls
   const handlePhoneCall = () => {
@@ -79,12 +37,9 @@ export default function ContactPage() {
     window.location.href = 'mailto:AllLevelsAthletics@gmail.com'
   }
 
-  // Function to scroll to contact form
-  const scrollToContactForm = () => {
-    const element = document.getElementById('contact-form')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+  // Function to open Calendly
+  const openCalendly = () => {
+    window.open('https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09', '_blank')
   }
 
   // Function to scroll to multiple ways to connect section
@@ -149,7 +104,7 @@ export default function ContactPage() {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={scrollToContactForm}
+                onClick={() => setIsCalendlyOpen(true)}
                 className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-6 py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <span className="flex items-center gap-2">
@@ -254,7 +209,7 @@ export default function ContactPage() {
                     48-hour advance booking required
                   </p>
                 <Button 
-                  onClick={scrollToContactForm}
+                  onClick={() => setIsCalendlyOpen(true)}
                   className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
                 >
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
@@ -551,8 +506,8 @@ export default function ContactPage() {
            </div>
          </section>
 
-               {/* Contact Form */}
-        <section id="contact-form" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-orange-500/5 via-yellow-500/3 to-orange-500/5 relative overflow-hidden">
+               {/* Calendly Booking Section */}
+        <section id="calendly-booking" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-orange-500/5 via-yellow-500/3 to-orange-500/5 relative overflow-hidden">
                     {/* Background Elements */}
            <div className="absolute top-10 right-10 w-24 sm:w-32 h-24 sm:h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
            <div className="absolute bottom-10 left-10 w-32 sm:w-40 h-32 sm:h-40 bg-yellow-500/10 rounded-full blur-2xl"></div>
@@ -561,176 +516,31 @@ export default function ContactPage() {
             <div className="max-w-4xl mx-auto">
                                                        <div className="text-center mb-16">
                  <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
-                   Send Us a <span className="gradient-text">Message</span>
+                   Schedule Your <span className="gradient-text">Free Consultation</span>
                  </h2>
                 <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Tell us about your goals and we'll get back to you with a personalized plan within 24 hours
+                  Book a time that works for you and let's discuss your fitness goals and how we can help you achieve them
                 </p>
               </div>
 
                            <Card className="bg-card/90 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 shadow-2xl hover:shadow-orange-500/25">
                  <CardHeader className="text-center pb-6 sm:pb-8">
                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
-                     <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
+                     <Calendar className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
                   </div>
-                   <CardTitle className="font-heading text-2xl sm:text-3xl">Get Your Free Consultation</CardTitle>
+                   <CardTitle className="font-heading text-2xl sm:text-3xl">Book Your Consultation</CardTitle>
                    <CardDescription className="text-base sm:text-lg text-muted-foreground">
-                    Fill out the form below and Daniel will personally respond within 24 hours
+                    Choose a time that works for you - consultations are available evenings and weekends
                   </CardDescription>
                 </CardHeader>
-                <form onSubmit={handleSubmit}>
-                 <CardContent className="space-y-6 sm:space-y-8">
-                 {/* Personal Information */}
-                  <div className="space-y-4 sm:space-y-6">
-                    <h3 className="font-heading text-lg sm:text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
-                     Personal Information
-                   </h3>
-                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      <div className="space-y-2 sm:space-y-3">
-                        <Label htmlFor="firstName" className="text-sm font-semibold">First Name *</Label>
-                                                 <Input 
-                           id="firstName" 
-                           name="firstName"
-                           value={formData.firstName}
-                           onChange={handleInputChange}
-                           placeholder="Enter your first name" 
-                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                           required
-                         />
-                      </div>
-                      <div className="space-y-2 sm:space-y-3">
-                        <Label htmlFor="lastName" className="text-sm font-semibold">Last Name *</Label>
-                                                 <Input 
-                           id="lastName" 
-                           name="lastName"
-                           value={formData.lastName}
-                           onChange={handleInputChange}
-                           placeholder="Enter your last name" 
-                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                           required
-                         />
-                      </div>
-                    </div>
-
-                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      <div className="space-y-2 sm:space-y-3">
-                        <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
-                                                 <Input 
-                           id="email" 
-                           name="email"
-                           type="email" 
-                           value={formData.email}
-                           onChange={handleInputChange}
-                           placeholder="your.email@example.com" 
-                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                           required
-                         />
-                      </div>
-                      <div className="space-y-2 sm:space-y-3">
-                        <Label htmlFor="phone" className="text-sm font-semibold">Phone Number</Label>
-                                                 <Input 
-                           id="phone" 
-                           name="phone"
-                           type="tel" 
-                           value={formData.phone}
-                           onChange={handleInputChange}
-                           placeholder="(555) 123-4567" 
-                           className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                         />
-                      </div>
-                    </div>
-                 </div>
-
-                 {/* Fitness Goals */}
-                 <div className="space-y-4">
-                    <h3 className="font-heading text-lg sm:text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
-                     Your Fitness Journey
-                   </h3>
-                    <div className="space-y-2 sm:space-y-3">
-                     <Label htmlFor="goals" className="text-sm font-semibold">What are your fitness goals? *</Label>
-                                           <Textarea
-                        id="goals"
-                        name="goals"
-                        value={formData.goals}
-                        onChange={handleInputChange}
-                        placeholder="Tell us about your current fitness level, goals, and what you hope to achieve..."
-                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[100px] sm:min-h-[120px] resize-none"
-                        required
-                      />
-                   </div>
-
-                    <div className="space-y-2 sm:space-y-3">
-                     <Label htmlFor="experience" className="text-sm font-semibold">Current fitness experience</Label>
-                                           <Textarea
-                        id="experience"
-                        name="experience"
-                        value={formData.experience}
-                        onChange={handleInputChange}
-                        placeholder="Describe your current workout routine, any injuries or limitations, and previous training experience..."
-                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[80px] sm:min-h-[100px] resize-none"
-                      />
-                   </div>
-
-                    <div className="space-y-2 sm:space-y-3">
-                     <Label htmlFor="timeline" className="text-sm font-semibold">When would you like to start?</Label>
-                                           <Input 
-                        id="timeline" 
-                        name="timeline"
-                        value={formData.timeline}
-                        onChange={handleInputChange}
-                        placeholder="Immediately, next week, next month..." 
-                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 h-10 sm:h-12" 
-                      />
-                   </div>
-                 </div>
-
-                 {/* Questions */}
-                 <div className="space-y-4">
-                    <h3 className="font-heading text-lg sm:text-xl font-semibold text-orange-400 border-b border-orange-500/30 pb-2">
-                     Questions & Additional Info
-                   </h3>
-                    <div className="space-y-2 sm:space-y-3">
-                     <Label htmlFor="questions" className="text-sm font-semibold">Any questions for Daniel?</Label>
-                                           <Textarea
-                        id="questions"
-                        name="questions"
-                        value={formData.questions}
-                        onChange={handleInputChange}
-                        placeholder="Ask about programs, pricing, methodology, or anything else you'd like to know..."
-                         className="bg-background/80 border-2 border-orange-500/20 focus:border-orange-500/60 transition-all duration-300 min-h-[60px] sm:min-h-[80px] resize-none"
-                      />
-                   </div>
-                 </div>
-
-                                   {/* Submit Button */}
-                   <div className="text-center pt-4 sm:pt-6 border-t border-orange-500/30">
-                    <Button
-                      type="submit"
-                      size="lg"
-                      disabled={isSubmitting}
-                      className="gradient-orange-yellow text-black font-bold text-sm sm:text-base px-8 sm:px-16 py-4 sm:py-6 rounded-full hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-orange-500/25 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSubmitting ? 'Sending...' : 'Send Message & Get Free Consultation'}
-                    </Button>
-                    
-                    {submitStatus === 'success' && (
-                      <p className="text-green-400 text-sm mt-4">
-                        Message sent successfully! Daniel will get back to you within 24 hours.
-                      </p>
-                    )}
-                    
-                    {submitStatus === 'error' && (
-                      <p className="text-red-400 text-sm mt-4">
-                        There was an error sending your message. Please try again.
-                      </p>
-                    )}
-                    
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-4 sm:mt-6 max-w-md mx-auto">
-                      We respect your privacy. Your information will never be shared with third parties.
-                    </p>
-                  </div>
+                <CardContent className="p-0">
+                  {/* Calendly Inline Widget */}
+                  <div 
+                    className="calendly-inline-widget" 
+                    data-url="https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09"
+                    style={{ minWidth: '320px', height: '700px' }}
+                  ></div>
                 </CardContent>
-                </form>
               </Card>
            </div>
          </div>
@@ -860,6 +670,12 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      {/* Calendly Popup */}
+      <CalendlyPopup 
+        isOpen={isCalendlyOpen} 
+        onClose={() => setIsCalendlyOpen(false)} 
+      />
     </div>
   )
 }

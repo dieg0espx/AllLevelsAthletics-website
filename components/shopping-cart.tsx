@@ -73,7 +73,7 @@ export function ShoppingCart() {
                     <div className="relative w-20 h-20 flex-shrink-0">
                       <Image
                         src={
-                          item.name.includes("All Levels Knot Roller") 
+                          item.name.includes("MFRoller") 
                             ? "/roller/roller7.jpg"
                             : item.name.includes("Body Tension Reset Course")
                             ? "/gymTools.jpg"

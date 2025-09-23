@@ -203,7 +203,7 @@ export default function SuccessPage() {
                                <div className="relative w-16 h-16 rounded-lg overflow-hidden">
                                  <img
                                    src={
-                                     item.name.includes("All Levels Knot Roller") 
+                                    item.name.includes("MFRoller") 
                                        ? "/roller/roller7.jpg"
                                        : item.name.includes("Body Tension Reset Course")
                                        ? "/gymTools.jpg"
