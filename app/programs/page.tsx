@@ -7,15 +7,29 @@ import { CheckCircle, Clock, Users, Target, Zap, Heart, Award, Calendar, Play, C
 import { useState, useRef, useEffect } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
 import ProgramConfirmationDialog from "@/components/program-confirmation-dialog"
+import { useAuth } from "@/contexts/auth-context"
+import { AuthModal } from "@/components/auth-modal"
 
 export default function ProgramsPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const carouselRef = useRef<HTMLDivElement>(null)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const { user } = useAuth()
   
   const totalSlides = 4
   const slideWidth = 400 + 24 // card width + gap
+
+  const handleStartTransformation = () => {
+    if (!user) {
+      // User is not logged in, show auth modal
+      setIsAuthModalOpen(true)
+    } else {
+      // User is logged in, show program dialog
+      setIsProgramDialogOpen(true)
+    }
+  }
 
   const scrollToSlide = (direction: 'prev' | 'next') => {
     if (!carouselRef.current) return
@@ -179,7 +193,7 @@ export default function ProgramsPage() {
                   <div className="space-y-3">
                     <Button 
                       className="gradient-orange-yellow text-black font-bold hover:scale-105 transition-all text-lg px-8 py-4 rounded-xl w-full"
-                      onClick={() => setIsProgramDialogOpen(true)}
+                      onClick={handleStartTransformation}
                     >
                       Start Your Transformation
                     </Button>
@@ -757,6 +771,13 @@ export default function ProgramsPage() {
         isOpen={isProgramDialogOpen}
         onClose={() => setIsProgramDialogOpen(false)}
         onConfirm={() => setIsProgramDialogOpen(false)}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        redirectTo="/programs"
       />
     </div>
   )
