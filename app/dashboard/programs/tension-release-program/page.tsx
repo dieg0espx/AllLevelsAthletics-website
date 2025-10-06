@@ -167,10 +167,25 @@ export default function TensionReleaseProgramPage() {
     }
   }
 
+  const getNextUncompletedVideo = () => {
+    return courseVideos.findIndex(video => !watchedVideos.has(video.id))
+  }
+
   const startCourse = () => {
     setShowWelcome(false)
-    setCurrentVideo(courseVideos[0])
-    setCurrentVideoIndex(0)
+    
+    // Find the next uncompleted video
+    const nextUncompletedIndex = getNextUncompletedVideo()
+    
+    if (nextUncompletedIndex !== -1) {
+      // Go to the next uncompleted video
+      setCurrentVideo(courseVideos[nextUncompletedIndex])
+      setCurrentVideoIndex(nextUncompletedIndex)
+    } else {
+      // All videos completed, go to the last video
+      setCurrentVideo(courseVideos[courseVideos.length - 1])
+      setCurrentVideoIndex(courseVideos.length - 1)
+    }
   }
 
   if (subscriptionLoading || isLoading) {
@@ -361,7 +376,10 @@ export default function TensionReleaseProgramPage() {
                 className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold hover:scale-105 transition-all px-8 py-4 text-lg"
                 onClick={startCourse}
               >
-                {watchedVideos.size > 0 ? 'Continue Learning' : 'Start the Program'}
+                {watchedVideos.size > 0 ? 
+                  (getNextUncompletedVideo() !== -1 ? 'Continue Learning' : 'Review Program') : 
+                  'Start the Program'
+                }
                 <Play className="w-5 h-5 ml-2" />
               </Button>
             </div>
