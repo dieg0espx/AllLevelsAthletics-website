@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import { CheckCircle, Trophy, Home, User, Mail, Calendar, Star, Award } from "lu
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 
-export default function PlanSuccessPage() {
+function PlanSuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const [isLoading, setIsLoading] = useState(true)
@@ -261,5 +261,20 @@ export default function PlanSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PlanSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-600/10 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <PlanSuccessContent />
+    </Suspense>
   )
 }
