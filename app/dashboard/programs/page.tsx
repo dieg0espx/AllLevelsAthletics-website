@@ -21,48 +21,30 @@ export default function ProgramsPage() {
   const router = useRouter()
   const { user, signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
+  const [userPrograms, setUserPrograms] = useState<any[]>([])
 
-  // Mock data - replace with real data from your backend
-  const [userPrograms] = useState([
-    {
-      id: 1,
-      name: "Foundation Strength Program",
-      description: "12-week program for building fundamental strength",
-      progress: 75,
-      startDate: "2024-01-01",
-      endDate: "2024-03-25",
-      status: "active",
-      workoutsCompleted: 9,
-      totalWorkouts: 12
-    }
-  ])
 
-  const [availablePrograms] = useState([
-    {
-      id: 1,
-      name: "Beginner's Journey",
-      description: "Perfect for those just starting their fitness journey",
-      duration: "8 weeks",
-      difficulty: "Beginner",
-      price: "$97",
-      features: ["Full body workouts", "Nutrition guide", "Progress tracking", "Video demonstrations"]
-    },
-    {
-      id: 2,
-      name: "Intermediate Power",
-      description: "Build strength and muscle for intermediate lifters",
-      duration: "12 weeks",
-      difficulty: "Intermediate",
-      price: "$147",
-      features: ["Progressive overload", "Advanced techniques", "Recovery protocols", "Personalized adjustments"]
+  const fetchUserPrograms = async () => {
+    if (!user?.id) return
+
+    try {
+      const response = await fetch(`/api/user-programs?userId=${user.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setUserPrograms(data.programs || [])
+      }
+    } catch (error) {
+      console.error('Error fetching user programs:', error)
     }
-  ])
+  }
 
   useEffect(() => {
     if (!user) {
       router.push('/')
       return
     }
+    
+    fetchUserPrograms()
     const timer = setTimeout(() => setIsLoading(false), 1000)
     return () => clearTimeout(timer)
   }, [user, router])
@@ -144,9 +126,6 @@ export default function ProgramsPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">{program.name}</CardTitle>
-                      <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
-                        {program.status}
-                      </Badge>
                     </div>
                     <CardDescription className="text-white/70">{program.description}</CardDescription>
                   </CardHeader>
@@ -167,18 +146,17 @@ export default function ProgramsPage() {
                           <span className="text-white/70">Workouts:</span>
                           <span className="text-white ml-2">{program.workoutsCompleted}/{program.totalWorkouts}</span>
                         </div>
-                        <div>
-                          <span className="text-white/70">Duration:</span>
-                          <span className="text-white ml-2">{program.duration}</span>
-                        </div>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-white/70">
                         <Calendar className="w-4 h-4" />
                         <span>{new Date(program.startDate).toLocaleDateString()} - {new Date(program.endDate).toLocaleDateString()}</span>
                       </div>
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                      <Button 
+                        className="w-full bg-orange-500 hover:bg-orange-600"
+                        onClick={() => router.push(`/dashboard/programs/${program.slug}`)}
+                      >
                         <Play className="w-4 h-4 mr-2" />
-                        Continue Program
+                        {program.progress > 0 ? 'Continue Program' : 'Start Program'}
                       </Button>
                     </div>
                   </CardContent>
@@ -201,55 +179,6 @@ export default function ProgramsPage() {
           )}
         </div>
 
-        {/* Available Programs */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Dumbbell className="w-6 h-6 text-orange-400" />
-            Available Programs
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availablePrograms.map((program) => (
-              <Card key={program.id} className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="text-white">{program.name}</CardTitle>
-                  <CardDescription className="text-white/70">{program.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/70">Duration:</span>
-                      <span className="text-white">{program.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/70">Difficulty:</span>
-                      <Badge variant="secondary" className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-                        {program.difficulty}
-                      </Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-white">Features:</h4>
-                      <ul className="space-y-1">
-                        {program.features.map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2 text-sm text-white/80">
-                            <CheckCircle className="w-4 h-4 text-orange-400" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-orange-400">{program.price}</span>
-                      <Button onClick={() => router.push('/contact')} className="bg-orange-500 hover:bg-orange-600">
-                        Get Started
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
       </main>
     </div>
   )
