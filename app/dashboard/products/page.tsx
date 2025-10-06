@@ -101,7 +101,6 @@ export default function ProductsPage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
   }
 
   const getStatusColor = (status: string) => {

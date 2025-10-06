@@ -64,7 +64,7 @@ export default function ProgramsPage() {
     <div className="min-h-screen bg-background">
 
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-40 sm:pt-44 md:pt-48 lg:pt-52 pb-24 sm:pb-28 md:pb-32 lg:pb-36 bg-gradient-to-br from-black via-gray-900 to-black">
+      <section className="relative overflow-hidden pt-32 sm:pt-40 md:pt-48 lg:pt-52 pb-20 sm:pb-24 md:pb-28 lg:pb-32 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
         <div className="absolute inset-0">
           <img
@@ -81,23 +81,23 @@ export default function ProgramsPage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="gradient-orange-yellow text-black font-bold mb-6 sm:mb-8 text-base sm:text-lg px-4 sm:px-6 py-2">
+            <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-sm sm:text-base px-3 sm:px-4 py-1.5 sm:py-2">
               Premium Training Programs
             </Badge>
-            <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-8 sm:mb-10 leading-tight tracking-tight">
-              <span className="block text-white mb-3 sm:mb-4">Specialized Programs for</span>
+            <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 sm:mb-8 leading-tight tracking-tight">
+              <span className="block text-white mb-2 sm:mb-3">Specialized Programs for</span>
               <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Every Goal</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-10 sm:mb-12 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 sm:mb-10 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
               From foundational movement patterns to elite performance training, discover the perfect program to match
               your current level and ambitious goals. Every program includes our revolutionary tension reset methodology.
             </p>
             
             {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 justify-center items-center">
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={() => window.location.href = '/programs#featured-programs'}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
@@ -108,7 +108,7 @@ export default function ProgramsPage() {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-4 sm:px-6 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-sm sm:text-base px-3 sm:px-4 sm:px-6 py-2.5 sm:py-3 md:py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={() => setIsCalendlyOpen(true)}
               >
                 <span className="flex items-center gap-2">
@@ -130,10 +130,10 @@ export default function ProgramsPage() {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
-            <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Runner's Tension Score <span className="gradient-text">Program</span>
             </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Our most popular and effective training program designed to transform your fitness journey
             </p>
           </div>
@@ -156,10 +156,10 @@ export default function ProgramsPage() {
                       <Target className="w-4 h-4" />
                       PREMIUM PROGRAM
                     </div>
-                    <h3 className="font-heading text-3xl md:text-4xl font-bold text-white">
+                    <h3 className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white">
                       Comprehensive Tension Release & Performance Enhancement
                     </h3>
-                    <p className="text-xl text-orange-200 leading-relaxed">
+                    <p className="text-base sm:text-lg md:text-xl text-orange-200 leading-relaxed">
                       Transform your running performance through our scientifically-backed methodology that addresses the root causes of tension and movement limitations.
                     </p>
                   </div>
@@ -209,37 +209,37 @@ export default function ProgramsPage() {
             </div>
 
             {/* Program Components Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
               <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-1 sm:mb-2 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Tension Release</h4>
-                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Increase work capacity through targeted tension release techniques that unlock your body's potential</p>
+                <h4 className="font-heading text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:text-orange-400 transition-colors">Tension Release</h4>
+                <p className="text-white/80 leading-relaxed text-xs sm:text-sm lg:text-base">Increase work capacity through targeted tension release techniques that unlock your body's potential</p>
               </Card>
 
               <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-1 sm:mb-2 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Stretching</h4>
-                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Improve range of motion (ROM) with progressive stretching protocols designed for runners</p>
+                <h4 className="font-heading text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:text-orange-400 transition-colors">Stretching</h4>
+                <p className="text-white/80 leading-relaxed text-xs sm:text-sm lg:text-base">Improve range of motion (ROM) with progressive stretching protocols designed for runners</p>
               </Card>
 
               <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-1 sm:mb-2 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <Target className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Activation</h4>
-                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Wake up weak muscles with targeted activation exercises that restore proper function</p>
+                <h4 className="font-heading text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:text-orange-400 transition-colors">Activation</h4>
+                <p className="text-white/80 leading-relaxed text-xs sm:text-sm lg:text-base">Wake up weak muscles with targeted activation exercises that restore proper function</p>
               </Card>
 
               <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-1 sm:mb-2 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Compound Reintegration</h4>
-                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Connect muscles together and scale strength to prevent reinjury and optimize performance</p>
+                <h4 className="font-heading text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 group-hover:text-orange-400 transition-colors">Compound Reintegration</h4>
+                <p className="text-white/80 leading-relaxed text-xs sm:text-sm lg:text-base">Connect muscles together and scale strength to prevent reinjury and optimize performance</p>
               </Card>
             </div>
 
@@ -280,10 +280,10 @@ export default function ProgramsPage() {
         
         <div className="container mx-auto px-6 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               Program <span className="gradient-text">Categories</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Find the perfect program category for your specific goals and experience level
             </p>
             {/* Scroll Instructions */}
@@ -319,9 +319,9 @@ export default function ProgramsPage() {
             {/* Carousel Container - Fixed for mobile */}
             <div 
               ref={carouselRef}
-              className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing scrollbar-hide"
+              className="flex overflow-x-auto gap-3 sm:gap-4 md:gap-6 pb-4 snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing scrollbar-hide"
             >
-              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[85%] sm:min-w-[400px] snap-center flex flex-col rounded-2xl">
+              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[90%] sm:min-w-[85%] md:min-w-[400px] snap-center flex flex-col rounded-2xl">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
@@ -610,10 +610,10 @@ export default function ProgramsPage() {
       <section className="py-20 bg-black relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               Why Choose Our <span className="gradient-text">Programs?</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Every program is built on proven principles and personalized to your unique needs
             </p>
           </div>
@@ -623,14 +623,14 @@ export default function ProgramsPage() {
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
               <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-1 sm:mb-2 lg:mb-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Target className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">Personalized Approach</h3>
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-1 sm:mb-2 lg:mb-3">Personalized Approach</h3>
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 text-sm sm:text-base">
                   Every program is customized to your goals, experience level, and available time.
                 </p>
-                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
+                <div className="mt-auto pt-1 sm:pt-2 lg:pt-3 border-t border-orange-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-orange-400">
                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                     <span>Tailored Programs</span>
@@ -643,20 +643,20 @@ export default function ProgramsPage() {
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
               <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-1 sm:mb-2 lg:mb-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Award className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-1 sm:mb-2 lg:mb-3">
                   <span className="block lg:hidden">Proven Results</span>
                   <span className="hidden lg:block">
                     <span className="block">Proven</span>
                     <span className="block">Results</span>
                   </span>
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 text-sm sm:text-base">
                   Based on methods that have transformed 500+ athletes across all levels.
                 </p>
-                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
+                <div className="mt-auto pt-1 sm:pt-2 lg:pt-3 border-t border-yellow-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-yellow-400">
                     <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                     <span>Track Record</span>
@@ -669,20 +669,20 @@ export default function ProgramsPage() {
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
               <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-1 sm:mb-2 lg:mb-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Users className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-1 sm:mb-2 lg:mb-3">
                   <span className="block lg:hidden">Expert Guidance</span>
                   <span className="hidden lg:block">
                     <span className="block">Expert</span>
                     <span className="block">Guidance</span>
                   </span>
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 text-sm sm:text-base">
                   Direct access to professional coaching and ongoing support throughout your journey.
                 </p>
-                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
+                <div className="mt-auto pt-1 sm:pt-2 lg:pt-3 border-t border-orange-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-orange-400">
                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                     <span>Professional Support</span>
@@ -695,14 +695,14 @@ export default function ProgramsPage() {
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
               <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-1 sm:mb-2 lg:mb-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">Progressive System</h3>
-                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-1 sm:mb-2 lg:mb-3">Progressive System</h3>
+                <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 text-sm sm:text-base">
                   Structured progression that adapts as you grow stronger and more capable.
                 </p>
-                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
+                <div className="mt-auto pt-1 sm:pt-2 lg:pt-3 border-t border-yellow-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-yellow-400">
                     <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                     <span>Adaptive Training</span>
@@ -719,10 +719,10 @@ export default function ProgramsPage() {
         <div className="wave-pattern-a"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
-            <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6">
               Ready to Transform Your <span className="gradient-text">Training?</span>
             </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
               Book a 15-minute session with Daniel to discover your personalized path to peak performance.
             </p>
             

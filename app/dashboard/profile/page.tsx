@@ -152,7 +152,6 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
   }
 
   const handleInputChange = (field: string, value: string) => {

@@ -278,7 +278,6 @@ export default function ClientDashboard() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
   }
 
   const formatTimeAgo = (dateString: string) => {
@@ -316,7 +315,7 @@ export default function ClientDashboard() {
 
   return (
     <AdminRedirect>
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Header */}
       <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -353,40 +352,44 @@ export default function ClientDashboard() {
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Dashboard Navigation */}
-        <nav className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur-md border border-orange-500/30 rounded-lg p-4 mb-8">
-          <div className="flex flex-wrap items-center justify-center space-x-6">
-            <Link href="/dashboard/programs" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <BookOpen className="w-5 h-5 inline mr-2" />
-              Programs
+        <nav className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur-md border border-orange-500/30 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 sm:gap-6 overflow-x-auto">
+            <Link href="/dashboard/programs" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Programs</span>
+              <span className="sm:hidden">Programs</span>
             </Link>
-            <Link href="/dashboard/coaching" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <Users className="w-5 h-5 inline mr-2" />
-              1-on-1 Coaching
+            <Link href="/dashboard/coaching" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">1-on-1 Coaching</span>
+              <span className="sm:hidden">Coaching</span>
             </Link>
-            <Link href="/dashboard/products" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <ShoppingBag className="w-5 h-5 inline mr-2" />
-              Purchased Products
+            <Link href="/dashboard/products" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Purchased Products</span>
+              <span className="sm:hidden">Products</span>
             </Link>
-            <Link href="/dashboard/profile" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <User className="w-5 h-5 inline mr-2" />
-              My Information
+            <Link href="/dashboard/profile" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <User className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">My Information</span>
+              <span className="sm:hidden">Profile</span>
             </Link>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <div className="relative mb-8 overflow-hidden">
+        <div className="relative mb-6 sm:mb-8 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-yellow-500/10 to-orange-500/20 rounded-2xl"></div>
-          <div className="relative p-8 text-center">
-            <div className="mb-4">
-              <div className="w-20 h-20 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Dumbbell className="w-10 h-10 text-black" />
+          <div className="relative p-4 sm:p-6 md:p-8 text-center">
+            <div className="mb-3 sm:mb-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+                <Dumbbell className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
               </div>
             </div>
-            <h2 className="text-4xl font-bold text-white mb-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-3">
               Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Athlete'}!
             </h2>
-            <p className="text-white/80 text-xl mb-4">
+            <p className="text-white/80 text-lg sm:text-xl mb-3 sm:mb-4">
               Ready to crush your fitness goals today?
             </p>
           </div>
@@ -402,7 +405,7 @@ export default function ClientDashboard() {
 
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Programs Summary */}
           <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 cursor-pointer" onClick={() => router.push('/dashboard/programs')}>
             <CardHeader>

@@ -51,7 +51,6 @@ export default function ProgramsPage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
   }
 
   if (isLoading) {
@@ -70,40 +69,43 @@ export default function ProgramsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Header */}
       <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/dashboard')}
-                className="text-white/90 hover:text-orange-400 hover:bg-white/10"
+                className="text-white/90 hover:text-orange-400 hover:bg-white/10 text-xs sm:text-sm flex-shrink-0"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+                <span className="sm:hidden">Back</span>
               </Button>
-              <h1 className="text-2xl font-bold text-orange-400">My Programs</h1>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400 truncate min-w-0">My Programs</h1>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/')}
-                className="text-white/90 hover:text-orange-400 hover:bg-white/10"
+                className="text-white/90 hover:text-orange-400 hover:bg-white/10 text-xs sm:text-sm"
               >
-                Back to Site
+                <span className="hidden sm:inline">Back to Site</span>
+                <span className="sm:hidden">Site</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-white/90 hover:text-red-400 hover:bg-white/10"
+                className="text-white/90 hover:text-red-400 hover:bg-white/10 text-xs sm:text-sm"
               >
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Out</span>
               </Button>
             </div>
           </div>
@@ -120,45 +122,43 @@ export default function ProgramsPage() {
           </h2>
           
           {userPrograms.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
               {userPrograms.map((program) => (
                 <Card key={program.id} className="bg-white/5 border-orange-500/30">
-                  <CardHeader>
+                  <CardHeader className="pb-3 sm:pb-4">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-white">{program.name}</CardTitle>
+                      <CardTitle className="text-white text-base sm:text-lg">{program.name}</CardTitle>
                     </div>
-                    <CardDescription className="text-white/70">{program.description}</CardDescription>
+                    <CardDescription className="text-white/70 text-sm">{program.description}</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-white/70">Progress</span>
-                        <span className="text-orange-400 font-medium">{program.progress}%</span>
-                      </div>
-                      <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
-                          className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${program.progress}%` }}
-                        ></div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-white/70">Workouts:</span>
-                          <span className="text-white ml-2">{program.workoutsCompleted}/{program.totalWorkouts}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-white/70">
-                        <Calendar className="w-4 h-4" />
-                        <span>{new Date(program.startDate).toLocaleDateString()} - {new Date(program.endDate).toLocaleDateString()}</span>
-                      </div>
-                      <Button 
-                        className="w-full bg-orange-500 hover:bg-orange-600"
-                        onClick={() => router.push(`/dashboard/programs/${program.slug}`)}
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        {program.progress > 0 ? 'Continue Program' : 'Start Program'}
-                      </Button>
+                  <CardContent className="space-y-3 sm:space-y-4">
+                    <div className="flex items-center justify-between text-xs sm:text-sm">
+                      <span className="text-white/70">Progress</span>
+                      <span className="text-orange-400 font-medium">{program.progress}%</span>
                     </div>
+                    <div className="w-full bg-white/10 rounded-full h-2">
+                      <div 
+                        className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${program.progress}%` }}
+                      ></div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
+                      <div>
+                        <span className="text-white/70">Workouts:</span>
+                        <span className="text-white ml-2">{program.workoutsCompleted}/{program.totalWorkouts}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-white/70">
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="truncate">{new Date(program.startDate).toLocaleDateString()} - {new Date(program.endDate).toLocaleDateString()}</span>
+                    </div>
+                    <Button 
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-sm sm:text-base py-2 sm:py-3"
+                      onClick={() => router.push(`/dashboard/programs/${program.slug}`)}
+                    >
+                      <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      {program.progress > 0 ? 'Continue Program' : 'Start Program'}
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
