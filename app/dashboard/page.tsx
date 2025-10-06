@@ -84,7 +84,11 @@ export default function ClientDashboard() {
         const data = await response.json()
         setPurchasedProductsCount(data.orders?.length || 0)
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted for products count')
+        return
+      }
       console.error('Error fetching products count:', error)
       // Set default value on error
       setPurchasedProductsCount(0)
@@ -112,7 +116,11 @@ export default function ClientDashboard() {
           setHasCoachingSubscription(true)
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted for subscription data')
+        return
+      }
       console.error('Error fetching subscription data:', error)
       // Set default values on error
       setSubscriptionData(null)
@@ -144,7 +152,11 @@ export default function ClientDashboard() {
         console.log('📊 Dashboard - Local programs found:', localPrograms.length)
         setUserPrograms(localPrograms)
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted for user programs')
+        return
+      }
       console.error('Error fetching user programs:', error)
       // If API fails, check localStorage as fallback
       console.log('API error, checking localStorage for programs')
@@ -253,7 +265,11 @@ export default function ClientDashboard() {
       activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       setRecentActivity(activities.slice(0, 3))
 
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted for recent activity')
+        return
+      }
       console.error('Error fetching recent activity:', error)
       // Set empty array on error
       setRecentActivity([])

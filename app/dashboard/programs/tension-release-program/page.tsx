@@ -305,16 +305,16 @@ export default function TensionReleaseProgramPage() {
         {!showWelcome && currentVideo && (
           <div className="mb-8">
             <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-2xl p-8 border-2 border-orange-500/30">
-              <div className="grid lg:grid-cols-3 gap-8">
+              <div className="grid lg:grid-cols-4 gap-8">
                 {/* Video Player */}
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-3">
                   <div className="relative">
-                    <div className="aspect-video bg-black/50 rounded-xl overflow-hidden">
+                    <div className="aspect-[16/9] bg-black/50 rounded-xl overflow-hidden">
                       <video
                         key={currentVideo.id}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         controls
-                        poster="/womanexcercising.jpg"
+                        preload="metadata"
                         onEnded={() => handleVideoComplete(currentVideo.id)}
                       >
                         <source src={currentVideo.url} type="video/mp4" />
@@ -356,11 +356,14 @@ export default function TensionReleaseProgramPage() {
                 </div>
                 
                 {/* Video Info & Controls */}
-                <div className="space-y-6">
+                <div className="lg:col-span-1 space-y-6">
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-2">
                       {currentVideo.title}
                     </h3>
+                    <p className="text-orange-300/90 text-sm mb-4 leading-relaxed">
+                      {currentVideo.subtitle}
+                    </p>
                     <div className="flex items-center gap-2 mb-4">
                       {isVideoWatched(currentVideo.id) && (
                         <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
@@ -465,6 +468,81 @@ export default function TensionReleaseProgramPage() {
           </div>
         </div>
 
+        {/* Video Modules - Improved Layout */}
+        {!showWelcome && (
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-orange-400" />
+              Course Modules
+            </h3>
+            
+            {/* Progress Overview */}
+            <div className="bg-white/5 rounded-xl p-4 mb-6 border border-orange-500/20">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-white/70 text-sm">Course Progress</span>
+                <span className="text-orange-400 font-semibold text-sm">{Math.round(progress)}% Complete</span>
+              </div>
+              <Progress value={progress} className="h-2 bg-white/10">
+                <div className="h-full bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+              </Progress>
+              <p className="text-xs text-white/60 mt-2">
+                {watchedVideos.size} of {courseVideos.length} modules completed
+              </p>
+            </div>
+
+            {/* Compact Module List */}
+            <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-500/30 scrollbar-track-transparent">
+              {courseVideos.map((video) => (
+                <div 
+                  key={video.id} 
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                    currentVideo?.id === video.id 
+                      ? 'bg-orange-500/20 border border-orange-500/50' 
+                      : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-orange-500/30'
+                  }`}
+                  onClick={() => handleVideoSelect(video)}
+                >
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+                      <span className="text-orange-400 font-semibold text-sm">{video.id}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-white font-medium text-sm truncate">
+                      {video.title}
+                    </h4>
+                    <p className="text-orange-300/80 text-xs truncate mb-1">
+                      {video.subtitle}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-white/60">
+                      <Clock className="w-3 h-3" />
+                      <span>Video Module</span>
+                      {isVideoWatched(video.id) && (
+                        <>
+                          <span>•</span>
+                          <span className="text-green-400 flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3" />
+                            Completed
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex-shrink-0">
+                    {isVideoWatched(video.id) ? (
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <Play className="w-5 h-5 text-orange-400" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Program Components */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-6 text-center">
@@ -499,53 +577,6 @@ export default function TensionReleaseProgramPage() {
             <p className="text-white/80 leading-relaxed">Connect muscles together and scale strength to prevent reinjury and optimize performance</p>
           </Card>
         </div>
-
-        {/* Video Modules Carousel */}
-        {!showWelcome && (
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-orange-400" />
-              Course Modules
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {courseVideos.map((video) => (
-                <Card 
-                  key={video.id} 
-                  className={`cursor-pointer transition-all duration-300 ${
-                    currentVideo?.id === video.id 
-                      ? 'border-orange-500 bg-orange-500/10 scale-105' 
-                      : 'border-orange-500/30 bg-white/5 hover:border-orange-400/50 hover:bg-white/10 hover:scale-102'
-                  }`}
-                  onClick={() => handleVideoSelect(video)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-white text-sm font-semibold">
-                        Module {video.id}
-                      </CardTitle>
-                      <div className="flex items-center gap-2">
-                        {isVideoWatched(video.id) && (
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        )}
-                        <Play className="w-4 h-4 text-orange-400" />
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <h4 className="text-white font-medium text-sm mb-2 line-clamp-2">
-                      {video.title}
-                    </h4>
-                    <div className="flex items-center gap-2 text-xs text-white/70">
-                      <Clock className="w-3 h-3" />
-                      <span>Video Module</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Completion Status */}
         {!showWelcome && progress === 100 && (

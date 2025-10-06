@@ -210,36 +210,36 @@ export default function ProgramsPage() {
 
             {/* Program Components Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-6 text-center">
-                <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Zap className="w-8 h-8 text-black" />
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-xl font-bold mb-3 group-hover:text-orange-400 transition-colors">Tension Release</h4>
-                <p className="text-white/80 leading-relaxed">Increase work capacity through targeted tension release techniques that unlock your body's potential</p>
+                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Tension Release</h4>
+                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Increase work capacity through targeted tension release techniques that unlock your body's potential</p>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-6 text-center">
-                <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Heart className="w-8 h-8 text-black" />
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-xl font-bold mb-3 group-hover:text-orange-400 transition-colors">Stretching</h4>
-                <p className="text-white/80 leading-relaxed">Improve range of motion (ROM) with progressive stretching protocols designed for runners</p>
+                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Stretching</h4>
+                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Improve range of motion (ROM) with progressive stretching protocols designed for runners</p>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-6 text-center">
-                <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Target className="w-8 h-8 text-black" />
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Target className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-xl font-bold mb-3 group-hover:text-orange-400 transition-colors">Activation</h4>
-                <p className="text-white/80 leading-relaxed">Wake up weak muscles with targeted activation exercises that restore proper function</p>
+                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Activation</h4>
+                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Wake up weak muscles with targeted activation exercises that restore proper function</p>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-6 text-center">
-                <div className="w-16 h-16 rounded-full gradient-orange-yellow mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <CheckCircle className="w-8 h-8 text-black" />
+              <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm p-4 sm:p-6 text-center">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-3 sm:mb-4 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                 </div>
-                <h4 className="font-heading text-xl font-bold mb-3 group-hover:text-orange-400 transition-colors">Compound Reintegration</h4>
-                <p className="text-white/80 leading-relaxed">Connect muscles together and scale strength to prevent reinjury and optimize performance</p>
+                <h4 className="font-heading text-lg sm:text-xl font-bold mb-2 sm:mb-3 group-hover:text-orange-400 transition-colors">Compound Reintegration</h4>
+                <p className="text-white/80 leading-relaxed text-sm sm:text-base">Connect muscles together and scale strength to prevent reinjury and optimize performance</p>
               </Card>
             </div>
 
@@ -258,7 +258,7 @@ export default function ProgramsPage() {
                   Schedule a free 15-minute session with Daniel and map out your personalized path to peak performance.
                 </p>
                 <Button 
-                  className="gradient-orange-yellow text-black font-bold hover:scale-105 transition-all text-xl px-12 py-4 rounded-xl"
+                  className="gradient-orange-yellow text-black font-bold hover:scale-105 transition-all text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl w-full sm:w-auto"
                   onClick={() => {
                     console.log('Button clicked, opening Calendly popup')
                     setIsCalendlyOpen(true)
@@ -301,7 +301,7 @@ export default function ProgramsPage() {
             <button
               onClick={() => scrollToSlide('prev')}
               disabled={currentSlide === 0}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-lg hover:shadow-xl"
+              className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 items-center justify-center hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-lg hover:shadow-xl"
               aria-label="Previous slide"
             >
               <ChevronLeft className="w-6 h-6 text-white group-hover:text-orange-400 transition-colors" />
@@ -310,7 +310,7 @@ export default function ProgramsPage() {
             <button
               onClick={() => scrollToSlide('next')}
               disabled={currentSlide >= 3}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-lg hover:shadow-xl"
+              className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 items-center justify-center hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-lg hover:shadow-xl"
               aria-label="Next slide"
             >
               <ChevronRight className="w-6 h-6 text-white group-hover:text-orange-400 transition-colors" />
@@ -321,31 +321,31 @@ export default function ProgramsPage() {
               ref={carouselRef}
               className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing scrollbar-hide"
             >
-              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[85%] sm:min-w-[400px] snap-center flex flex-col rounded-2xl">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
                       <Target className="w-8 h-8 text-black" />
                     </div>
                     <div className="min-w-0">
-                      <CardTitle className="font-heading text-2xl">Strength & Conditioning</CardTitle>
-                      <CardDescription>Build power, endurance, and resilience</CardDescription>
+                      <CardTitle className="font-heading text-xl sm:text-2xl">Strength & Conditioning</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Build power, endurance, and resilience</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-1 flex flex-col">
-                  <div className="grid grid-cols-2 gap-4 flex-1">
+                <CardContent className="space-y-4 flex-1 flex flex-col p-4 sm:p-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 flex-1">
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-orange-400">Beginner Programs</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-orange-400 text-sm sm:text-base">Beginner Programs</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Foundation Builder (6 weeks)</li>
                         <li>• Bodyweight Basics (4 weeks)</li>
                         <li>• Movement Fundamentals (8 weeks)</li>
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-yellow-400">Advanced Programs</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-yellow-400 text-sm sm:text-base">Advanced Programs</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Elite Strength (12 weeks)</li>
                         <li>• Power Development (10 weeks)</li>
                         <li>• Competition Prep (16 weeks)</li>
@@ -355,31 +355,31 @@ export default function ProgramsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[85%] sm:min-w-[400px] snap-center flex flex-col rounded-2xl">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
                       <Heart className="w-8 h-8 text-black" />
                     </div>
                     <div className="min-w-0">
-                      <CardTitle className="font-heading text-2xl">Recovery & Mobility</CardTitle>
-                      <CardDescription>Restore function and prevent injury</CardDescription>
+                      <CardTitle className="font-heading text-xl sm:text-2xl">Recovery & Mobility</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Restore function and prevent injury</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-1 flex flex-col">
-                  <div className="grid grid-cols-2 gap-4 flex-1">
+                <CardContent className="space-y-4 flex-1 flex flex-col p-4 sm:p-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 flex-1">
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-orange-400">Recovery Programs</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-orange-400 text-sm sm:text-base">Recovery Programs</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Tension Reset (30 days)</li>
                         <li>• Active Recovery (4 weeks)</li>
                         <li>• Sleep Optimization (6 weeks)</li>
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-yellow-400">Mobility Programs</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-yellow-400 text-sm sm:text-base">Mobility Programs</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Daily Mobility (ongoing)</li>
                         <li>• Desk Worker Relief (8 weeks)</li>
                         <li>• Athletic Flexibility (12 weeks)</li>
@@ -389,31 +389,31 @@ export default function ProgramsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-orange-500/50 transition-all hover:glow-orange backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[85%] sm:min-w-[400px] snap-center flex flex-col rounded-2xl">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
                       <Zap className="w-8 h-8 text-black" />
                     </div>
                     <div className="min-w-0">
-                      <CardTitle className="font-heading text-2xl">Sport-Specific Training</CardTitle>
-                      <CardDescription>Tailored for your sport or activity</CardDescription>
+                      <CardTitle className="font-heading text-xl sm:text-2xl">Sport-Specific Training</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Tailored for your sport or activity</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-1 flex flex-col">
-                  <div className="grid grid-cols-2 gap-4 flex-1">
+                <CardContent className="space-y-4 flex-1 flex flex-col p-4 sm:p-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 flex-1">
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-orange-400">Team Sports</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-orange-400 text-sm sm:text-base">Team Sports</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Basketball Performance</li>
                         <li>• Soccer Conditioning</li>
                         <li>• Football Strength</li>
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-yellow-400">Individual Sports</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-yellow-400 text-sm sm:text-base">Individual Sports</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Running Performance</li>
                         <li>• Tennis Agility</li>
                         <li>• Golf Mobility</li>
@@ -423,31 +423,31 @@ export default function ProgramsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[280px] sm:min-w-[400px] snap-start flex flex-col">
+              <Card className="bg-card/90 border-2 border-muted hover:border-yellow-500/50 transition-all hover:glow-yellow backdrop-blur-sm shadow-xl hover:shadow-2xl min-w-[85%] sm:min-w-[400px] snap-center flex flex-col rounded-2xl">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-full gradient-orange-yellow flex items-center justify-center flex-shrink-0">
                       <Award className="w-8 h-8 text-black" />
                     </div>
                     <div className="min-w-0">
-                      <CardTitle className="font-heading text-2xl">Specialized Programs</CardTitle>
-                      <CardDescription>Unique approaches for specific needs</CardDescription>
+                      <CardTitle className="font-heading text-xl sm:text-2xl">Specialized Programs</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Unique approaches for specific needs</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-1 flex flex-col">
-                  <div className="grid grid-cols-2 gap-4 flex-1">
+                <CardContent className="space-y-4 flex-1 flex flex-col p-4 sm:p-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 flex-1">
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-orange-400">Age-Specific</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-orange-400 text-sm sm:text-base">Age-Specific</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Youth Athletics (13-18)</li>
                         <li>• Masters Training (50+)</li>
                         <li>• Senior Fitness (65+)</li>
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-yellow-400">Lifestyle-Based</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                      <h4 className="font-semibold text-yellow-400 text-sm sm:text-base">Lifestyle-Based</h4>
+                      <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                         <li>• Busy Professional</li>
                         <li>• New Parent Fitness</li>
                         <li>• Travel Warrior</li>
@@ -618,19 +618,19 @@ export default function ProgramsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
             {/* Personalized Approach */}
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-4 sm:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Target className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-3 sm:mb-4">Personalized Approach</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">Personalized Approach</h3>
+                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
                   Every program is customized to your goals, experience level, and available time.
                 </p>
-                <div className="mt-auto pt-3 sm:pt-4 border-t border-orange-500/20">
+                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-orange-400">
                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                     <span>Tailored Programs</span>
@@ -642,21 +642,21 @@ export default function ProgramsPage() {
             {/* Proven Results */}
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-4 sm:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Award className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-3 sm:mb-4">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">
                   <span className="block lg:hidden">Proven Results</span>
                   <span className="hidden lg:block">
                     <span className="block">Proven</span>
                     <span className="block">Results</span>
                   </span>
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
                   Based on methods that have transformed 500+ athletes across all levels.
                 </p>
-                <div className="mt-auto pt-3 sm:pt-4 border-t border-yellow-500/20">
+                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-yellow-400">
                     <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                     <span>Track Record</span>
@@ -668,21 +668,21 @@ export default function ProgramsPage() {
             {/* Expert Guidance */}
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-4 sm:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Users className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-3 sm:mb-4">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">
                   <span className="block lg:hidden">Expert Guidance</span>
                   <span className="hidden lg:block">
                     <span className="block">Expert</span>
                     <span className="block">Guidance</span>
                   </span>
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
                   Direct access to professional coaching and ongoing support throughout your journey.
                 </p>
-                <div className="mt-auto pt-3 sm:pt-4 border-t border-orange-500/20">
+                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-orange-400">
                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                     <span>Professional Support</span>
@@ -694,15 +694,15 @@ export default function ProgramsPage() {
             {/* Progressive System */}
             <div className="group relative h-full">
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-4 sm:p-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+              <Card className="relative bg-card/80 backdrop-blur-sm border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25 text-center group-hover:bg-card/90 h-full flex flex-col p-3 sm:p-4 lg:p-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
                   <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-3 sm:mb-4">Progressive System</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3 lg:mb-4">Progressive System</h3>
+                <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 lg:mb-6 text-sm sm:text-base">
                   Structured progression that adapts as you grow stronger and more capable.
                 </p>
-                <div className="mt-auto pt-3 sm:pt-4 border-t border-yellow-500/20">
+                <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
                   <div className="flex items-center justify-center gap-2 text-sm text-yellow-400">
                     <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                     <span>Adaptive Training</span>
