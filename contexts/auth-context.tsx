@@ -10,6 +10,7 @@ interface AuthContextType {
   userRole: string | null
   loading: boolean
   signOut: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,26 +25,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserRole = async (userId: string) => {
     // Check cache first
     if (roleCache.has(userId)) {
+      console.log('🎯 Using cached role for user:', userId, 'role:', roleCache.get(userId))
       setUserRole(roleCache.get(userId)!)
       return
     }
 
     try {
+      console.log('🔄 Fetching user role for:', userId)
+      
       // First try to get role from user metadata (fastest)
       const { data: { user } } = await supabase.auth.getUser()
       
+      console.log('👤 User metadata:', user?.user_metadata)
+      
       if (user?.user_metadata?.role) {
         const role = user.user_metadata.role
+        console.log('✅ Found role in user metadata:', role)
         setUserRole(role)
         setRoleCache(prev => new Map(prev).set(userId, role))
         return
       }
 
+      console.log('📞 No role in metadata, calling API...')
+      
       // Fallback to API call only if needed
       const response = await fetch(`/api/user-profile?userId=${userId}`)
       const data = await response.json()
       
+      console.log('📡 API response:', data)
+      
       const role = (response.ok && data.profile?.role) ? data.profile.role : 'client'
+      console.log('🎯 Final role determined:', role)
       setUserRole(role)
       setRoleCache(prev => new Map(prev).set(userId, role))
     } catch (error) {
@@ -101,6 +113,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  const refreshUser = async () => {
+    try {
+      console.log('🔄 Refreshing user data...')
+      const { data: { user: refreshedUser } } = await supabase.auth.getUser()
+      setUser(refreshedUser)
+      
+      if (refreshedUser) {
+        await fetchUserRole(refreshedUser.id)
+      }
+      console.log('✅ User data refreshed')
+    } catch (error) {
+      console.error('❌ Error refreshing user data:', error)
+    }
+  }
+
   const signOut = async () => {
     try {
       console.log('🚪 Attempting to sign out...')
@@ -133,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userRole,
     loading,
     signOut,
+    refreshUser,
   }
 
   return (

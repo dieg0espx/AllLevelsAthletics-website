@@ -220,15 +220,13 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       
       if (failed.length === 0) {
         console.log('Successfully deleted all check-ins')
-        alert('All check-ins have been deleted successfully!')
         fetchCheckIns() // Refresh the list
       } else {
         console.error('Some deletions failed:', failed)
-        alert(`Deleted ${results.length - failed.length} check-ins, but ${failed.length} failed to delete.`)
+        console.error(`Deleted ${results.length - failed.length} check-ins, but ${failed.length} failed to delete.`)
       }
     } catch (error) {
       console.error('Error deleting check-ins:', error)
-      alert('An error occurred while deleting check-ins.')
     }
   }
 
@@ -260,11 +258,9 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
         setCheckInToCancel(null)
       } else {
         console.error('Error cancelling check-in')
-        alert('An error occurred while cancelling the check-in.')
       }
     } catch (error) {
       console.error('Error cancelling check-in:', error)
-      alert('An error occurred while cancelling the check-in.')
     }
   }
 
@@ -314,13 +310,13 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
   const handleAddCheckIn = async () => {
     // Basic validation
     if (!newCheckIn.scheduled_date) {
-      alert('Please select a date and time for your check-in')
+      console.log('Please select a date and time for your check-in')
       return
     }
 
     // Check monthly limit
     if (getRemainingCheckIns() === 0) {
-      alert(`You've reached your monthly limit of ${getMonthlyCheckInLimit()} check-ins. Please wait until next month or upgrade your plan.`)
+      console.log(`You've reached your monthly limit of ${getMonthlyCheckInLimit()} check-ins. Please wait until next month or upgrade your plan.`)
       return
     }
 
@@ -361,18 +357,17 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       } else {
         const errorData = await response.json()
         console.error('Error response:', errorData)
-        alert('Failed to schedule check-in. Please try again.')
+        console.error('Failed to schedule check-in. Please try again.')
       }
     } catch (error) {
       console.error('Error adding check-in:', error)
-      alert('An error occurred while scheduling your check-in. Please try again.')
     }
   }
 
   const handleAddProgress = async () => {
     // Basic validation
     if (!newProgress.metric_name.trim()) {
-      alert('Please enter a metric name')
+      console.log('Please enter a metric name')
       return
     }
 
@@ -408,11 +403,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       } else {
         const errorData = await response.json()
         console.error('Error response:', errorData)
-        alert('Failed to add progress entry. Please try again.')
+        console.error('Failed to add progress entry. Please try again.')
       }
     } catch (error) {
       console.error('Error adding progress:', error)
-      alert('An error occurred. Please try again.')
     } finally {
       setIsAddingProgress(false)
     }
@@ -449,11 +443,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       } else {
         const errorData = await response.json()
         console.error('Error response:', errorData)
-        alert('Failed to update notes. Please try again.')
+        console.error('Failed to update notes. Please try again.')
       }
     } catch (error) {
       console.error('Error updating notes:', error)
-      alert('An error occurred. Please try again.')
     } finally {
       setIsUpdatingNotes(false)
     }

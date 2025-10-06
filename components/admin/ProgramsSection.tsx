@@ -126,8 +126,8 @@ export function ProgramsSection({
   const stats = {
     total: programs.length,
     active: programs.filter(p => p.isActive).length,
-    totalEnrollments: programs.reduce((sum, p) => sum + p.enrollmentCount, 0),
-    totalRevenue: programs.reduce((sum, p) => sum + p.totalRevenue, 0)
+    totalEnrollments: programs.reduce((sum, p) => sum + (p.enrollmentCount || 0), 0),
+    totalRevenue: programs.reduce((sum, p) => sum + (p.totalRevenue || 0), 0)
   }
 
   if (programsLoading) {
@@ -259,7 +259,7 @@ export function ProgramsSection({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-white/70">Price:</span>
-                  <span className="text-orange-400 font-semibold">${program.price}</span>
+                  <span className="text-orange-400 font-semibold">${program.price || 0}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-white/70">Duration:</span>
@@ -271,11 +271,11 @@ export function ProgramsSection({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-white/70">Enrollments:</span>
-                  <span className="text-white">{program.enrollmentCount}</span>
+                  <span className="text-white">{program.enrollmentCount || 0}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-white/70">Revenue:</span>
-                  <span className="text-green-400 font-semibold">${program.totalRevenue}</span>
+                  <span className="text-green-400 font-semibold">${program.totalRevenue || 0}</span>
                 </div>
               </div>
             </CardContent>
@@ -348,7 +348,7 @@ export function ProgramsSection({
                   id="price"
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                  onChange={(e) => setFormData({...formData, price: Number(e.target.value) || 0})}
                   className="bg-white/5 border-orange-500/30 text-white"
                   placeholder="0"
                 />

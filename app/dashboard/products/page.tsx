@@ -60,7 +60,6 @@ export default function ProductsPage() {
       
       if (!token) {
         console.error('❌ No access token available')
-        alert('Authentication error: No access token. Please log out and log back in.')
         return
       }
       
@@ -89,17 +88,12 @@ export default function ProductsPage() {
         const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
         console.error('❌ Failed to fetch orders:', errorData)
         
-        // Show user-friendly error message
+        // Log error details
         const errorMessage = errorData.details || errorData.error || 'Unknown error occurred'
-        if (errorData.error?.includes('Database table') || errorData.error?.includes('does not exist')) {
-          alert('Database setup required: Please contact support to set up the database tables.')
-        } else {
-          alert(`Failed to load your orders: ${errorMessage}`)
-        }
+        console.error('Failed to load orders:', errorMessage)
       }
     } catch (error) {
       console.error('💥 Error fetching orders:', error)
-      alert('Network error: Please check your internet connection and try again.')
     } finally {
       setIsLoadingOrders(false)
     }
@@ -521,7 +515,7 @@ export default function ProductsPage() {
                                     }
                                     window.open(trackingUrl, '_blank')
                                   } else {
-                                    alert('Tracking information is not available yet. Please check back later.')
+                                    console.log('Tracking information not available for this order')
                                   }
                                 }}
                               >

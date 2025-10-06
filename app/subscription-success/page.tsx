@@ -12,7 +12,7 @@ import Link from 'next/link'
 export default function SubscriptionSuccessPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const { user, userRole } = useAuth()
   const { refreshSubscription, subscription, loading } = useSubscription()
   const [isLoading, setIsLoading] = useState(true)
   const [sessionData, setSessionData] = useState<any>(null)
@@ -70,6 +70,8 @@ export default function SubscriptionSuccessPage() {
       </div>
     )
   }
+
+  const dashboardHref = (userRole === 'admin' || user?.user_metadata?.role === 'admin') ? '/admin' : '/dashboard'
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -202,7 +204,7 @@ export default function SubscriptionSuccessPage() {
               asChild
               className="flex-1 bg-orange-500 hover:bg-orange-600"
             >
-              <Link href="/dashboard">
+              <Link href={dashboardHref}>
                 Go to Dashboard
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>

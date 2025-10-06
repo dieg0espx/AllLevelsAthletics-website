@@ -23,10 +23,23 @@ import {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { user, signOut, refreshUser } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+
+  // Debug isSaving state changes specifically
+  useEffect(() => {
+    console.log('🔄 isSaving state changed to:', isSaving)
+    if (isSaving) {
+      console.trace('📍 isSaving set to true - stack trace:')
+    }
+  }, [isSaving])
+
+  // Debug state changes
+  useEffect(() => {
+    console.log('🔄 State changed - isEditing:', isEditing, 'isSaving:', isSaving, 'isLoading:', isLoading)
+  }, [isEditing, isSaving, isLoading])
 
   // Profile data from Supabase
   const [profileData, setProfileData] = useState({
@@ -78,7 +91,9 @@ export default function ProfilePage() {
       const data = await response.json()
       
       if (response.ok) {
+        console.log('📋 Profile fetch response:', JSON.stringify(data, null, 2))
         if (data.profile) {
+          console.log('📋 Profile data from API:', JSON.stringify(data.profile, null, 2))
           // Parse phone number if it includes country code
           const phoneData = parsePhoneNumber(data.profile.phone || "")
           
@@ -102,10 +117,14 @@ export default function ProfilePage() {
             dateOfBirth: data.profile.date_of_birth || ""
           }
           
+          console.log('📋 Processed profile data:', JSON.stringify(newProfileData, null, 2))
           setProfileData(newProfileData)
           setOriginalData(newProfileData)
+        } else {
+          console.log('⚠️ No profile data returned from API')
         }
       } else {
+        console.error('❌ Profile fetch failed:', response.status, data)
       }
     } catch (error) {
       console.error('💥 Error fetching profile data:', error)
@@ -153,6 +172,8 @@ export default function ProfilePage() {
   }
 
   const handleSave = async () => {
+    console.log('🚀 handleSave function called')
+    console.log('🚀 Setting isSaving to true')
     setIsSaving(true)
     try {
       console.log('🔄 Saving profile data...')
@@ -176,7 +197,7 @@ export default function ProfilePage() {
         }
       }
       
-      console.log('📤 Sending profile data:', requestData)
+      console.log('📤 Sending profile data:', JSON.stringify(requestData, null, 2))
       
       const response = await fetch('/api/user-profile', {
         method: 'PUT',
@@ -187,7 +208,7 @@ export default function ProfilePage() {
       })
 
       const responseData = await response.json()
-      console.log('📡 Profile save response:', responseData)
+      console.log('📡 Profile save response:', JSON.stringify(responseData, null, 2))
 
       if (response.ok) {
         console.log('✅ Profile saved successfully')
@@ -195,17 +216,19 @@ export default function ProfilePage() {
         setIsEditing(false)
         // Refresh profile data after successful save
         await fetchProfileData()
-        alert('Profile saved successfully!')
+        // Refresh user auth data to update display name on dashboard
+        await refreshUser()
       } else {
         console.error('❌ Failed to save profile:', responseData)
         const errorMessage = responseData.details || responseData.error || 'Unknown error occurred'
-        alert(`Failed to save profile: ${errorMessage}`)
+        console.error('Profile save failed:', errorMessage)
       }
     } catch (error) {
       console.error('💥 Error saving profile:', error)
-      alert('Error saving profile. Please check your internet connection and try again.')
+    } finally {
+      console.log('🚀 Setting isSaving to false in finally block')
+      setIsSaving(false)
     }
-    setIsSaving(false)
   }
 
   const handleCancel = () => {
@@ -480,16 +503,33 @@ export default function ProfilePage() {
             
             <div className="flex space-x-2">
               {!isEditing ? (
-                <Button onClick={() => setIsEditing(true)} className="bg-orange-500 hover:bg-orange-600">
+                <Button 
+                  onClick={() => {
+                    console.log('🖱️ Edit Profile clicked, setting isEditing to true')
+                    setIsEditing(true)
+                  }} 
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
               ) : (
                 <>
-                  <Button onClick={handleCancel} variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
+                  <Button 
+                    onClick={handleCancel} 
+                    variant="outline" 
+                    className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} disabled={isSaving} className="bg-orange-500 hover:bg-orange-600">
+                  <Button 
+                    onClick={() => {
+                      console.log('🖱️ Save Changes clicked, isSaving:', isSaving)
+                      handleSave()
+                    }} 
+                    disabled={isSaving} 
+                    className="bg-orange-500 hover:bg-orange-600"
+                  >
                     <Save className="w-4 h-4 mr-2" />
                     {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
