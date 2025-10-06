@@ -6,11 +6,13 @@ import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Clock, Users, Target, Zap, Heart, Award, Calendar, Play, ChevronLeft, ChevronRight, Star, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
+import ProgramConfirmationDialog from "@/components/program-confirmation-dialog"
 
 export default function ProgramsPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const carouselRef = useRef<HTMLDivElement>(null)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+  const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false)
   
   const totalSlides = 4
   const slideWidth = 400 + 24 // card width + gap
@@ -177,12 +179,12 @@ export default function ProgramsPage() {
                   <div className="space-y-3">
                     <Button 
                       className="gradient-orange-yellow text-black font-bold hover:scale-105 transition-all text-lg px-8 py-4 rounded-xl w-full"
-                      onClick={() => window.location.href = '/contact#contact-form'}
+                      onClick={() => setIsProgramDialogOpen(true)}
                     >
                       Start Your Transformation
                     </Button>
                     <p className="text-center text-green-400 font-semibold text-sm">
-                      ✓ Limited-time free access
+                      ✓ Premium program access
                     </p>
                   </div>
                 </div>
@@ -748,6 +750,13 @@ export default function ProgramsPage() {
       <CalendlyPopup 
         isOpen={isCalendlyOpen} 
         onClose={() => setIsCalendlyOpen(false)} 
+      />
+
+      {/* Program Confirmation Dialog */}
+      <ProgramConfirmationDialog
+        isOpen={isProgramDialogOpen}
+        onClose={() => setIsProgramDialogOpen(false)}
+        onConfirm={() => setIsProgramDialogOpen(false)}
       />
     </div>
   )

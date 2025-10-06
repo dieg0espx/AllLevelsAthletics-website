@@ -26,6 +26,7 @@ export default function ClientDashboard() {
   const [recentActivity, setRecentActivity] = useState<any[]>([])
   const [subscriptionData, setSubscriptionData] = useState<any>(null)
   const [hasCoachingSubscription, setHasCoachingSubscription] = useState(false)
+  const [userPrograms, setUserPrograms] = useState<any[]>([])
 
   useEffect(() => {
     // Wait for auth to finish loading before checking user
@@ -41,26 +42,52 @@ export default function ClientDashboard() {
     
     if (user) {
       // User is authenticated, proceed
-      const timer = setTimeout(() => setIsLoading(false), 1000)
       
-      // Fetch purchased products count and recent activity
-      fetchPurchasedProductsCount()
-      fetchRecentActivity()
-      fetchSubscriptionData()
+      // Set a maximum loading time of 3 seconds as fallback
+      const fallbackTimer = setTimeout(() => {
+        console.log('Dashboard loading timeout - forcing load complete')
+        setIsLoading(false)
+      }, 3000)
       
-      return () => clearTimeout(timer)
+      // Fetch data in parallel with error handling
+      Promise.allSettled([
+        fetchPurchasedProductsCount(),
+        fetchRecentActivity(),
+        fetchSubscriptionData(),
+        fetchUserPrograms()
+      ]).then(() => {
+        // Ensure loading is set to false even if some requests fail
+        clearTimeout(fallbackTimer)
+        setIsLoading(false)
+      }).catch(() => {
+        // Fallback to ensure loading state is cleared
+        clearTimeout(fallbackTimer)
+        setIsLoading(false)
+      })
+      
+      return () => clearTimeout(fallbackTimer)
     }
   }, [user, authLoading, router])
 
   const fetchPurchasedProductsCount = async () => {
+    if (!user?.id) return
     try {
-      const response = await fetch(`/api/user-orders?userId=${user?.id}`)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+      
+      const response = await fetch(`/api/user-orders?userId=${user.id}`, {
+        signal: controller.signal
+      })
+      clearTimeout(timeoutId)
+      
       if (response.ok) {
         const data = await response.json()
         setPurchasedProductsCount(data.orders?.length || 0)
       }
     } catch (error) {
       console.error('Error fetching products count:', error)
+      // Set default value on error
+      setPurchasedProductsCount(0)
     }
   }
 
@@ -68,7 +95,14 @@ export default function ClientDashboard() {
     if (!user?.id) return
 
     try {
-      const response = await fetch(`/api/user-subscription?userId=${user.id}`)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+      
+      const response = await fetch(`/api/user-subscription?userId=${user.id}`, {
+        signal: controller.signal
+      })
+      clearTimeout(timeoutId)
+      
       if (response.ok) {
         const data = await response.json()
         setSubscriptionData(data)
@@ -80,6 +114,47 @@ export default function ClientDashboard() {
       }
     } catch (error) {
       console.error('Error fetching subscription data:', error)
+      // Set default values on error
+      setSubscriptionData(null)
+      setHasCoachingSubscription(false)
+    }
+  }
+
+  const fetchUserPrograms = async () => {
+    if (!user?.id) return
+
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+      
+      const response = await fetch(`/api/user-programs?userId=${user.id}`, {
+        signal: controller.signal
+      })
+      clearTimeout(timeoutId)
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('📊 Dashboard - API response:', data)
+        console.log('📊 Dashboard - Programs found:', data.programs?.length || 0)
+        setUserPrograms(data.programs || [])
+      } else {
+        // If API fails, check localStorage as fallback
+        console.log('⚠️ API failed, checking localStorage for programs')
+        const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
+        console.log('📊 Dashboard - Local programs found:', localPrograms.length)
+        setUserPrograms(localPrograms)
+      }
+    } catch (error) {
+      console.error('Error fetching user programs:', error)
+      // If API fails, check localStorage as fallback
+      console.log('API error, checking localStorage for programs')
+      try {
+        const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
+        setUserPrograms(localPrograms)
+      } catch (localError) {
+        console.error('Error reading localStorage:', localError)
+        setUserPrograms([])
+      }
     }
   }
 
@@ -87,43 +162,91 @@ export default function ClientDashboard() {
     if (!user?.id) return
 
     try {
-      // Fetch recent orders
-      const ordersResponse = await fetch(`/api/user-orders?userId=${user.id}`)
-      const ordersData = await ordersResponse.json()
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout for this complex function
       
-      // Fetch subscription data
-      const subscriptionResponse = await fetch(`/api/user-subscription?userId=${user.id}`)
-      const subscriptionData = await subscriptionResponse.json()
+      // Fetch all data in parallel with timeout
+      const [ordersResponse, subscriptionResponse, programsResponse] = await Promise.allSettled([
+        fetch(`/api/user-orders?userId=${user.id}`, { signal: controller.signal }),
+        fetch(`/api/user-subscription?userId=${user.id}`, { signal: controller.signal }),
+        fetch(`/api/user-programs?userId=${user.id}`, { signal: controller.signal })
+      ])
+      
+      clearTimeout(timeoutId)
 
       const activities: any[] = []
 
-      // Add recent orders as activities
-      if (ordersData.orders && ordersData.orders.length > 0) {
-        ordersData.orders.slice(0, 3).forEach((order: any) => {
-          activities.push({
-            id: order.id,
-            type: 'purchase',
-            title: `Purchased ${order.name}`,
-            description: `Order #${order.orderNumber}`,
-            date: order.purchaseDate,
-            icon: <Package className="w-4 h-4 text-yellow-400" />,
-            color: 'yellow'
+      // Process orders data
+      if (ordersResponse.status === 'fulfilled' && ordersResponse.value.ok) {
+        const ordersData = await ordersResponse.value.json()
+        if (ordersData.orders && ordersData.orders.length > 0) {
+          ordersData.orders.slice(0, 3).forEach((order: any) => {
+            activities.push({
+              id: order.id,
+              type: 'purchase',
+              title: `Purchased ${order.name}`,
+              description: `Order #${order.orderNumber}`,
+              date: order.purchaseDate,
+              icon: <Package className="w-4 h-4 text-yellow-400" />,
+              color: 'yellow'
+            })
           })
-        })
+        }
       }
 
-      // Add subscription activity if exists
-      if (subscriptionData.subscription) {
-        const sub = subscriptionData.subscription
-        activities.push({
-          id: `sub-${sub.id}`,
-          type: 'subscription',
-          title: `Started ${sub.plan_name} Plan`,
-          description: sub.status === 'active' ? 'Active subscription' : `Status: ${sub.status}`,
-          date: sub.created_at,
-          icon: <CheckCircle className="w-4 h-4 text-green-400" />,
-          color: 'green'
-        })
+      // Process subscription data
+      if (subscriptionResponse.status === 'fulfilled' && subscriptionResponse.value.ok) {
+        const subscriptionData = await subscriptionResponse.value.json()
+        if (subscriptionData.subscription) {
+          const sub = subscriptionData.subscription
+          activities.push({
+            id: `sub-${sub.id}`,
+            type: 'subscription',
+            title: `Started ${sub.plan_name} Plan`,
+            description: sub.status === 'active' ? 'Active subscription' : `Status: ${sub.status}`,
+            date: sub.created_at,
+            icon: <CheckCircle className="w-4 h-4 text-green-400" />,
+            color: 'green'
+          })
+        }
+      }
+
+      // Process programs data
+      if (programsResponse.status === 'fulfilled' && programsResponse.value.ok) {
+        const programsData = await programsResponse.value.json()
+        if (programsData.programs && programsData.programs.length > 0) {
+          programsData.programs.slice(0, 2).forEach((program: any) => {
+            activities.push({
+              id: `program-${program.id}`,
+              type: 'program',
+              title: `Started ${program.name}`,
+              description: `${program.progress}% complete`,
+              date: program.startDate,
+              icon: <BookOpen className="w-4 h-4 text-orange-400" />,
+              color: 'orange'
+            })
+          })
+        }
+      } else {
+        // If API failed, check localStorage for programs
+        try {
+          const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
+          if (localPrograms.length > 0) {
+            localPrograms.slice(0, 2).forEach((program: any) => {
+              activities.push({
+                id: `program-${program.id}`,
+                type: 'program',
+                title: `Started ${program.name}`,
+                description: `${program.progress}% complete`,
+                date: program.startDate || program.registeredAt,
+                icon: <BookOpen className="w-4 h-4 text-orange-400" />,
+                color: 'orange'
+              })
+            })
+          }
+        } catch (localError) {
+          console.error('Error reading localStorage for activities:', localError)
+        }
       }
 
       // Sort by date (most recent first) and limit to 3
@@ -132,6 +255,8 @@ export default function ClientDashboard() {
 
     } catch (error) {
       console.error('Error fetching recent activity:', error)
+      // Set empty array on error
+      setRecentActivity([])
     }
   }
 
@@ -275,11 +400,56 @@ export default function ClientDashboard() {
                 <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Dumbbell className="w-6 h-6 text-orange-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">No Programs Yet</h3>
-                <p className="text-white/70 text-sm mb-3">Start your fitness journey</p>
-                <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
-                  Explore Programs
-                </Button>
+                {userPrograms.length > 0 ? (
+                  <>
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      {userPrograms.length} Active Program{userPrograms.length > 1 ? 's' : ''}
+                    </h3>
+                    <p className="text-white/70 text-sm mb-3">
+                      {userPrograms[0]?.name || 'Continue your fitness journey'}
+                    </p>
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                      View Programs
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-semibold text-white mb-2">No Programs Yet</h3>
+                    <p className="text-white/70 text-sm mb-3">Start your fitness journey</p>
+                    <div className="space-y-2">
+                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600 w-full">
+                        Explore Programs
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 w-full text-xs"
+                        onClick={async () => {
+                          console.log('🧪 Testing database...')
+                          try {
+                            const response = await fetch('/api/test-program', { 
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ userId: user?.id })
+                            })
+                            const data = await response.json()
+                            console.log('Database test response:', data)
+                            if (response.ok) {
+                              alert('✅ Database test passed! Table exists and works.')
+                            } else {
+                              alert('❌ Database test failed: ' + data.error + '\n\nPlease run the SQL setup from SETUP_DATABASE.md')
+                            }
+                          } catch (error) {
+                            console.error('Database test error:', error)
+                            alert('❌ Database test failed: ' + error)
+                          }
+                        }}
+                      >
+                        Test Database
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -348,7 +518,7 @@ export default function ClientDashboard() {
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-orange-500/20">
-                  <div className={`w-8 h-8 ${activity.color === 'green' ? 'bg-green-500/20' : activity.color === 'yellow' ? 'bg-yellow-500/20' : 'bg-blue-500/20'} rounded-full flex items-center justify-center`}>
+                  <div className={`w-8 h-8 ${activity.color === 'green' ? 'bg-green-500/20' : activity.color === 'yellow' ? 'bg-yellow-500/20' : activity.color === 'orange' ? 'bg-orange-500/20' : 'bg-blue-500/20'} rounded-full flex items-center justify-center`}>
                     {activity.icon}
                   </div>
                   <div className="flex-1">
