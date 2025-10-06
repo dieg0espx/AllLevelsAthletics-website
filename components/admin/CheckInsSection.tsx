@@ -143,11 +143,10 @@ export function CheckInsSection({ checkIns, checkInsLoading, onRefresh }: CheckI
         onRefresh()
       } else {
         console.error('Failed to save notes')
-        alert('Failed to save notes. Please try again.')
+        console.error('Failed to save notes. Please try again.')
       }
     } catch (error) {
       console.error('Error saving notes:', error)
-      alert('An error occurred while saving notes.')
     }
   }
 

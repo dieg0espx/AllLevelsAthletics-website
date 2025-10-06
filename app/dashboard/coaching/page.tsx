@@ -245,12 +245,11 @@ export default function CoachingPage() {
         setUpgrading(null)
       } else {
         const errorData = await response.json()
-        alert(`Failed to start upgrade: ${errorData.error}`)
+        console.error('Failed to start upgrade:', errorData.error)
         setUpgrading(null)
       }
     } catch (error) {
       console.error('Error upgrading plan:', error)
-      alert('An error occurred while processing your upgrade. Please try again.')
       setUpgrading(null)
     }
   }

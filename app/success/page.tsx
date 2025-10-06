@@ -17,7 +17,7 @@ export default function SuccessPage() {
   const [cartItems, setCartItems] = useState<any[]>([])
   const [shippingInfo, setShippingInfo] = useState<any>({})
   const [totalAmount, setTotalAmount] = useState(0)
-  const { user } = useAuth()
+  const { user, userRole } = useAuth()
 
   useEffect(() => {
     // Simulate loading for better UX
@@ -367,7 +367,7 @@ export default function SuccessPage() {
           <div className="text-center">
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button asChild className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
-                <Link href="/dashboard">
+                <Link href={(userRole === 'admin' || user?.user_metadata?.role === 'admin') ? '/admin' : '/dashboard'}>
                   <Home className="w-5 h-5 mr-2" />
                   Go to My Account
                 </Link>

@@ -15,7 +15,7 @@ export default function PlanSuccessPage() {
   const [orderSaved, setOrderSaved] = useState(false)
   const [orderSaveAttempted, setOrderSaveAttempted] = useState(false)
   const [planData, setPlanData] = useState<any>({})
-  const { user } = useAuth()
+  const { user, userRole } = useAuth()
 
   useEffect(() => {
     // Simulate loading for better UX
@@ -220,8 +220,8 @@ export default function PlanSuccessPage() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="gradient-orange-yellow text-black font-bold hover:scale-105 transition-all">
-              <Link href="/dashboard">
+            <Button asChild size="lg" className="gradient-orange-yellow text_black font-bold hover:scale-105 transition-all">
+              <Link href={(userRole === 'admin' || user?.user_metadata?.role === 'admin') ? '/admin' : '/dashboard'}>
                 <User className="w-5 h-5 mr-2" />
                 Go to Dashboard
               </Link>

@@ -198,10 +198,10 @@ export default function CheckoutPage() {
          console.error('Stripe failed to load')
          throw new Error('Stripe failed to load')
        }
-     } catch (error) {
-       console.error('Checkout error:', error)
-       const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.'
-       alert(`Checkout Error: ${errorMessage}`)
+    } catch (error) {
+      console.error('Checkout error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+      console.error('Checkout failed:', errorMessage)
      } finally {
        setIsProcessing(false)
      }
