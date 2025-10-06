@@ -45,12 +45,21 @@ export default function TensionReleaseProgramPage() {
       return
     }
     
+    // Ensure user has the program in their database record
+    ensureUserProgram()
+    
     // Load watched videos from localStorage
     const savedWatched = localStorage.getItem('tension-release-watched')
     if (savedWatched) {
       const watched = new Set(JSON.parse(savedWatched))
       setWatchedVideos(watched)
-      setProgress((watched.size / courseVideos.length) * 100)
+      const progressValue = (watched.size / courseVideos.length) * 100
+      setProgress(progressValue)
+      
+      // Sync initial progress with backend
+      if (user?.id && watched.size > 0) {
+        syncProgressWithBackend(progressValue, [...watched])
+      }
     }
     
     // Set first video as current if none selected
@@ -72,14 +81,72 @@ export default function TensionReleaseProgramPage() {
     const newWatched = new Set(watchedVideos)
     newWatched.add(videoId)
     setWatchedVideos(newWatched)
-    setProgress((newWatched.size / courseVideos.length) * 100)
+    const newProgress = (newWatched.size / courseVideos.length) * 100
+    setProgress(newProgress)
     
     // Save to localStorage
     localStorage.setItem('tension-release-watched', JSON.stringify([...newWatched]))
+    
+    // Sync progress with backend
+    syncProgressWithBackend(newProgress, [...newWatched])
   }
 
   const handleManualComplete = (videoId: number) => {
     handleVideoComplete(videoId)
+  }
+
+  const ensureUserProgram = async () => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch('/api/add-user-program', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          programId: 'tension-release-program',
+          programName: 'Comprehensive Tension Release & Performance Enhancement',
+          programType: 'premium'
+        })
+      })
+      
+      if (response.ok) {
+        console.log('User program ensured successfully')
+      } else {
+        console.error('Failed to ensure user program')
+      }
+    } catch (error) {
+      console.error('Error ensuring user program:', error)
+    }
+  }
+
+  const syncProgressWithBackend = async (progress: number, watchedVideos: number[]) => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch('/api/update-program-progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          programId: 'tension-release-program',
+          progress: progress,
+          watchedVideos: watchedVideos
+        })
+      })
+      
+      if (response.ok) {
+        console.log('Progress synced with backend successfully')
+      } else {
+        console.error('Failed to sync progress with backend')
+      }
+    } catch (error) {
+      console.error('Error syncing progress with backend:', error)
+    }
   }
 
   const isVideoWatched = (videoId: number) => watchedVideos.has(videoId)
@@ -261,7 +328,7 @@ export default function TensionReleaseProgramPage() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         {showWelcome && (
-          <div className="mb-8">
+        <div className="mb-8">
             <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-2xl p-8 border-2 border-orange-500/30 text-center">
               <div className="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Star className="w-10 h-10 text-orange-400" />
@@ -387,19 +454,19 @@ export default function TensionReleaseProgramPage() {
                       Mark as Completed
                     </Button>
                   )}
-                  
-                  {/* Progress */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-white/70">Program Progress</span>
-                      <span className="text-orange-400 font-semibold">{Math.round(progress)}%</span>
-                    </div>
-                    <Progress value={progress} className="h-2 bg-white/10">
-                      <div className="h-full bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
-                    </Progress>
-                    <p className="text-sm text-white/60">
-                      {watchedVideos.size} of {courseVideos.length} modules completed
-                    </p>
+                
+                {/* Progress */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Program Progress</span>
+                    <span className="text-orange-400 font-semibold">{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="h-2 bg-white/10">
+                    <div className="h-full bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+                  </Progress>
+                  <p className="text-sm text-white/60">
+                    {watchedVideos.size} of {courseVideos.length} modules completed
+                  </p>
                   </div>
                 </div>
               </div>
