@@ -62,7 +62,7 @@ export function Footer() {
                   </li>
                   <li>
                     <a href="/services#knot-roller" className="hover:text-orange-400 transition-colors text-sm sm:text-base block py-1">
-                      All Levels Knot Roller
+                      MFRoller
                     </a>
                   </li>
                   <li>

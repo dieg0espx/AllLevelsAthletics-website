@@ -396,8 +396,8 @@ export default function CheckoutPage() {
                          <div className="relative w-28 h-28 flex-shrink-0">
                            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent rounded-xl"></div>
                            <Image
-                             src={
-                               item.name.includes("All Levels Knot Roller") 
+                            src={
+                              item.name.includes("MFRoller") 
                                  ? "/roller/roller7.jpg"
                                  : item.name.includes("Body Tension Reset Course")
                                  ? "/gymTools.jpg"

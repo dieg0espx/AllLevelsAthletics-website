@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { useSubscription } from "@/contexts/subscription-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
+import CalendlyPopup from "@/components/calendly-popup"
 
 export default function ServicesPage() {
   const [selectedImage, setSelectedImage] = useState("/roller/roller7.jpg")
@@ -21,6 +22,7 @@ export default function ServicesPage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [isAnnual, setIsAnnual] = useState(false)
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const { user } = useAuth()
   const { hasActiveSubscription } = useSubscription()
   
@@ -237,18 +239,18 @@ export default function ServicesPage() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out shadow-xl group hover:shadow-2xl hover:shadow-orange-500/25 hover:-translate-y-1 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                onClick={() => window.location.href = '/contact#contact-form'}
+                onClick={() => setIsCalendlyOpen(true)}
               >
                 <span className="flex items-center gap-2 sm:gap-3">
                   <Zap className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform duration-300" />
-                  Start Free Trial
+                  Talk With Daniel
                 </span>
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-4 sm:px-6 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                onClick={() => window.location.href = '/services#services'}
+                onClick={() => window.location.href = '/services#knot-roller'}
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
@@ -821,10 +823,10 @@ export default function ServicesPage() {
          <div className="container mx-auto px-4">
            <div className="text-center mb-12 sm:mb-16">
              <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-               Our <span className="gradient-text">Products</span>
+              Train <span className="gradient-text">Smarter</span>
              </h2>
              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-               Self-guided programs and professional tools for independent training
+              Professional tools for independent training.
              </p>
            </div>
 
@@ -839,7 +841,7 @@ export default function ServicesPage() {
                        <Zap className="w-6 h-6 text-black" />
                      </div>
                      <div>
-                                               <CardTitle className="font-heading text-2xl text-white mb-1">All Levels Knot Roller</CardTitle>
+                       <CardTitle className="font-heading text-2xl text-white mb-1">MFRoller</CardTitle>
                         <CardDescription className="text-orange-300">Professional Myofascial Release Tool</CardDescription>
                      </div>
                    </div>
@@ -887,7 +889,7 @@ export default function ServicesPage() {
                        <div className="relative overflow-hidden rounded-xl">
                          <img
                            src={rollerImages[currentSlide]}
-                           alt="All Levels Knot Roller"
+                          alt="MFRoller"
                            className="w-full h-48 sm:h-64 object-cover object-center transition-all duration-500"
                          />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
@@ -958,7 +960,7 @@ export default function ServicesPage() {
                          <div className="space-y-2 sm:space-y-3">
                            <AddToCart
                              productId="knot-roller"
-                             productName="All Levels Knot Roller"
+                            productName="MFRoller"
                              price={99}
                              image="/roller/roller5.jpeg"
                              description="Professional myofascial release tool for athletes and fitness enthusiasts"
@@ -1000,330 +1002,9 @@ export default function ServicesPage() {
             </Card>
           </div>
 
-                     {/* Body Tension Reset Course Detailed Information */}
-           <div id="tension-reset-course" className="mt-16 max-w-7xl mx-auto">
-                                                   <Card className="bg-transparent border-2 border-orange-500/30 overflow-hidden rounded-t-lg p-0">
-               <CardHeader className="relative border-b border-orange-500/30 overflow-hidden p-0">
-                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20"></div>
-                 <div className="relative z-10 px-8 py-6">
-                   <div className="flex items-center gap-3">
-                     <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center">
-                       <Target className="w-6 h-6 text-black" />
-                     </div>
-                     <div>
-                                               <CardTitle className="font-heading text-2xl text-white mb-1">Body Tension Reset Course</CardTitle>
-                        <CardDescription className="text-orange-300">30-Day Self-Guided Program</CardDescription>
-                     </div>
-                   </div>
-                 </div>
-               </CardHeader>
-                               <CardContent className="p-4 sm:p-6 md:p-8 bg-card/90">
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                   {/* Course Description - Left */}
-                   <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-                     <div>
-                       <h3 className="font-heading text-lg sm:text-xl font-bold text-orange-400 mb-2 sm:mb-3">Course Overview</h3>
-                       <p className="text-white/80 leading-relaxed text-sm sm:text-base">
-                         A self-paced program designed to help you identify, track, and reduce your body's tension levels. 
-                         In just 30 days, you can cut your Body Tension Score by 50%—guaranteed or your money back.
-                       </p>
-                     </div>
-                     
-                     <div>
-                       <h3 className="font-heading text-lg sm:text-xl font-bold text-yellow-400 mb-2 sm:mb-3">What You'll Learn</h3>
-                       <ul className="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
-                         <li className="flex items-start gap-2 sm:gap-3">
-                           <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                           <span><strong>Body Tension Score System:</strong> Understand and apply the system to measure muscle tension and pain</span>
-                         </li>
-                         <li className="flex items-start gap-2 sm:gap-3">
-                           <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                           <span><strong>Problem Area Identification:</strong> Identify specific problem areas in your body and know exactly where to focus</span>
-                         </li>
-                         <li className="flex items-start gap-2 sm:gap-3">
-                           <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                           <span><strong>Progress Tracking:</strong> Track progress each week using simple PDF or Excel tools</span>
-                         </li>
-                         <li className="flex items-start gap-2 sm:gap-3">
-                           <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                           <span><strong>Step-by-step Techniques:</strong> Follow proven techniques to reduce pain, release tightness, and restore mobility</span>
-                         </li>
-                       </ul>
-                     </div>
-                   </div>
+                     {/* Body Tension Reset Course - TEMPORARILY REMOVED */}
 
-                   {/* Course Image - Center */}
-                   <div className="lg:col-span-1">
-                     <div className="space-y-3 sm:space-y-4">
-                       <div className="relative overflow-hidden rounded-xl">
-                         <img
-                           src="/gymTools.jpg"
-                           alt="Body Tension Reset Course"
-                           className="w-full h-48 sm:h-64 object-cover object-center"
-                         />
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-                       </div>
-                       
-                       {/* Course Benefits */}
-                       <div className="bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border-2 border-orange-500/30 rounded-xl p-3 sm:p-4">
-                         <h3 className="font-heading text-base sm:text-lg font-bold text-orange-400 mb-2 sm:mb-3">Course Benefits</h3>
-                         <div className="space-y-2 text-xs sm:text-sm text-white/80">
-                           <div className="flex items-center gap-2">
-                             <CheckCircle className="w-4 h-4 text-orange-500" />
-                             <span>50% reduction in Body Tension Score guaranteed</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <CheckCircle className="w-4 h-4 text-orange-500" />
-                             <span>Measurable results you can track</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <CheckCircle className="w-4 h-4 text-orange-500" />
-                             <span>Easy-to-use tracking system</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <CheckCircle className="w-4 h-4 text-orange-500" />
-                             <span>Small, consistent steps for big improvements</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <CheckCircle className="w-4 h-4 text-orange-500" />
-                             <span>Lasting improvements in how you feel and move</span>
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-
-                   {/* Price Card - Right (End) */}
-                   <div className="lg:col-span-1">
-                     <Card className="bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border-2 border-orange-500/30 p-4 sm:p-6">
-                       <div className="text-center mb-4 sm:mb-6">
-                         <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$49</div>
-                         <p className="text-xs sm:text-sm text-muted-foreground line-through mb-1">$99</p>
-                         <p className="text-xs sm:text-sm text-green-400 font-semibold mb-3 sm:mb-4">50% OFF</p>
-                         <div className="space-y-2 sm:space-y-3">
-                           <AddToCart
-                             productId="tension-reset-course"
-                             productName="Body Tension Reset Course"
-                             price={49}
-                             image="/roller/roller5.jpeg"
-                             description="30-day self-guided program to reduce body tension and pain"
-                             className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                           >
-                             <span className="flex items-center gap-2">
-                               <ShoppingCart className="w-4 h-4" />
-                               Add to Cart
-                             </span>
-                           </AddToCart>
-                           <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
-                             <span className="flex items-center gap-2">
-                               <Play className="w-4 h-4" />
-                               Watch Preview
-                             </span>
-                           </Button>
-                         </div>
-                       </div>
-                       
-                       <div className="space-y-3 sm:space-y-4">
-                         <h3 className="font-heading text-base sm:text-lg font-bold text-orange-400">What's Included</h3>
-                         <ul className="space-y-2 text-white/80 text-xs sm:text-sm">
-                           <li className="flex items-center gap-2">
-                             <Clock className="w-4 h-4 text-yellow-500" />
-                             <span>30 days of guided instruction</span>
-                           </li>
-                           <li className="flex items-center gap-2">
-                             <Play className="w-4 h-4 text-yellow-500" />
-                             <span>Video demonstrations</span>
-                           </li>
-                           <li className="flex items-center gap-2">
-                             <Target className="w-4 h-4 text-yellow-500" />
-                             <span>Progress tracking tools (PDF/Excel)</span>
-                           </li>
-                           <li className="flex items-center gap-2">
-                             <Heart className="w-4 h-4 text-yellow-500" />
-                             <span>Money-back guarantee</span>
-                           </li>
-                           <li className="flex items-center gap-2">
-                             <Award className="w-4 h-4 text-yellow-500" />
-                             <span>Lifetime access</span>
-                           </li>
-                         </ul>
-                       </div>
-                     </Card>
-                   </div>
-                 </div>
-               </CardContent>
-            </Card>
-          </div>
-
-                     {/* Complete Bundle Detailed Information */}
-           <div id="complete-bundle" className="mt-16 max-w-7xl mx-auto">
-                                                   <Card className="bg-transparent border-2 border-orange-500/30 overflow-hidden rounded-t-lg p-0">
-               <CardHeader className="relative border-b border-orange-500/30 overflow-hidden p-0">
-                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20"></div>
-                 <div className="relative z-10 px-8 py-6">
-                   <div className="flex items-center gap-3">
-                     <div className="w-12 h-12 rounded-full gradient-orange-yellow flex items-center justify-center">
-                       <ShoppingCart className="w-6 h-6 text-black" />
-                     </div>
-                     <div>
-                                               <CardTitle className="font-heading text-2xl text-white mb-1">Complete Bundle</CardTitle>
-                        <CardDescription className="text-orange-500/30">Knot Roller + Course Package</CardDescription>
-                     </div>
-                   </div>
-                 </div>
-               </CardHeader>
-                               <CardContent className="p-4 sm:p-6 md:p-8 bg-card/90">
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                   {/* Bundle Description - Left */}
-                   <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-                                          <div>
-                        <h3 className="font-heading text-lg sm:text-xl font-bold text-orange-400 mb-2 sm:mb-3">Bundle Overview</h3>
-                        <p className="text-white/80 leading-relaxed text-sm sm:text-base">
-                          Get the ultimate recovery system by combining the All Levels Knot Roller with the Body Tension Reset Course. 
-                          This bundle gives you everything you need to take control of your recovery, reduce pain, and move better—starting today.
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h3 className="font-heading text-lg sm:text-xl font-bold text-yellow-400 mb-2 sm:mb-3">What You'll Receive</h3>
-                        <ul className="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
-                          <li className="flex items-start gap-2 sm:gap-3">
-                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                            <span><strong>Full Knot Roller Device:</strong> Built to last and designed to unlock deep muscle tension</span>
-                          </li>
-                          <li className="flex items-start gap-2 sm:gap-3">
-                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                            <span><strong>Lifetime Course Access:</strong> Body Tension Reset Course with the Body Tension Score system</span>
-                          </li>
-                          <li className="flex items-start gap-2 sm:gap-3">
-                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                            <span><strong>Bonus Integration Guide:</strong> Shows you exactly how to use the roller with the course for maximum results</span>
-                          </li>
-                          <li className="flex items-start gap-2 sm:gap-3">
-                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                            <span><strong>Priority Support:</strong> Customer support for any questions or guidance</span>
-                          </li>
-                          <li className="flex items-start gap-2 sm:gap-3">
-                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                            <span><strong>Free Shipping:</strong> Included in the bundle price</span>
-                          </li>
-                        </ul>
-                      </div>
-                   </div>
-
-                   {/* Bundle Image - Center */}
-                   <div className="lg:col-span-1">
-                     <div className="space-y-3 sm:space-y-4">
-                       <div className="relative overflow-hidden rounded-xl group">
-                         <img
-                           src={bundleImages[bundleCurrentSlide]}
-                           alt="Complete Bundle - Knot Roller + Course Package"
-                           className="w-full h-48 sm:h-64 object-cover object-center transition-all duration-500 ease-in-out"
-                         />
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-                         
-                         {/* Bundle Image Gallery Indicators */}
-                         <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2">
-                           {bundleImages.map((_, index) => (
-                             <button
-                               key={index}
-                               onClick={() => setBundleCurrentSlide(index)}
-                               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                 index === bundleCurrentSlide 
-                                   ? 'bg-orange-500 scale-125' 
-                                   : 'bg-white/50 hover:bg-white/70'
-                               }`}
-                             />
-                           ))}
-                         </div>
-                       </div>
-                       
-                                               {/* Perfect For */}
-                        <div className="bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border-2 border-orange-500/30 rounded-xl p-3 sm:p-4">
-                          <h3 className="font-heading text-base sm:text-lg font-bold text-orange-400 mb-2 sm:mb-3">Perfect For</h3>
-                          <div className="space-y-2 text-xs sm:text-sm text-white/80">
-                            <div className="flex items-center gap-2">
-                              <Users className="w-4 h-4 text-orange-500" />
-                              <span>Athletes looking for complete recovery</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Target className="w-4 h-4 text-orange-500" />
-                              <span>Anyone with chronic muscle tension</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Heart className="w-4 h-4 text-orange-500" />
-                              <span>People wanting to reduce pain naturally</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Zap className="w-4 h-4 text-orange-500" />
-                              <span>Those seeking better mobility and movement</span>
-                            </div>
-                          </div>
-                        </div>
-                     </div>
-                   </div>
-
-                   {/* Price Card - Right (End) */}
-                   <div className="lg:col-span-1">
-                                          <Card className="bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border-2 border-orange-500/30 p-4 sm:p-6">
-                        <div className="text-center mb-4 sm:mb-6">
-                          <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$149</div>
-                          <p className="text-xs sm:text-sm text-muted-foreground line-through mb-1">$199</p>
-                          <p className="text-xs sm:text-sm text-orange-400 font-semibold mb-3 sm:mb-4">Save $50!</p>
-                          <div className="space-y-2 sm:space-y-3">
-                            <AddToCart
-                              productId="complete-bundle"
-                              productName="Complete Bundle - Knot Roller + Course"
-                              price={149}
-                              image="/roller/roller5.jpeg"
-                              description="Complete recovery system with Knot Roller and Body Tension Reset Course"
-                              className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                            >
-                              <span className="flex items-center gap-2">
-                                <ShoppingCart className="w-4 h-4" />
-                                Add to Cart
-                              </span>
-                            </AddToCart>
-                            <Button variant="outline" className="w-full border-orange-500/50 text-orange-400 text-sm sm:text-base hover:bg-orange-500/10">
-                              <span className="flex items-center gap-2">
-                                <Info className="w-4 h-4" />
-                                Learn More
-                              </span>
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-3 sm:space-y-4">
-                          <h3 className="font-heading text-base sm:text-lg font-bold text-orange-400">Bundle Benefits</h3>
-                          <ul className="space-y-2 text-white/80 text-xs sm:text-sm">
-                            <li className="flex items-center gap-2">
-                              <CheckCircle className="w-4 h-4 text-orange-500" />
-                              <span>Complete recovery system in one package</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle className="w-4 h-4 text-orange-500" />
-                              <span>Save $50 compared to buying separately</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle className="w-4 h-4 text-orange-500" />
-                              <span>Proven results from 500+ clients</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle className="w-4 h-4 text-orange-500" />
-                              <span>Professional-grade tools and guidance</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle className="w-4 h-4 text-orange-500" />
-                              <span>Lifetime access to course content</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </Card>
-                   </div>
-                 </div>
-               </CardContent>
-            </Card>
-          </div>
+                     {/* Complete Bundle - TEMPORARILY REMOVED */}
 
          
         </div>
@@ -1348,22 +1029,22 @@ export default function ServicesPage() {
               <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
                 <CardHeader className="text-center">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-4 sm:mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                    <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
+                    <Award className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                   </div>
-                  <CardTitle className="font-heading text-lg sm:text-xl md:text-2xl mb-2 group-hover:text-orange-400 transition-colors">Free 7-Day Trial</CardTitle>
-                  <CardDescription className="text-orange-300 text-sm sm:text-base">Experience our coaching risk-free</CardDescription>
+                  <CardTitle className="font-heading text-lg sm:text-xl md:text-2xl mb-2 group-hover:text-orange-400 transition-colors">Annual Membership Discount</CardTitle>
+                  <CardDescription className="text-orange-300 text-sm sm:text-base">Save 15% when you pay yearly</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base mb-4 sm:mb-6">
-                    Get full access to our Starter program for 7 days. No commitment, no credit card required.
+                    Commit to your goals with a full-year Train Tears membership and enjoy 15% off compared to the monthly plan.
                   </p>
                   <Button 
                     className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                    onClick={() => window.location.href = '/contact#contact-form'}
+                    onClick={() => window.location.href = '/services#services'}
                   >
                     <span className="flex items-center gap-2">
-                      <Zap className="w-4 h-4" />
-                      Start Free Trial
+                      <Award className="w-4 h-4" />
+                      Get Annual Plan
                     </span>
                   </Button>
                 </CardContent>
@@ -1372,22 +1053,22 @@ export default function ServicesPage() {
                            <Card className="bg-card/90 border-2 border-yellow-500/30 hover:border-yellow-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
                 <CardHeader className="text-center">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-4 sm:mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                    <Award className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
+                    <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                   </div>
-                  <CardTitle className="font-heading text-lg sm:text-xl md:text-2xl mb-2 group-hover:text-yellow-400 transition-colors">BOGO MFRoller</CardTitle>
-                  <CardDescription className="text-yellow-300 text-sm sm:text-base">Buy 2, Get 1 Free - Limited Time</CardDescription>
+                  <CardTitle className="font-heading text-lg sm:text-xl md:text-2xl mb-2 group-hover:text-yellow-400 transition-colors">Free Program Access</CardTitle>
+                  <CardDescription className="text-yellow-300 text-sm sm:text-base">Runners Tension Score – Now Free</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base mb-4 sm:mb-6">
-                    Perfect for training partners or family. Get three professional MFRollers for the price of two.
+                    Discover where your body holds tension and how to release it. Access the full Runners Tension Score Program completely free.
                   </p>
                   <Button 
                     className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                    onClick={() => window.location.href = '/contact#contact-form'}
+                    onClick={() => window.location.href = '/programs#featured-programs'}
                   >
                     <span className="flex items-center gap-2">
-                      <Award className="w-4 h-4" />
-                      Claim Offer
+                      <Heart className="w-4 h-4" />
+                      See Free Program
                     </span>
                   </Button>
                 </CardContent>
@@ -1396,22 +1077,22 @@ export default function ServicesPage() {
                            <Card className="bg-card/90 border-2 border-orange-500/30 hover:border-orange-500 transition-all hover:glow-orange group backdrop-blur-sm cursor-pointer hover:scale-105">
                 <CardHeader className="text-center">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full gradient-orange-yellow mx-auto mb-4 sm:mb-6 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                    <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
+                    <Users className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
                   </div>
-                  <CardTitle className="font-heading text-lg sm:text-xl md:text-2xl mb-2 group-hover:text-orange-400 transition-colors">6-Month Discount</CardTitle>
-                  <CardDescription className="text-orange-300 text-sm sm:text-base">Save 10% on any coaching tier</CardDescription>
+                  <CardTitle className="font-heading text-lg sm:text-xl md:text-2xl mb-2 group-hover:text-orange-400 transition-colors">One-on-One Coaching</CardTitle>
+                  <CardDescription className="text-orange-300 text-sm sm:text-base">Compare Training Tiers</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base mb-4 sm:mb-6">
-                    Commit to your transformation with our 6-month packages and save 10% on your monthly rate.
+                    Find the perfect level of support for your fitness journey. Explore our Starter, Growth, and Elite plans with personalized coaching to match your goals.
                   </p>
                   <Button 
                     className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                    onClick={() => window.location.href = '/contact#contact-form'}
+                    onClick={() => window.location.href = '/services#services'}
                   >
                     <span className="flex items-center gap-2">
-                      <Heart className="w-4 h-4" />
-                      Get Discount
+                      <Users className="w-4 h-4" />
+                      View Coaching Plans
                     </span>
                   </Button>
                 </CardContent>
@@ -1516,7 +1197,7 @@ export default function ServicesPage() {
                 Ready to Transform Your <span className="gradient-text">Training?</span>
               </h2>
               <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed">
-                Join hundreds of athletes who have already discovered the power of our proven methodology.
+                Book a 15-minute session with Daniel to discover your personalized path to peak performance.
               </p>
               
               {/* Enhanced buttons with better styling */}
@@ -1524,21 +1205,11 @@ export default function ServicesPage() {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-2xl hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20"
-                  onClick={() => handleSubscriptionCheckout('foundation', 'Foundation Plan')}
-                  disabled={subscriptionLoading}
+                  onClick={() => setIsCalendlyOpen(true)}
                 >
                   <span className="flex items-center gap-2 sm:gap-3">
                     <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-                    {subscriptionLoading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
-                        Processing...
-                      </>
-                    ) : hasActiveSubscription ? (
-                      'Manage Subscription'
-                    ) : (
-                      'Start Free 7-Day Trial'
-                    )}
+                    Book 15-Min Session
                   </span>
                 </Button>
               </div>
@@ -1554,6 +1225,12 @@ export default function ServicesPage() {
             redirectTo="/services"
           />
         )}
+
+        {/* Calendly Popup */}
+        <CalendlyPopup 
+          isOpen={isCalendlyOpen} 
+          onClose={() => setIsCalendlyOpen(false)} 
+        />
      </div>
    )
  }
