@@ -8,16 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Users,
   Package,
-  BookOpen,
-  Calendar,
-  BarChart3
+  BookOpen
 } from "lucide-react"
 
 // Import section components
 import { ClientsSection } from "@/components/admin/ClientsSection"
 import { OrdersSection } from "@/components/admin/OrdersSection"
 import { ProgramsSection } from "@/components/admin/ProgramsSection"
-import { CheckInsSection } from "@/components/admin/CheckInsSection"
 import { CoachingManagementSection } from "@/components/admin/CoachingManagementSection"
 
 interface Client {
@@ -343,13 +340,6 @@ export default function AdminPage() {
               Coaching
             </TabsTrigger>
             <TabsTrigger 
-              value="checkins" 
-              className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-white/70"
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Check-ins
-            </TabsTrigger>
-            <TabsTrigger 
               value="clients" 
               className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-white/70"
             >
@@ -370,13 +360,6 @@ export default function AdminPage() {
               <BookOpen className="w-4 h-4 mr-2" />
               Programs
             </TabsTrigger>
-            <TabsTrigger 
-              value="analytics" 
-              className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-white/70"
-            >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Analytics
-            </TabsTrigger>
           </TabsList>
 
           {/* Coaching Management Section */}
@@ -384,15 +367,9 @@ export default function AdminPage() {
             <CoachingManagementSection 
               coachingLoading={coachingLoading}
               onRefresh={handleRefreshCoaching}
-            />
-          </TabsContent>
-
-          {/* Check-ins Section */}
-          <TabsContent value="checkins">
-            <CheckInsSection 
               checkIns={checkIns}
               checkInsLoading={checkInsLoading}
-              onRefresh={handleRefreshCheckIns}
+              onRefreshCheckIns={handleRefreshCheckIns}
             />
           </TabsContent>
 
@@ -430,30 +407,6 @@ export default function AdminPage() {
               onUpdateProgram={handleUpdateProgram}
               onDeleteProgram={handleDeleteProgram}
             />
-          </TabsContent>
-
-          {/* Analytics Section */}
-          <TabsContent value="analytics">
-            <Card className="bg-white/5 border-orange-500/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-orange-400" />
-                  Analytics Dashboard
-                </CardTitle>
-                <CardDescription className="text-white/70">
-                  Business insights and performance metrics
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-16">
-                  <BarChart3 className="w-16 h-16 text-orange-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Analytics Coming Soon</h3>
-                  <p className="text-white/70">
-                    Advanced analytics and reporting features will be available here.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>
