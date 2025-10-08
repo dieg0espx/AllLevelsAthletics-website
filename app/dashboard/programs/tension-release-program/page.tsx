@@ -181,12 +181,15 @@ export default function TensionReleaseProgramPage() {
       })
       
       if (response.ok) {
-        console.log('Progress synced with backend successfully')
+        console.log('✅ Progress synced with backend successfully')
       } else {
-        console.error('Failed to sync progress with backend')
+        const errorData = await response.json()
+        console.warn('⚠️ Failed to sync progress with backend:', errorData)
+        // Don't throw error - progress is still saved in localStorage
       }
     } catch (error) {
-      console.error('Error syncing progress with backend:', error)
+      console.warn('⚠️ Error syncing progress with backend (will retry later):', error)
+      // Don't throw error - progress is still saved in localStorage
     }
   }
 
