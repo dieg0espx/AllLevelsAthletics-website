@@ -107,6 +107,10 @@ export function CoachingManagementSection({
   const [selectedCheckIn, setSelectedCheckIn] = useState<CheckIn | null>(null)
   const [showCheckInModal, setShowCheckInModal] = useState(false)
   const [checkInNotes, setCheckInNotes] = useState('')
+  
+  // Client details modal
+  const [showClientDetailsModal, setShowClientDetailsModal] = useState(false)
+  const [selectedClientForDetails, setSelectedClientForDetails] = useState<CoachingClient | null>(null)
 
   useEffect(() => {
     fetchCoachingData()
@@ -523,11 +527,27 @@ export function CoachingManagementSection({
                       </div>
                     )}
                     <div className="flex gap-2 mt-4">
-                      <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 flex-1">
-                        <MessageSquare className="w-4 h-4 mr-1" />
-                        Message
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 flex-1"
+                        onClick={() => {
+                          setSelectedClientForDetails(client)
+                          setShowClientDetailsModal(true)
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-1" />
+                        View Details
                       </Button>
-                      <Button size="sm" variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 flex-1">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 flex-1"
+                        onClick={() => {
+                          setFormData({ ...formData, client_id: client.id })
+                          setShowScheduleModal(true)
+                        }}
+                      >
                         <Calendar className="w-4 h-4 mr-1" />
                         Schedule
                       </Button>
@@ -900,6 +920,102 @@ export function CoachingManagementSection({
           </Card>
         </div>
       )}
+
+      {/* Client Details Modal */}
+      <Dialog open={showClientDetailsModal} onOpenChange={setShowClientDetailsModal}>
+        <DialogContent className="bg-gray-900 border-orange-500/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <User className="w-5 h-5 text-orange-400" />
+              Client Information
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedClientForDetails && (
+            <div className="space-y-6">
+              {/* Client Info */}
+              <div className="bg-white/5 rounded-lg p-4">
+                <h3 className="text-orange-400 font-semibold mb-3">Contact Information</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-white/70">Name:</span>
+                    <span className="text-white font-medium">{selectedClientForDetails.full_name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/70">Email:</span>
+                    <span className="text-white">{selectedClientForDetails.email}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subscription Info */}
+              <div className="bg-white/5 rounded-lg p-4">
+                <h3 className="text-orange-400 font-semibold mb-3">Subscription Details</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-white/70">Plan:</span>
+                    <span className="text-orange-400 font-medium">{selectedClientForDetails.plan_name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/70">Status:</span>
+                    <Badge className={selectedClientForDetails.subscription_status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-500/20 text-gray-400 border-gray-500/30'}>
+                      {selectedClientForDetails.subscription_status}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Info */}
+              <div className="bg-white/5 rounded-lg p-4">
+                <h3 className="text-orange-400 font-semibold mb-3">Progress Tracking</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-white/70">Sessions Completed:</span>
+                    <span className="text-white font-medium">{selectedClientForDetails.completed_sessions}/{selectedClientForDetails.total_sessions}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/70">Progress Score:</span>
+                    <span className="text-green-400 font-semibold">{selectedClientForDetails.progress_score}%</span>
+                  </div>
+                  {selectedClientForDetails.next_session && (
+                    <div className="flex justify-between">
+                      <span className="text-white/70">Next Session:</span>
+                      <span className="text-blue-400">{formatDate(selectedClientForDetails.next_session)}</span>
+                    </div>
+                  )}
+                  {selectedClientForDetails.last_check_in && (
+                    <div className="flex justify-between">
+                      <span className="text-white/70">Last Check-in:</span>
+                      <span className="text-white">{formatDate(selectedClientForDetails.last_check_in)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <Button
+                  onClick={() => setShowClientDetailsModal(false)}
+                  variant="outline"
+                  className="border-gray-500/30 text-gray-400 hover:bg-gray-500/10"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    setFormData({ ...formData, client_id: selectedClientForDetails.id })
+                    setShowClientDetailsModal(false)
+                    setShowScheduleModal(true)
+                  }}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Schedule Session
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Check-in Notes Modal */}
       <Dialog open={showCheckInModal} onOpenChange={setShowCheckInModal}>

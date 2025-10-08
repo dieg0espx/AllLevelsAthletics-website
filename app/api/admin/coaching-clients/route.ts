@@ -23,16 +23,14 @@ export async function GET(request: NextRequest) {
     const clients = await Promise.all(
       subscriptions.map(async (subscription) => {
         // Get user profile data
-        const { data: profile, error: profileError } = await supabaseAdmin
+        const { data: profile } = await supabaseAdmin
           .from('user_profiles')
           .select('*')
           .eq('user_id', subscription.user_id)
           .single()
 
-        if (profileError) {
-          console.error('Error fetching profile for user:', subscription.user_id, profileError)
-          return null
-        }
+        // Also get auth user data for metadata
+        const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(subscription.user_id)
         
         // Get session counts
         const { data: sessions } = await supabaseAdmin
@@ -67,10 +65,18 @@ export async function GET(request: NextRequest) {
         // Calculate progress score (simplified - could be more sophisticated)
         const progressScore = totalSessions > 0 ? Math.min(100, Math.round((completedSessions / totalSessions) * 100)) : 0
 
+        // Get name from auth metadata first, then profile, then email
+        const fullName = authUser?.user?.user_metadata?.full_name || 
+                        profile?.full_name || 
+                        authUser?.user?.email?.split('@')[0] || 
+                        'Unknown'
+        
+        const email = authUser?.user?.email || profile?.email || 'Unknown'
+
         return {
           id: subscription.user_id,
-          email: profile.email || 'Unknown',
-          full_name: profile.full_name || 'Unknown',
+          email: email,
+          full_name: fullName,
           plan_name: subscription.plan_name,
           subscription_status: subscription.status,
           total_sessions: totalSessions,
