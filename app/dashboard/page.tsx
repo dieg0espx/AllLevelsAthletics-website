@@ -514,7 +514,7 @@ export default function ClientDashboard() {
                   <>
                     <h3 className="text-lg font-semibold text-white mb-2">No Programs Yet</h3>
                     <p className="text-white/70 text-sm mb-3">Start your fitness journey</p>
-                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600 w-full">
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
                       Explore Programs
                     </Button>
                   </>
@@ -545,7 +545,7 @@ export default function ClientDashboard() {
                 {hasCoachingSubscription ? (
                   <Button 
                     size="sm" 
-                    className="bg-orange-500 hover:bg-orange-600 w-full"
+                    className="bg-orange-500 hover:bg-orange-600"
                     onClick={(e) => {
                       e.stopPropagation()
                       router.push('/dashboard/coaching')
@@ -603,7 +603,7 @@ export default function ClientDashboard() {
                 <p className="text-white/70 text-sm mb-3">
                   {purchasedProductsCount > 0 ? 'Track your orders' : 'Start shopping'}
                 </p>
-                <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
+                <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
                   {purchasedProductsCount > 0 ? 'View Details' : 'Browse Products'}
                 </Button>
               </div>
