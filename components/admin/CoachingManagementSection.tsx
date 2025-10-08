@@ -39,6 +39,11 @@ interface CoachingClient {
   next_session?: string
   progress_score: number
   last_check_in?: string
+  phone?: string
+  address?: string
+  city?: string
+  state?: string
+  zip_code?: string
 }
 
 interface CoachingSession {
@@ -111,6 +116,8 @@ export function CoachingManagementSection({
   // Client details modal
   const [showClientDetailsModal, setShowClientDetailsModal] = useState(false)
   const [selectedClientForDetails, setSelectedClientForDetails] = useState<CoachingClient | null>(null)
+  const [clientScheduledSessions, setClientScheduledSessions] = useState<CheckIn[]>([])
+  const [loadingClientSessions, setLoadingClientSessions] = useState(false)
 
   useEffect(() => {
     fetchCoachingData()
@@ -364,6 +371,75 @@ export function CoachingManagementSection({
     }
   }
 
+  // Get monthly check-in limit based on plan
+  const getMonthlyLimit = (planName: string) => {
+    switch (planName?.toLowerCase()) {
+      case 'foundation':
+        return 1
+      case 'growth':
+        return 2
+      case 'elite':
+        return 4
+      default:
+        return 1
+    }
+  }
+
+  // Fetch client's scheduled sessions when opening details
+  const fetchClientSessions = async (clientId: string) => {
+    setLoadingClientSessions(true)
+    try {
+      const now = new Date()
+      const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+      const lastOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      
+      const clientSessions = checkIns.filter(checkIn => 
+        checkIn.user?.id === clientId &&
+        new Date(checkIn.scheduled_date) >= firstOfMonth &&
+        new Date(checkIn.scheduled_date) <= lastOfMonth &&
+        (checkIn.status === 'scheduled' || checkIn.status === 'completed')
+      )
+      
+      setClientScheduledSessions(clientSessions)
+    } catch (error) {
+      console.error('Error fetching client sessions:', error)
+    } finally {
+      setLoadingClientSessions(false)
+    }
+  }
+
+  // Open client details and fetch their sessions
+  const handleViewClientDetails = (client: CoachingClient) => {
+    setSelectedClientForDetails(client)
+    fetchClientSessions(client.id)
+    setShowClientDetailsModal(true)
+  }
+
+  // Cancel a client's session
+  const handleCancelClientSession = async (checkInId: string) => {
+    if (!confirm('Are you sure you want to cancel this session?')) return
+
+    try {
+      const response = await fetch('/api/admin/check-ins', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          checkInId: checkInId,
+          status: 'cancelled'
+        })
+      })
+
+      if (response.ok) {
+        onRefreshCheckIns()
+        if (selectedClientForDetails) {
+          fetchClientSessions(selectedClientForDetails.id)
+        }
+      }
+    } catch (error) {
+      console.error('Error cancelling session:', error)
+    }
+  }
+
   if (coachingLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -531,10 +607,7 @@ export function CoachingManagementSection({
                         size="sm" 
                         variant="outline" 
                         className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 flex-1"
-                        onClick={() => {
-                          setSelectedClientForDetails(client)
-                          setShowClientDetailsModal(true)
-                        }}
+                        onClick={() => handleViewClientDetails(client)}
                       >
                         <User className="w-4 h-4 mr-1" />
                         View Details
@@ -923,76 +996,220 @@ export function CoachingManagementSection({
 
       {/* Client Details Modal */}
       <Dialog open={showClientDetailsModal} onOpenChange={setShowClientDetailsModal}>
-        <DialogContent className="bg-gray-900 border-orange-500/30 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-gray-900 border-orange-500/30 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <User className="w-5 h-5 text-orange-400" />
-              Client Information
-            </DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-white text-2xl flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6 text-black" />
+                </div>
+                Client Profile
+              </DialogTitle>
+              {selectedClientForDetails && (
+                <Badge className={selectedClientForDetails.subscription_status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-500/20 text-gray-400 border-gray-500/30'}>
+                  {selectedClientForDetails.subscription_status}
+                </Badge>
+              )}
+            </div>
           </DialogHeader>
           
           {selectedClientForDetails && (
             <div className="space-y-6">
-              {/* Client Info */}
-              <div className="bg-white/5 rounded-lg p-4">
-                <h3 className="text-orange-400 font-semibold mb-3">Contact Information</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-white/70">Name:</span>
-                    <span className="text-white font-medium">{selectedClientForDetails.full_name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-white/70">Email:</span>
-                    <span className="text-white">{selectedClientForDetails.email}</span>
-                  </div>
-                </div>
+              {/* Client Name Header */}
+              <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-lg p-4 border border-orange-500/30">
+                <h2 className="text-2xl font-bold text-white mb-1">{selectedClientForDetails.full_name}</h2>
+                <p className="text-orange-400">{selectedClientForDetails.plan_name} Plan</p>
               </div>
 
-              {/* Subscription Info */}
-              <div className="bg-white/5 rounded-lg p-4">
-                <h3 className="text-orange-400 font-semibold mb-3">Subscription Details</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-white/70">Plan:</span>
-                    <span className="text-orange-400 font-medium">{selectedClientForDetails.plan_name}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column - Contact & Subscription Info */}
+                <div className="space-y-4">
+                  {/* Contact Info */}
+                  <div className="bg-white/5 rounded-lg p-4 border border-orange-500/20">
+                    <h3 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      Contact Information
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Email:</span>
+                        <span className="text-white">{selectedClientForDetails.email}</span>
+                      </div>
+                      {selectedClientForDetails.phone && (
+                        <div className="flex justify-between">
+                          <span className="text-white/70">Phone:</span>
+                          <span className="text-white">{selectedClientForDetails.phone}</span>
+                        </div>
+                      )}
+                      {(selectedClientForDetails.address || selectedClientForDetails.city) && (
+                        <div className="flex flex-col gap-1 mt-3">
+                          <span className="text-white/70 text-sm">Address:</span>
+                          {selectedClientForDetails.address && (
+                            <span className="text-white text-sm">{selectedClientForDetails.address}</span>
+                          )}
+                          {(selectedClientForDetails.city || selectedClientForDetails.state) && (
+                            <span className="text-white text-sm">
+                              {selectedClientForDetails.city}{selectedClientForDetails.city && selectedClientForDetails.state ? ', ' : ''}{selectedClientForDetails.state} {selectedClientForDetails.zip_code}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-white/70">Status:</span>
-                    <Badge className={selectedClientForDetails.subscription_status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-500/20 text-gray-400 border-gray-500/30'}>
-                      {selectedClientForDetails.subscription_status}
-                    </Badge>
+
+                  {/* Subscription Info */}
+                  <div className="bg-white/5 rounded-lg p-4 border border-orange-500/20">
+                    <h3 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
+                      <Star className="w-4 h-4" />
+                      Subscription Details
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Plan:</span>
+                        <span className="text-orange-400 font-medium">{selectedClientForDetails.plan_name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Monthly Limit:</span>
+                        <span className="text-white font-medium">{getMonthlyLimit(selectedClientForDetails.plan_name)} sessions/month</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Progress Info */}
+                  <div className="bg-white/5 rounded-lg p-4 border border-orange-500/20">
+                    <h3 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4" />
+                      Progress Tracking
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Total Sessions:</span>
+                        <span className="text-white font-medium">{selectedClientForDetails.completed_sessions}/{selectedClientForDetails.total_sessions}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Progress Score:</span>
+                        <span className="text-green-400 font-semibold">{selectedClientForDetails.progress_score}%</span>
+                      </div>
+                      {selectedClientForDetails.last_check_in && (
+                        <div className="flex justify-between">
+                          <span className="text-white/70">Last Check-in:</span>
+                          <span className="text-white">{formatDate(selectedClientForDetails.last_check_in)}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Progress Info */}
-              <div className="bg-white/5 rounded-lg p-4">
-                <h3 className="text-orange-400 font-semibold mb-3">Progress Tracking</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-white/70">Sessions Completed:</span>
-                    <span className="text-white font-medium">{selectedClientForDetails.completed_sessions}/{selectedClientForDetails.total_sessions}</span>
+                {/* Right Column - This Month's Sessions */}
+                <div className="space-y-4">
+                  <div className="bg-white/5 rounded-lg p-4 border border-orange-500/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-orange-400 font-semibold flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        This Month's Sessions
+                      </h3>
+                      <Badge className={clientScheduledSessions.length >= getMonthlyLimit(selectedClientForDetails.plan_name) ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'}>
+                        {clientScheduledSessions.length}/{getMonthlyLimit(selectedClientForDetails.plan_name)} Used
+                      </Badge>
+                    </div>
+
+                    {loadingClientSessions ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    ) : clientScheduledSessions.length > 0 ? (
+                      <div className="space-y-3">
+                        {clientScheduledSessions.map((session) => (
+                          <div key={session.id} className="bg-white/5 rounded-lg p-3 border border-orange-500/20">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-white font-medium text-sm">
+                                {new Date(session.scheduled_date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  timeZone: 'America/Los_Angeles'
+                                })} at {new Date(session.scheduled_date).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true,
+                                  timeZone: 'America/Los_Angeles'
+                                })}
+                              </div>
+                              <Badge className={session.status === 'completed' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-blue-500/20 text-blue-400 border-blue-500/30'}>
+                                {session.status}
+                              </Badge>
+                            </div>
+                            <p className="text-white/60 text-xs capitalize mb-2">
+                              {session.check_in_type.replace('_', ' ')} Session
+                            </p>
+                            {session.notes && (
+                              <div className="text-white/70 text-xs bg-white/5 p-2 rounded mb-2">
+                                📝 {session.notes}
+                              </div>
+                            )}
+                            {session.status === 'scheduled' && (
+                              <div className="flex gap-2 mt-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedCheckIn(session)
+                                    setCheckInNotes(session.notes || '')
+                                    setShowCheckInModal(true)
+                                  }}
+                                  className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 text-xs flex-1"
+                                >
+                                  <Edit className="w-3 h-3 mr-1" />
+                                  Edit Notes
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleCancelClientSession(session.id)}
+                                  className="border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs flex-1"
+                                >
+                                  <X className="w-3 h-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Calendar className="w-12 h-12 text-white/40 mx-auto mb-3" />
+                        <p className="text-white/60 text-sm">No sessions scheduled this month</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-white/70">Progress Score:</span>
-                    <span className="text-green-400 font-semibold">{selectedClientForDetails.progress_score}%</span>
-                  </div>
-                  {selectedClientForDetails.next_session && (
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Next Session:</span>
-                      <span className="text-blue-400">{formatDate(selectedClientForDetails.next_session)}</span>
+
+                  {/* Limit Warning/Info */}
+                  {clientScheduledSessions.length >= getMonthlyLimit(selectedClientForDetails.plan_name) ? (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <X className="w-5 h-5 text-red-400" />
+                        <h4 className="text-red-400 font-semibold">Monthly Limit Reached</h4>
+                      </div>
+                      <p className="text-white/80 text-sm">
+                        This client has reached their monthly limit of {getMonthlyLimit(selectedClientForDetails.plan_name)} sessions. 
+                        To schedule more, they need to cancel/reschedule an existing session or upgrade their plan.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <h4 className="text-green-400 font-semibold">Sessions Available</h4>
+                      </div>
+                      <p className="text-white/80 text-sm">
+                        {getMonthlyLimit(selectedClientForDetails.plan_name) - clientScheduledSessions.length} session{getMonthlyLimit(selectedClientForDetails.plan_name) - clientScheduledSessions.length !== 1 ? 's' : ''} remaining this month
+                      </p>
                     </div>
                   )}
-                  {selectedClientForDetails.last_check_in && (
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Last Check-in:</span>
-                      <span className="text-white">{formatDate(selectedClientForDetails.last_check_in)}</span>
-                    </div>
-                  )}
                 </div>
               </div>
 
-              <div className="flex gap-3 justify-end">
+              <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
                 <Button
                   onClick={() => setShowClientDetailsModal(false)}
                   variant="outline"
@@ -1006,10 +1223,13 @@ export function CoachingManagementSection({
                     setShowClientDetailsModal(false)
                     setShowScheduleModal(true)
                   }}
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  disabled={clientScheduledSessions.length >= getMonthlyLimit(selectedClientForDetails.plan_name)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Session
+                  <Plus className="w-4 h-4 mr-2" />
+                  {clientScheduledSessions.length >= getMonthlyLimit(selectedClientForDetails.plan_name) 
+                    ? 'Limit Reached' 
+                    : 'Schedule New Session'}
                 </Button>
               </div>
             </div>

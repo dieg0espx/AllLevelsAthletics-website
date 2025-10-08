@@ -65,13 +65,13 @@ export async function GET(request: NextRequest) {
         // Calculate progress score (simplified - could be more sophisticated)
         const progressScore = totalSessions > 0 ? Math.min(100, Math.round((completedSessions / totalSessions) * 100)) : 0
 
-        // Get name from auth metadata first, then profile, then email
+        // Get name and email from auth metadata first, then profile
         const fullName = authUser?.user?.user_metadata?.full_name || 
                         profile?.full_name || 
                         authUser?.user?.email?.split('@')[0] || 
                         'Unknown'
         
-        const email = authUser?.user?.email || profile?.email || 'Unknown'
+        const email = authUser?.user?.email || profile?.email || 'No email found'
 
         return {
           id: subscription.user_id,
@@ -83,7 +83,12 @@ export async function GET(request: NextRequest) {
           completed_sessions: completedSessions,
           next_session: nextSession?.scheduled_date || null,
           progress_score: progressScore,
-          last_check_in: lastCheckIn?.scheduled_date || null
+          last_check_in: lastCheckIn?.scheduled_date || null,
+          phone: profile?.phone || null,
+          address: profile?.address || null,
+          city: profile?.city || null,
+          state: profile?.state || null,
+          zip_code: profile?.zip_code || null
         }
       })
     )
