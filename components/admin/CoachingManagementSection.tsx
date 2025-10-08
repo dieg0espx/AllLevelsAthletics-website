@@ -996,7 +996,7 @@ export function CoachingManagementSection({
 
       {/* Client Details Modal */}
       <Dialog open={showClientDetailsModal} onOpenChange={setShowClientDetailsModal}>
-        <DialogContent className="bg-gray-900 border-orange-500/30 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-gray-900 border-orange-500/30 text-white max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle className="text-white text-2xl flex items-center gap-3">
