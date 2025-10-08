@@ -1,31 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 
-export async function POST(request: NextRequest) {
-  console.log('===== EMAIL API STARTED =====')
-  
+interface EmailData {
+  orderId: number
+  orderNumber: string
+  customerEmail: string
+  customerName: string
+  items: any[]
+  totalAmount: number
+  shippingAddress: any
+  orderDate: string
+}
+
+export async function sendOrderConfirmationEmail(data: EmailData) {
   try {
-    const body = await request.json()
-    const { 
-      orderId, 
-      orderNumber, 
-      customerEmail, 
-      customerName, 
-      items, 
-      totalAmount, 
-      shippingAddress,
-      orderDate 
-    } = body
-
-    console.log('Email API received data:', {
-      orderId,
-      orderNumber,
-      customerEmail,
-      customerName,
-      totalAmount,
-      itemsCount: items?.length
-    })
-
     console.log('Sending order confirmation emails...')
 
     // Create email transporter
@@ -45,36 +32,21 @@ export async function POST(request: NextRequest) {
     console.log('SMTP connection verified successfully')
 
     // Generate customer email content
-    const customerEmailContent = generateCustomerEmailContent({
-      orderNumber,
-      customerName,
-      items,
-      totalAmount,
-      shippingAddress,
-      orderDate
-    })
+    const customerEmailContent = generateCustomerEmailContent(data)
 
     // Generate admin email content
-    const adminEmailContent = generateAdminEmailContent({
-      orderNumber,
-      customerName,
-      customerEmail,
-      items,
-      totalAmount,
-      shippingAddress,
-      orderDate
-    })
+    const adminEmailContent = generateAdminEmailContent(data)
 
     // Send customer confirmation email
     const customerMailOptions = {
       from: `"All Levels Athletics" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-      to: customerEmail,
-      subject: `Order Confirmation - ${orderNumber}`,
+      to: data.customerEmail,
+      subject: `Order Confirmation - ${data.orderNumber}`,
       html: customerEmailContent.html,
       text: customerEmailContent.text,
     }
 
-    console.log('Sending customer email to:', customerEmail)
+    console.log('Sending customer email to:', data.customerEmail)
     const customerInfo = await transporter.sendMail(customerMailOptions)
     console.log('Customer email sent successfully! Message ID:', customerInfo.messageId)
 
@@ -82,7 +54,7 @@ export async function POST(request: NextRequest) {
     const adminMailOptions = {
       from: `"All Levels Athletics" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com',
-      subject: `New Order Received - ${orderNumber}`,
+      subject: `New Order Received - ${data.orderNumber}`,
       html: adminEmailContent.html,
       text: adminEmailContent.text,
     }
@@ -91,30 +63,23 @@ export async function POST(request: NextRequest) {
     const adminInfo = await transporter.sendMail(adminMailOptions)
     console.log('Admin email sent successfully! Message ID:', adminInfo.messageId)
 
-    console.log('===== EMAIL API COMPLETED SUCCESSFULLY =====')
-    return NextResponse.json({ 
+    return {
       success: true,
       message: 'Order confirmation emails sent successfully',
       customerEmailId: customerInfo.messageId,
       adminEmailId: adminInfo.messageId
-    })
+    }
 
   } catch (error) {
-    console.error('===== EMAIL API ERROR =====')
     console.error('Error sending order confirmation emails:', error)
-    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-    return NextResponse.json(
-      { 
-        error: 'Failed to send order confirmation emails',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    )
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
   }
 }
 
-function generateCustomerEmailContent({ orderNumber, customerName, items, totalAmount, shippingAddress, orderDate }: any) {
+function generateCustomerEmailContent({ orderNumber, customerName, items, totalAmount, shippingAddress, orderDate }: EmailData) {
   const itemsList = items.map((item: any) => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
@@ -225,7 +190,7 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
             <ul>
               <li>We'll process your order within 1-2 business days</li>
               <li>You'll receive a shipping confirmation with tracking information</li>
-              
+              <li>Your order will be delivered within 5-7 business days</li>
             </ul>
           </div>
           
@@ -276,7 +241,7 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
   return { html, text }
 }
 
-function generateAdminEmailContent({ orderNumber, customerName, customerEmail, items, totalAmount, shippingAddress, orderDate }: any) {
+function generateAdminEmailContent({ orderNumber, customerName, customerEmail, items, totalAmount, shippingAddress, orderDate }: EmailData) {
   const itemsList = items.map((item: any) => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
@@ -442,3 +407,5 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
 
   return { html, text }
 }
+
+

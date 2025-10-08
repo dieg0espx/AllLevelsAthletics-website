@@ -26,6 +26,17 @@ export default function ServicesPage() {
   const { user } = useAuth()
   const { hasActiveSubscription } = useSubscription()
   
+  // Preload Calendly script on page load
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
+
   const rollerImages = [
     "/roller/roller7.jpg",
     "/roller/roller8.jpg",
@@ -53,28 +64,8 @@ export default function ServicesPage() {
     }
 
     if (hasActiveSubscription) {
-      // Redirect to customer portal for existing subscribers
-      try {
-        const response = await fetch('/api/create-customer-portal-session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: user.id,
-          }),
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to create portal session')
-        }
-
-        window.location.href = data.sessionUrl
-      } catch (error) {
-        console.error('Error opening customer portal:', error)
-      }
+      // Redirect to dashboard coaching page for existing subscribers
+      window.location.href = '/dashboard/coaching'
       return
     }
 

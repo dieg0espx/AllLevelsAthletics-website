@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button"
 import { X, Minus, Plus, Trash2, ShoppingCart as ShoppingCartIcon, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useState } from "react"
 
 export function ShoppingCart() {
   const { state, removeItem, updateQuantity, closeCart, getTotalItems, getTotalPrice } = useCart()
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity >= 1) {
@@ -153,11 +155,24 @@ export function ShoppingCart() {
               {/* Checkout Button */}
               <Link href="/checkout" className="block">
                 <Button 
-                  onClick={closeCart}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 text-lg font-medium"
+                  onClick={() => {
+                    setIsCheckingOut(true)
+                    closeCart()
+                  }}
+                  disabled={isCheckingOut}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 text-lg font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Proceed to Checkout
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  {isCheckingOut ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Loading Checkout...
+                    </>
+                  ) : (
+                    <>
+                      Proceed to Checkout
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </>
+                  )}
                 </Button>
               </Link>
 

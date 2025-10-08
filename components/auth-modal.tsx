@@ -40,17 +40,59 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     if (message) setMessage(null)
   }
 
+  // Password strength validation
+  const getPasswordStrength = (password: string): { score: number; text: string; color: string } => {
+    if (!password) return { score: 0, text: '', color: '' }
+    
+    let score = 0
+    
+    // Length check
+    if (password.length >= 8) score++
+    if (password.length >= 12) score++
+    
+    // Character variety checks
+    if (/[a-z]/.test(password)) score++ // lowercase
+    if (/[A-Z]/.test(password)) score++ // uppercase
+    if (/[0-9]/.test(password)) score++ // numbers
+    if (/[^a-zA-Z0-9]/.test(password)) score++ // special characters
+    
+    if (score <= 2) return { score, text: 'Weak', color: 'bg-red-500' }
+    if (score <= 4) return { score, text: 'Fair', color: 'bg-yellow-500' }
+    if (score <= 5) return { score, text: 'Good', color: 'bg-green-500' }
+    return { score, text: 'Strong', color: 'bg-green-600' }
+  }
+
+  const passwordStrength = !isLogin ? getPasswordStrength(formData.password) : null
+
   const validateForm = (): string | null => {
     if (!formData.email) return siteConfig.labels.validation.emailRequired
     
     if (!formData.password) return siteConfig.labels.validation.passwordRequired
-    if (formData.password.length < siteConfig.auth.minPasswordLength) {
-      return siteConfig.labels.validation.passwordTooShort.replace('6', siteConfig.auth.minPasswordLength.toString())
-    }
     
     if (!isLogin) {
+      // Stronger password requirements for registration
+      if (formData.password.length < 8) {
+        return 'Password must be at least 8 characters long'
+      }
+      if (!/[a-z]/.test(formData.password)) {
+        return 'Password must contain at least one lowercase letter'
+      }
+      if (!/[A-Z]/.test(formData.password)) {
+        return 'Password must contain at least one uppercase letter'
+      }
+      if (!/[0-9]/.test(formData.password)) {
+        return 'Password must contain at least one number'
+      }
+      if (!/[^a-zA-Z0-9]/.test(formData.password)) {
+        return 'Password must contain at least one special character (!@#$%^&*)'
+      }
       if (!formData.full_name) return siteConfig.labels.validation.fullNameRequired
       if (formData.password !== formData.confirmPassword) return siteConfig.labels.validation.passwordsDontMatch
+    } else {
+      // For login, just check minimum length
+      if (formData.password.length < siteConfig.auth.minPasswordLength) {
+        return siteConfig.labels.validation.passwordTooShort.replace('6', siteConfig.auth.minPasswordLength.toString())
+      }
     }
     
     return null
@@ -108,13 +150,16 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
         if (error) {
           setMessage({ type: 'error', text: error.message })
         } else {
-          setMessage({ type: 'success', text: siteConfig.labels.register.successMessage })
-          // Close modal after successful registration
+          setMessage({ 
+            type: 'success', 
+            text: `Verification email sent to ${formData.email}! Please check your inbox (and spam folder) to verify your account before logging in.` 
+          })
+          // Keep modal open longer so user can read the message
           setTimeout(() => {
             onClose()
             setFormData({ email: '', password: '', confirmPassword: '', full_name: '' })
             setMessage(null)
-          }, 2000)
+          }, 6000) // Increased from 2000ms to 6000ms
         }
       }
     } catch (error) {
@@ -265,6 +310,43 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            
+            {/* Password Strength Indicator (only for registration) */}
+            {!isLogin && formData.password && passwordStrength && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-white/70">Password Strength:</span>
+                  <span className={`font-semibold ${
+                    passwordStrength.text === 'Weak' ? 'text-red-400' :
+                    passwordStrength.text === 'Fair' ? 'text-yellow-400' :
+                    passwordStrength.text === 'Good' ? 'text-green-400' :
+                    'text-green-500'
+                  }`}>
+                    {passwordStrength.text}
+                  </span>
+                </div>
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full ${passwordStrength.color} transition-all duration-300`}
+                    style={{ width: `${(passwordStrength.score / 6) * 100}%` }}
+                  />
+                </div>
+                <div className="text-xs text-white/60 space-y-1">
+                  <p className="flex items-center gap-1">
+                    {formData.password.length >= 8 ? '✓' : '○'} At least 8 characters
+                  </p>
+                  <p className="flex items-center gap-1">
+                    {/[a-z]/.test(formData.password) && /[A-Z]/.test(formData.password) ? '✓' : '○'} Uppercase & lowercase letters
+                  </p>
+                  <p className="flex items-center gap-1">
+                    {/[0-9]/.test(formData.password) ? '✓' : '○'} At least one number
+                  </p>
+                  <p className="flex items-center gap-1">
+                    {/[^a-zA-Z0-9]/.test(formData.password) ? '✓' : '○'} At least one special character
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {!isLogin && (

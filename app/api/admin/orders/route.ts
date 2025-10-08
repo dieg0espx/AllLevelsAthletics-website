@@ -59,3 +59,68 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    console.log('🔄 Admin: Updating order...')
+    
+    const body = await request.json()
+    const { orderId, status, trackingNumber, carrier, comment } = body
+    
+    console.log('📦 Update request:', { orderId, status, trackingNumber, carrier, comment })
+
+    if (!orderId) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Prepare update data
+    const updateData: any = {
+      updated_at: new Date().toISOString()
+    }
+
+    // Add fields if provided
+    if (status) updateData.status = status
+    if (trackingNumber) updateData.tracking_number = trackingNumber
+    if (carrier) updateData.carrier = carrier
+    if (comment !== undefined) updateData.comment = comment
+
+    console.log('📦 Update data:', updateData)
+
+    // Update the order
+    const { data: updatedOrder, error: updateError } = await supabaseAdmin
+      .from('orders')
+      .update(updateData)
+      .eq('id', orderId)
+      .select(`
+        *,
+        order_items (*)
+      `)
+      .single()
+
+    if (updateError) {
+      console.error('❌ Error updating order:', updateError)
+      return NextResponse.json(
+        { error: `Failed to update order: ${updateError.message}` },
+        { status: 500 }
+      )
+    }
+
+    console.log('✅ Order updated successfully')
+
+    return NextResponse.json({ 
+      order: updatedOrder,
+      success: true,
+      message: 'Order updated successfully'
+    })
+
+  } catch (error) {
+    console.error('Error updating admin order:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

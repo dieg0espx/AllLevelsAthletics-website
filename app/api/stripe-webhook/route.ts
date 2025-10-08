@@ -276,6 +276,43 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     }
   }
 
+  // Send confirmation email
+  try {
+    const customerEmail = typeof customer !== 'string' && customer.email ? customer.email : null
+    
+    if (customerEmail) {
+      // Get plan price from subscription
+      const planPrice = subscription.items.data[0]?.price.unit_amount 
+        ? (subscription.items.data[0].price.unit_amount / 100).toString()
+        : '0'
+      
+      console.log('📧 Sending subscription confirmation email to:', customerEmail)
+      
+      const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/send-subscription-confirmation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: customerEmail,
+          planName: planName,
+          planPrice: planPrice,
+          billingPeriod: billingPeriod,
+          trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null
+        })
+      })
+      
+      if (emailResponse.ok) {
+        console.log('✅ Subscription confirmation email sent successfully')
+      } else {
+        console.error('❌ Failed to send subscription confirmation email')
+      }
+    } else {
+      console.log('⚠️ No customer email found, skipping confirmation email')
+    }
+  } catch (emailError) {
+    console.error('❌ Error sending subscription confirmation email:', emailError)
+    // Don't fail the webhook if email fails
+  }
+
   console.log('✅ Subscription created and saved successfully')
 }
 

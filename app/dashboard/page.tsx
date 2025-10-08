@@ -27,6 +27,7 @@ export default function ClientDashboard() {
   const [subscriptionData, setSubscriptionData] = useState<any>(null)
   const [hasCoachingSubscription, setHasCoachingSubscription] = useState(false)
   const [userPrograms, setUserPrograms] = useState<any[]>([])
+  const [refreshingSubscription, setRefreshingSubscription] = useState(false)
 
   useEffect(() => {
     // Wait for auth to finish loading before checking user
@@ -96,8 +97,13 @@ export default function ClientDashboard() {
   }
 
   const fetchSubscriptionData = async () => {
-    if (!user?.id) return
+    if (!user?.id) {
+      console.log('⚠️ No user ID, skipping subscription fetch')
+      return
+    }
 
+    console.log('🔄 Fetching subscription for user:', user.id)
+    
     try {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
@@ -107,24 +113,97 @@ export default function ClientDashboard() {
       })
       clearTimeout(timeoutId)
       
+      console.log('📡 Subscription API response status:', response.status, response.ok)
+      
       if (response.ok) {
         const data = await response.json()
+        console.log('💳 Subscription data received:', JSON.stringify(data, null, 2))
+        console.log('💳 Subscription object:', data.subscription)
+        console.log('💳 Subscription status:', data.subscription?.status)
+        console.log('💳 Subscription plan_name:', data.subscription?.plan_name)
         setSubscriptionData(data)
         
-        // Check if user has an active coaching subscription
-        if (data.subscription && data.subscription.status === 'active') {
+        // Check if user has an active coaching subscription (active or trialing)
+        if (data.subscription && (data.subscription.status === 'active' || data.subscription.status === 'trialing')) {
+          console.log('✅ Has active subscription:', data.subscription.plan_name)
           setHasCoachingSubscription(true)
+        } else {
+          console.log('❌ No active subscription found. Data:', data.subscription)
+          setHasCoachingSubscription(false)
+          
+          // Auto-sync if we have a Stripe customer ID but no subscription
+          if (data.userProfile?.stripe_customer_id && !data.subscription) {
+            console.log('🔄 Auto-syncing: Found Stripe customer ID but no subscription in database')
+            console.log('🔄 This likely means the webhook didn\'t fire. Attempting manual sync...')
+            
+            // Try to sync from Stripe automatically
+            setTimeout(async () => {
+              try {
+                const syncResponse = await fetch('/api/sync-subscription-status', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ userId: user.id })
+                })
+                
+                const syncData = await syncResponse.json()
+                
+                if (syncResponse.ok) {
+                  console.log('✅ Auto-sync successful! Refreshing page...')
+                  // Refresh the page to show the synced subscription
+                  window.location.reload()
+                } else {
+                  console.log('⚠️ Auto-sync failed:', syncData.error)
+                }
+              } catch (error) {
+                console.error('❌ Auto-sync error:', error)
+              }
+            }, 1000) // Wait 1 second before auto-syncing
+          }
         }
+      } else {
+        const errorData = await response.text()
+        console.error('❌ Subscription API failed:', response.status, errorData)
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
         console.log('Fetch aborted for subscription data')
         return
       }
-      console.error('Error fetching subscription data:', error)
+      console.error('💥 Error fetching subscription data:', error)
       // Set default values on error
       setSubscriptionData(null)
       setHasCoachingSubscription(false)
+    }
+  }
+
+  const handleRefreshSubscription = async () => {
+    setRefreshingSubscription(true)
+    try {
+      console.log('🔄 Manual sync - fetching subscription from Stripe...')
+      
+      // First, try to sync from Stripe
+      const syncResponse = await fetch('/api/sync-subscription-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?.id })
+      })
+      
+      const syncData = await syncResponse.json()
+      
+      if (syncResponse.ok) {
+        console.log('✅ Subscription synced from Stripe:', syncData)
+        alert('✅ Subscription synced successfully! Refreshing...')
+      } else {
+        console.log('⚠️ Sync failed, trying regular fetch:', syncData.error)
+      }
+      
+      // Then fetch the updated data
+      await fetchSubscriptionData()
+    } catch (error) {
+      console.error('❌ Error refreshing subscription:', error)
+      alert('Failed to refresh subscription. Please try again.')
+    } finally {
+      setRefreshingSubscription(false)
     }
   }
 
@@ -435,38 +514,9 @@ export default function ClientDashboard() {
                   <>
                     <h3 className="text-lg font-semibold text-white mb-2">No Programs Yet</h3>
                     <p className="text-white/70 text-sm mb-3">Start your fitness journey</p>
-                    <div className="space-y-2">
-                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600 w-full">
-                        Explore Programs
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 w-full text-xs"
-                        onClick={async () => {
-                          console.log('🧪 Testing database...')
-                          try {
-                            const response = await fetch('/api/test-program', { 
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ userId: user?.id })
-                            })
-                            const data = await response.json()
-                            console.log('Database test response:', data)
-                            if (response.ok) {
-                              alert('✅ Database test passed! Table exists and works.')
-                            } else {
-                              alert('❌ Database test failed: ' + data.error + '\n\nPlease run the SQL setup from SETUP_DATABASE.md')
-                            }
-                          } catch (error) {
-                            console.error('Database test error:', error)
-                            alert('❌ Database test failed: ' + error)
-                          }
-                        }}
-                      >
-                        Test Database
-                      </Button>
-                    </div>
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600 w-full">
+                      Explore Programs
+                    </Button>
                   </>
                 )}
               </div>
@@ -492,9 +542,44 @@ export default function ClientDashboard() {
                 <p className="text-white/70 text-sm mb-3">
                   {hasCoachingSubscription ? 'Active coaching subscription' : 'Start your coaching journey'}
                 </p>
-                <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
-                  {hasCoachingSubscription ? 'View Details' : 'Get Started'}
-                </Button>
+                {hasCoachingSubscription ? (
+                  <Button 
+                    size="sm" 
+                    className="bg-orange-500 hover:bg-orange-600 w-full"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push('/dashboard/coaching')
+                    }}
+                  >
+                    View Details
+                  </Button>
+                ) : (
+                  <div className="flex gap-2 justify-center">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push('/services')
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-orange-400 hover:bg-orange-500/10 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleRefreshSubscription()
+                      }}
+                      disabled={refreshingSubscription}
+                    >
+                      {refreshingSubscription ? '⟳' : 'Refresh'}
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

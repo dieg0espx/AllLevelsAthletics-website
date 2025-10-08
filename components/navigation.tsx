@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Menu, X, Zap, User, LogOut, ShoppingCart as ShoppingCartIcon } from "lucide-react"
 import { AuthModal } from "@/components/auth-modal"
 import { ShoppingCart } from "@/components/shopping-cart"
+import CalendlyPopup from "@/components/calendly-popup"
 import { useAuth } from "@/contexts/auth-context"
 import { useCart } from "@/contexts/cart-context"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
@@ -15,11 +16,23 @@ import { siteConfig, replacePlaceholders } from "@/lib/config"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const [isSigningOut, setIsSigningOut] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut } = useAuth()
   const { toggleCart, getTotalItems } = useCart()
+
+  // Preload Calendly script on component mount
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true
@@ -182,12 +195,11 @@ export function Navigation() {
                 // User is not logged in
                 siteConfig.navigation.showUserIcon && (
                   <Button 
-                    variant="ghost" 
-                    size="icon"
+                    variant="ghost"
                     onClick={openAuthModal}
-                    className={`text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 rounded-full p-3 group`}
+                    className={`text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 rounded-full p-4 group`}
                   >
-                    <User className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    <User className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
                   </Button>
                 )
               )}
@@ -214,7 +226,10 @@ export function Navigation() {
                ) : (
                  // User is not logged in - show start trial
                  siteConfig.navigation.showStartTrial && (
-                   <Button className={`${siteConfig.styles.button.primary} px-6 xl:px-8 py-2 xl:py-3 ${siteConfig.styles.button.rounded} ${siteConfig.styles.button.hover} transition-all duration-300 group text-sm xl:text-base`}>
+                   <Button 
+                     className={`${siteConfig.styles.button.primary} px-6 xl:px-8 py-2 xl:py-3 ${siteConfig.styles.button.rounded} ${siteConfig.styles.button.hover} transition-all duration-300 group text-sm xl:text-base`}
+                     onClick={() => setIsCalendlyOpen(true)}
+                   >
                      <span className="flex items-center gap-2">
                        {siteConfig.navigation.startTrialText}
                        <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
@@ -356,7 +371,7 @@ export function Navigation() {
                       className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-2 rounded-lg group`}
                     >
                       <span className="flex items-center justify-center gap-2">
-                        <User className="w-3 h-3 group-hover:scale-110 transition-transform duration-300" />
+                        <User className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                         {siteConfig.labels.navigation.loginButton}
                       </span>
                     </Button>
@@ -367,7 +382,13 @@ export function Navigation() {
                              {/* Start Trial Button for Mobile (only for non-logged in users) */}
                {!user && siteConfig.navigation.showStartTrial && (
                  <div className="pt-1">
-                   <Button className={`w-full ${siteConfig.styles.button.primary} py-2 ${siteConfig.styles.button.rounded} shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation`}>
+                   <Button 
+                     className={`w-full ${siteConfig.styles.button.primary} py-2 ${siteConfig.styles.button.rounded} shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation`}
+                     onClick={() => {
+                       setIsCalendlyOpen(true)
+                       setIsOpen(false)
+                     }}
+                   >
                      <span className="flex items-center justify-center gap-2 text-sm">
                        {siteConfig.navigation.startTrialText}
                        <Zap className="w-3 h-3" />
@@ -389,6 +410,12 @@ export function Navigation() {
       
       {/* Shopping Cart */}
       <ShoppingCart />
+
+      {/* Calendly Popup */}
+      <CalendlyPopup 
+        isOpen={isCalendlyOpen} 
+        onClose={() => setIsCalendlyOpen(false)} 
+      />
     </>
   )
 }

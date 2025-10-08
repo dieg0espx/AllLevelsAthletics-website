@@ -21,6 +21,17 @@ export default function ProgramsPage() {
   const totalSlides = 4
   const slideWidth = 400 + 24 // card width + gap
 
+  // Preload Calendly script on page load
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
+
   const handleStartTransformation = () => {
     if (!user) {
       // User is not logged in, show auth modal

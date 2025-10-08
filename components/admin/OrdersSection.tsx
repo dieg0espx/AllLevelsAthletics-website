@@ -49,6 +49,7 @@ export function OrdersSection({ orders, ordersLoading, onUpdateOrder }: OrdersSe
   const [editForm, setEditForm] = useState({
     status: '',
     trackingNumber: '',
+    carrier: '',
     comment: ''
   })
 
@@ -56,6 +57,7 @@ export function OrdersSection({ orders, ordersLoading, onUpdateOrder }: OrdersSe
     setEditForm({
       status: order.status,
       trackingNumber: order.trackingNumber,
+      carrier: order.carrier || '',
       comment: order.comment || ''
     })
     setEditingOrder(order.id)
@@ -256,7 +258,7 @@ export function OrdersSection({ orders, ordersLoading, onUpdateOrder }: OrdersSe
                     {order.carrier && (
                       <div>
                         <Label className="text-white/70 text-sm">Carrier</Label>
-                        <div className="text-white font-medium">{order.carrier}</div>
+                        <div className="text-white font-medium">{order.carrier.toUpperCase()}</div>
                       </div>
                     )}
                   </div>
@@ -300,14 +302,32 @@ export function OrdersSection({ orders, ordersLoading, onUpdateOrder }: OrdersSe
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="tracking" className="text-white">Tracking Number</Label>
-                          <Input
-                            id="tracking"
-                            value={editForm.trackingNumber}
-                            onChange={(e) => setEditForm({...editForm, trackingNumber: e.target.value})}
-                            className="bg-white/5 border-orange-500/30 text-white"
-                          />
+                          <Label htmlFor="carrier" className="text-white">Carrier</Label>
+                          <Select
+                            value={editForm.carrier}
+                            onValueChange={(value) => setEditForm({...editForm, carrier: value})}
+                          >
+                            <SelectTrigger className="bg-white/5 border-orange-500/30 text-white">
+                              <SelectValue placeholder="Select carrier" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-900 border-orange-500/30">
+                              <SelectItem value="ups" className="text-white">UPS</SelectItem>
+                              <SelectItem value="fedex" className="text-white">FedEx</SelectItem>
+                              <SelectItem value="usps" className="text-white">USPS</SelectItem>
+                              <SelectItem value="dhl" className="text-white">DHL</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="tracking" className="text-white">Tracking Number</Label>
+                        <Input
+                          id="tracking"
+                          value={editForm.trackingNumber}
+                          onChange={(e) => setEditForm({...editForm, trackingNumber: e.target.value})}
+                          className="bg-white/5 border-orange-500/30 text-white"
+                          placeholder="Enter tracking number"
+                        />
                       </div>
                       <div>
                         <Label htmlFor="comment" className="text-white">Comments</Label>

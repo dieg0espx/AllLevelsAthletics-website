@@ -33,6 +33,17 @@ import CalendlyPopup from "@/components/calendly-popup"
 export default function HomePage() {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
 
+  // Preload Calendly script on page load
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
 
@@ -681,7 +692,7 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => window.location.href = '/services#services'}
                 >
                   Start Foundation Program
                 </Button>
@@ -735,7 +746,7 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => window.location.href = '/services#services'}
                 >
                   Choose Growth Program
                 </Button>
@@ -784,7 +795,7 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => window.location.href = '/services#services'}
                 >
                   Go Elite Premium
                 </Button>

@@ -87,7 +87,7 @@ export const siteConfig = {
   navigation: {
     showUserIcon: true,
     showStartTrial: true,
-    startTrialText: "Start Trial",
+    startTrialText: "Book Consultation",
     mobileMenuBreakpoint: "lg",
   },
   

@@ -48,6 +48,16 @@ export async function GET(request: NextRequest) {
 
     console.log('✅ Database connection successful')
 
+    // First, let's see all orders in the database (for debugging)
+    const { data: allOrders, error: allOrdersError } = await client
+      .from('orders')
+      .select('id, user_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10)
+    
+    console.log('📊 All orders in database (last 10):', allOrders)
+    console.log('📊 Looking for user_id:', userId)
+    
     // Fetch orders with items for the user using service role client
     const { data: orders, error: ordersError } = await client
       .from('orders')

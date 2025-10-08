@@ -343,6 +343,9 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       })
 
       if (response.ok) {
+        const data = await response.json()
+        const createdCheckInId = data.checkIn?.id
+        
         // Immediately remove the selected time from available hours
         const selectedTime = newCheckIn.scheduled_date.split('T')[1]
         setAvailableHours(prev => prev.filter(hour => hour !== selectedTime))
@@ -350,6 +353,33 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
         setNewCheckIn({ scheduled_date: '', check_in_type: 'regular', notes: '' })
         setShowAddCheckIn(false)
         fetchCheckIns()
+        
+        // Send confirmation email
+        if (createdCheckInId) {
+          console.log('Sending appointment confirmation email...')
+          try {
+            const emailResponse = await fetch('/api/coaching/send-appointment-confirmation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                checkInId: createdCheckInId,
+                userId
+              })
+            })
+            
+            if (emailResponse.ok) {
+              console.log('Confirmation email sent successfully')
+            } else {
+              const emailError = await emailResponse.json()
+              console.error('Failed to send confirmation email:', emailError)
+              // Don't fail the whole operation if email fails
+            }
+          } catch (emailError) {
+            console.error('Error sending confirmation email:', emailError)
+            // Don't fail the whole operation if email fails
+          }
+        }
+        
         // Also refresh available hours after creating a check-in (with small delay to ensure DB update)
         setTimeout(() => {
           fetchAvailableHours(selectedDate)
@@ -497,7 +527,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
         const checkInDate = new Date(checkIn.scheduled_date)
         return checkInDate.getMonth() === currentMonth && 
                checkInDate.getFullYear() === currentYear &&
-               checkIn.status === 'scheduled'
+               (checkIn.status === 'scheduled' || checkIn.status === 'completed')
       })
     }
 
@@ -523,7 +553,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       const checkInDate = new Date(checkIn.scheduled_date)
       return checkInDate >= billingMonthStart && 
              checkInDate <= billingMonthEnd &&
-             checkIn.status === 'scheduled'
+             (checkIn.status === 'scheduled' || checkIn.status === 'completed')
     })
   }
 

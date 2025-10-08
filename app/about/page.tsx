@@ -69,6 +69,17 @@ function TikTokVideo({ videoId, url }: { videoId: string; url: string }) {
 export default function AboutPage() {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
 
+  // Preload Calendly script on page load
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
 
