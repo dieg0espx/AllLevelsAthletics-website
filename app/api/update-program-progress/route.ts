@@ -19,11 +19,12 @@ export async function POST(request: NextRequest) {
     console.log('Progress:', progress)
     console.log('Watched Videos:', watchedVideos)
 
-    // Update the user_programs table with the new progress
+    // Update the user_programs table with the new progress and watched videos
     const { data, error } = await supabaseAdmin
       .from('user_programs')
       .update({ 
         progress: Math.round(progress),
+        watched_videos: watchedVideos || [],
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId)

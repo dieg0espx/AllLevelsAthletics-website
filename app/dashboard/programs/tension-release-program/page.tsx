@@ -45,22 +45,9 @@ export default function TensionReleaseProgramPage() {
       return
     }
     
-    // Ensure user has the program in their database record
+    // Ensure user has the program in their database record and load progress
     ensureUserProgram()
-    
-    // Load watched videos from localStorage
-    const savedWatched = localStorage.getItem('tension-release-watched')
-    if (savedWatched) {
-      const watched = new Set(JSON.parse(savedWatched))
-      setWatchedVideos(watched)
-      const progressValue = (watched.size / courseVideos.length) * 100
-      setProgress(progressValue)
-      
-      // Sync initial progress with backend
-      if (user?.id && watched.size > 0) {
-        syncProgressWithBackend(progressValue, [...watched])
-      }
-    }
+    loadUserProgress()
     
     // Set first video as current if none selected
     if (!currentVideo && courseVideos.length > 0) {
@@ -84,8 +71,11 @@ export default function TensionReleaseProgramPage() {
     const newProgress = (newWatched.size / courseVideos.length) * 100
     setProgress(newProgress)
     
-    // Save to localStorage
-    localStorage.setItem('tension-release-watched', JSON.stringify([...newWatched]))
+    // Save to localStorage (user-specific)
+    if (user?.id) {
+      const userSpecificKey = `tension-release-watched-${user.id}`
+      localStorage.setItem(userSpecificKey, JSON.stringify([...newWatched]))
+    }
     
     // Sync progress with backend
     syncProgressWithBackend(newProgress, [...newWatched])
@@ -93,6 +83,57 @@ export default function TensionReleaseProgramPage() {
 
   const handleManualComplete = (videoId: number) => {
     handleVideoComplete(videoId)
+  }
+
+  const loadUserProgress = async () => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch(`/api/user-programs?userId=${user.id}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        const program = data.programs?.find((p: any) => p.program_id === 'tension-release-program')
+        
+        if (program && program.watched_videos && program.watched_videos.length > 0) {
+          // Load from database
+          const watched = new Set<number>(program.watched_videos)
+          setWatchedVideos(watched)
+          setProgress(program.progress || 0)
+          
+          // Also save to localStorage for offline access
+          const userSpecificKey = `tension-release-watched-${user.id}`
+          localStorage.setItem(userSpecificKey, JSON.stringify(program.watched_videos))
+        } else {
+          // Fallback to localStorage if database doesn't have data yet
+          const userSpecificKey = `tension-release-watched-${user.id}`
+          const savedWatched = localStorage.getItem(userSpecificKey)
+          if (savedWatched) {
+            const watched = new Set<number>(JSON.parse(savedWatched) as number[])
+            setWatchedVideos(watched)
+            const progressValue = (watched.size / courseVideos.length) * 100
+            setProgress(progressValue)
+            
+            // Sync to database
+            if (watched.size > 0) {
+              syncProgressWithBackend(progressValue, [...watched])
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user progress:', error)
+      
+      // Fallback to localStorage
+      const userSpecificKey = `tension-release-watched-${user.id}`
+      const savedWatched = localStorage.getItem(userSpecificKey)
+      if (savedWatched) {
+        const watched = new Set<number>(JSON.parse(savedWatched) as number[])
+        setWatchedVideos(watched)
+        const progressValue = (watched.size / courseVideos.length) * 100
+        setProgress(progressValue)
+      }
+    }
   }
 
   const ensureUserProgram = async () => {
