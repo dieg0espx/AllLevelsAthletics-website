@@ -31,6 +31,7 @@ interface Program {
   isActive: boolean
   enrollmentCount: number
   totalRevenue: number
+  averageProgress?: number
   createdAt: string
   updatedAt: string
 }
@@ -41,6 +42,7 @@ interface ProgramsSectionProps {
   onAddProgram: (program: Omit<Program, 'id' | 'enrollmentCount' | 'totalRevenue' | 'createdAt' | 'updatedAt'>) => void
   onUpdateProgram: (programId: string, updates: Partial<Program>) => void
   onDeleteProgram: (programId: string) => void
+  onSetupTable?: () => void
 }
 
 export function ProgramsSection({ 
@@ -48,7 +50,8 @@ export function ProgramsSection({
   programsLoading, 
   onAddProgram, 
   onUpdateProgram, 
-  onDeleteProgram 
+  onDeleteProgram,
+  onSetupTable 
 }: ProgramsSectionProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
@@ -271,8 +274,14 @@ export function ProgramsSection({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-white/70">Enrollments:</span>
-                  <span className="text-white">{program.enrollmentCount || 0}</span>
+                  <span className="text-white font-semibold">{program.enrollmentCount || 0} clients</span>
                 </div>
+                {program.averageProgress !== undefined && program.enrollmentCount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/70">Avg Progress:</span>
+                    <span className="text-blue-400 font-semibold">{program.averageProgress}%</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-white/70">Revenue:</span>
                   <span className="text-green-400 font-semibold">${program.totalRevenue || 0}</span>
@@ -287,11 +296,23 @@ export function ProgramsSection({
         <div className="text-center py-16">
           <BookOpen className="w-16 h-16 text-orange-400 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white mb-2">No Programs Found</h3>
-          <p className="text-white/70">
+          <p className="text-white/70 mb-4">
             {searchTerm 
               ? 'No programs match your search criteria.' 
               : 'No programs have been created yet.'}
           </p>
+          {!searchTerm && programs.length === 0 && onSetupTable && (
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-white/60 text-sm">The programs table may not exist in your database.</p>
+              <Button
+                onClick={onSetupTable}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Setup Programs Table
+              </Button>
+            </div>
+          )}
         </div>
       )}
 

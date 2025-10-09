@@ -68,11 +68,11 @@ export default function CalendlyPopup({ isOpen, onClose, url = "https://calendly
       script.async = true
       script.onload = () => {
         console.log('Script loaded, waiting for Calendly initialization...')
-        // Wait a bit for Calendly to initialize
+        // Reduced wait time for faster initialization
         setTimeout(() => {
           console.log('Calendly should be ready now')
           setIsLoading(false)
-        }, 1000)
+        }, 300)
       }
       script.onerror = () => {
         console.error('Failed to load Calendly script')

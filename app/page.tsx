@@ -21,17 +21,78 @@ import {
   Quote,
   X,
   MessageCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 
 import Stars from "@/components/Stars"
-import Slider from "react-slick"
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
 import { useEffect, useState } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
 
 export default function HomePage() {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+
+  // Testimonials data
+  const testimonials = [
+    {
+      name: "Jessica M.",
+      role: "Marketing Executive",
+      quote: "Lost 30 pounds and gained incredible strength. Daniel's tension reset techniques changed everything for me! The personalized approach made all the difference in my fitness journey."
+    },
+    {
+      name: "Robert K.",
+      role: "Software Engineer",
+      quote: "Finally found a program that works with my busy schedule. The online coaching is incredibly effective and the recovery tools have been game-changing for my performance."
+    },
+    {
+      name: "Amanda L.",
+      role: "Physical Therapist",
+      quote: "The MFRoller and tension reset course eliminated my chronic back pain. Life-changing results that I never thought possible with online training!"
+    },
+    {
+      name: "Michael T.",
+      role: "Firefighter",
+      quote: "As a firefighter, I need to stay in peak condition. Daniel's programs have improved my strength, endurance, and recovery time significantly. The tension reset techniques are revolutionary!"
+    },
+    {
+      name: "Sarah J.",
+      role: "Nurse",
+      quote: "Working 12-hour shifts as a nurse, I needed a flexible program. Daniel's online coaching fits perfectly into my schedule and has transformed my energy levels and overall health."
+    },
+    {
+      name: "David R.",
+      role: "Business Owner",
+      quote: "At 45, I thought my best days were behind me. Daniel's programs proved me wrong. I'm stronger now than I was in my 20s, and the tension reset techniques have eliminated my chronic pain."
+    }
+  ]
+
+  // Auto-advance testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [testimonials.length])
+
+  // Preload Calendly script on page load
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
+
+  const nextTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+  }
+
+  const prevTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -191,297 +252,72 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Mobile Auto-Scrolling Carousel */}
-          <div className="md:hidden relative">
-            <Slider
-              dots={false}
-              arrows={false}
-              infinite={true}
-              speed={3000}
-              slidesToShow={1}
-              slidesToScroll={1}
-              autoplay={true}
-              autoplaySpeed={4000}
-              pauseOnHover={false}
-              pauseOnFocus={false}
-              className="success-stories-slider"
-            >
-                {/* Jessica M. Testimonial */}
-              <div className="px-2 sm:px-4">
-                <figure 
-                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
-                  itemScope 
-                  itemType="https://schema.org/Review"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
-                  <img
-                    src="/smiling-fitness-woman-headshot.png"
-                    alt="Jessica M. - Client Success Story"
-                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                        width={72}
-                        height={72}
-                        loading="lazy"
-                        decoding="async"
-                  />
-                </div>
-                <div className="flex justify-center gap-1 mb-2">
-                      <Stars rating={5} />
-                      <span className="sr-only">5 out of 5 stars</span>
-                </div>
+          {/* Mobile Testimonials Carousel */}
+          <div className="md:hidden relative w-full px-2 pb-12">
+            <div className="relative overflow-hidden">
+              {/* Left Arrow */}
+              <button
+                onClick={prevTestimonial}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full p-2.5 shadow-lg hover:shadow-xl transition-all hover:scale-110"
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft className="h-5 w-5 text-black" />
+              </button>
+
+              {/* Right Arrow */}
+              <button
+                onClick={nextTestimonial}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full p-2.5 shadow-lg hover:shadow-xl transition-all hover:scale-110"
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="h-5 w-5 text-black" />
+              </button>
+
+              {/* Testimonial Card */}
+              <div className="px-10">
+                <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl border border-amber-500/20 transition-all duration-500">
+                  {/* Quote Icon */}
+                  <div className="flex justify-center mb-4">
+                    <Quote className="w-12 h-12 text-amber-500/40" />
                   </div>
                   
-                                     <blockquote className="flex-1">
-                     <div className="relative">
-                       <div className="text-center mb-3 sm:mb-4">
-                         <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
-                           <span itemProp="name">Jessica M.</span>
-                         </div>
-                         <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
-                           Marketing Executive
-                         </div>
-                         <meta itemProp="reviewRating" content="5" />
-                       </div>
-                       <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
-                  "Lost 30 pounds and gained incredible strength. Daniel's tension reset techniques changed everything
-                       for me! The personalized approach made all the difference in my fitness journey."
-                </p>
-                </div>
-                 </blockquote>
-                </figure>
-              </div>
-
-                {/* Robert K. Testimonial */}
-              <div className="px-2 sm:px-4">
-                <figure 
-                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
-                  itemScope 
-                  itemType="https://schema.org/Review"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
-                  <img
-                    src="/confident-man-athletic-wear-headshot.png"
-                    alt="Robert K. - Client Success Story"
-                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                        width={72}
-                        height={72}
-                        loading="lazy"
-                        decoding="async"
-                  />
-                </div>
-                <div className="flex justify-center gap-1 mb-2">
-                      <Stars rating={5} />
-                      <span className="sr-only">5 out of 5 stars</span>
-                </div>
+                  {/* Stars */}
+                  <div className="flex justify-center gap-1 mb-6">
+                    <Stars rating={5} />
                   </div>
                   
-                                     <blockquote className="flex-1">
-                     <div className="relative">
-                       <div className="text-center mb-3 sm:mb-4">
-                         <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
-                           <span itemProp="name">Robert K.</span>
-                         </div>
-                         <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
-                           Software Engineer
-                         </div>
-                         <meta itemProp="reviewRating" content="5" />
-                       </div>
-                       <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
-                  "Finally found a program that works with my busy schedule. The online coaching is incredibly
-                       effective and the recovery tools have been game-changing for my performance."
-                </p>
-                </div>
-                 </blockquote>
-                </figure>
-              </div>
-
-                {/* Amanda L. Testimonial */}
-              <div className="px-2 sm:px-4">
-                <figure 
-                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
-                  itemScope 
-                  itemType="https://schema.org/Review"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
-                  <img
-                    src="/athletic-woman-headshot.png"
-                    alt="Amanda L. - Client Success Story"
-                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                        width={72}
-                        height={72}
-                        loading="lazy"
-                        decoding="async"
-                  />
-                </div>
-                <div className="flex justify-center gap-1 mb-2">
-                      <Stars rating={5} />
-                      <span className="sr-only">5 out of 5 stars</span>
-                </div>
-                  </div>
+                  {/* Quote Text */}
+                  <p className="text-lg leading-relaxed text-white/90 text-center mb-6 italic min-h-[180px] flex items-center justify-center">
+                    "{testimonials[currentTestimonial].quote}"
+                  </p>
                   
-                  <blockquote className="flex-1">
-                     <div className="relative">
-                       <div className="text-center mb-3 sm:mb-4">
-                         <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
-                           <span itemProp="name">Amanda L.</span>
-                         </div>
-                         <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
-                           Physical Therapist
-                         </div>
-                         <meta itemProp="reviewRating" content="5" />
-                       </div>
-                       <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
-                 "The MFRoller and tension reset course eliminated my chronic back pain. Life-changing results
-                       that I never thought possible with online training!"
-               </p>
+                  {/* Divider */}
+                  <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full mx-auto mb-5"></div>
+                  
+                  {/* Author Info */}
+                  <div className="text-center">
+                    <div className="font-bold text-xl text-white mb-1">{testimonials[currentTestimonial].name}</div>
+                    <div className="text-sm text-amber-400 font-medium">{testimonials[currentTestimonial].role}</div>
+                  </div>
                 </div>
-                 </blockquote>
-                </figure>
-              </div>
-
-              {/* Michael T. Testimonial */}
-              <div className="px-2 sm:px-4">
-                <figure 
-                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
-                  itemScope 
-                  itemType="https://schema.org/Review"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
-                      <img
-                        src="/person1.png"
-                        alt="Michael T. - Client Success Story"
-                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                        width={72}
-                        height={72}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <div className="flex justify-center gap-1 mb-2">
-                      <Stars rating={5} />
-                      <span className="sr-only">5 out of 5 stars</span>
               </div>
             </div>
-            
-                  <blockquote className="flex-1">
-                    <div className="relative">
-                      <div className="text-center mb-3 sm:mb-4">
-                        <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
-                          <span itemProp="name">Michael T.</span>
-                        </div>
-                        <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
-                          Firefighter
-                        </div>
-                        <meta itemProp="reviewRating" content="5" />
-                      </div>
-                      <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
-                        "As a firefighter, I need to stay in peak condition. Daniel's programs have improved my strength,
-                        endurance, and recovery time significantly. The tension reset techniques are revolutionary!"
-                      </p>
-                    </div>
-                  </blockquote>
-                </figure>
-              </div>
 
-              {/* Sarah J. Testimonial */}
-              <div className="px-2 sm:px-4">
-                <figure 
-                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
-                  itemScope 
-                  itemType="https://schema.org/Review"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
-                      <img
-                        src="/person2.png"
-                        alt="Sarah J. - Client Success Story"
-                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                        width={72}
-                        height={72}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <div className="flex justify-center gap-1 mb-2">
-                      <Stars rating={5} />
-                      <span className="sr-only">5 out of 5 stars</span>
-                    </div>
-                  </div>
-                  
-                  <blockquote className="flex-1">
-                    <div className="relative">
-                      <div className="text-center mb-3 sm:mb-4">
-                        <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
-                          <span itemProp="name">Sarah J.</span>
-                        </div>
-                        <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
-                          Nurse
-                        </div>
-                        <meta itemProp="reviewRating" content="5" />
-                      </div>
-                      <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
-                        "Working 12-hour shifts as a nurse, I needed a flexible program. Daniel's online coaching fits
-                        perfectly into my schedule and has transformed my energy levels and overall health."
-                      </p>
-                    </div>
-                  </blockquote>
-                </figure>
-              </div>
-
-              {/* David R. Testimonial */}
-              <div className="px-2 sm:px-4">
-                <figure 
-                  className="flex h-full flex-col rounded-2xl border border-amber-500/25 bg-neutral-900/60 p-4 sm:p-6 md:p-8 backdrop-blur-sm shadow-[0_10px_30px_-10px_rgba(0,0,0,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(251,191,36,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400/60 focus-visible:rounded-2xl"
-                  itemScope 
-                  itemType="https://schema.org/Review"
-                >
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 sm:mb-4">
-                      <img
-                        src="/person3.png"
-                        alt="David R. - Client Success Story"
-                        className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                        width={72}
-                        height={72}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <div className="flex justify-center gap-1 mb-2">
-                      <Stars rating={5} />
-                      <span className="sr-only">5 out of 5 stars</span>
-                    </div>
-          </div>
-
-                  <blockquote className="flex-1">
-                    <div className="relative">
-                      <div className="text-center mb-3 sm:mb-4">
-                        <div className="font-semibold text-neutral-100" itemProp="author" itemScope itemType="https://schema.org/Person">
-                          <span itemProp="name">David R.</span>
-                        </div>
-                        <div className="text-xs sm:text-sm text-neutral-400" itemProp="reviewBody">
-                          Business Owner
-                        </div>
-                        <meta itemProp="reviewRating" content="5" />
-                      </div>
-                      <div className="bg-gradient-to-r from-amber-500/40 via-amber-400/30 to-transparent h-px w-full mb-4 sm:mb-6"></div>
-                      <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-neutral-200 max-w-prose mx-auto">
-                        "At 45, I thought my best days were behind me. Daniel's programs proved me wrong. I'm stronger
-                        now than I was in my 20s, and the tension reset techniques have eliminated my chronic pain."
-                      </p>
-                    </div>
-                  </blockquote>
-                </figure>
-              </div>
-            </Slider>
+            {/* Dot Indicators */}
+            <div className="flex justify-center space-x-2 mt-8">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    currentTestimonial === index
+                      ? "w-8 bg-gradient-to-r from-orange-500 to-yellow-500 shadow-lg"
+                      : "w-2 bg-white/30 hover:bg-white/50"
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Desktop Grid with Manual Scrolling */}
@@ -681,7 +517,7 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => window.location.href = '/services#services'}
                 >
                   Start Foundation Program
                 </Button>
@@ -735,7 +571,7 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => window.location.href = '/services#services'}
                 >
                   Choose Growth Program
                 </Button>
@@ -784,7 +620,7 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/contact#contact-form'}
+                  onClick={() => window.location.href = '/services#services'}
                 >
                   Go Elite Premium
                 </Button>
@@ -793,7 +629,7 @@ export default function HomePage() {
           </div>
 
           {/* Service Comparison Table */}
-          <div className="max-w-[280px] sm:max-w-6xl mx-auto mt-20 mb-16">
+          <div className="hidden md:block max-w-[280px] sm:max-w-6xl mx-auto mt-20 mb-16">
             <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
               <CardHeader className="text-center pb-8 pt-8">
                   <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -986,7 +822,7 @@ export default function HomePage() {
                   </div>
                   <h3 className="font-heading text-lg sm:text-xl font-bold mb-3 sm:mb-4 group-hover:text-orange-400 transition-colors">Expert Guidance</h3>
                   <p className="text-white/80 leading-relaxed text-sm sm:text-base">
-                    Work directly with Daniel Ledbetter, a certified professional with years of experience in body transformation.
+                    Work directly with Daniel Ledbetter, a certified professional with over a decade of experience in helping Client's achieve their best Body Transformation.
                   </p>
                 </CardContent>
               </Card>
@@ -1158,7 +994,7 @@ export default function HomePage() {
                         </div>
                         <div>
                           <div className="font-bold text-white text-sm sm:text-base group-hover:text-orange-400 transition-colors">Daniel Ledbetter</div>
-                          <div className="text-xs text-white/80 group-hover:text-white/90 transition-colors">Certified Trainer & Specialist</div>
+                          <div className="text-xs text-white/80 group-hover:text-white/90 transition-colors">Certified Trainer and Performance Coach</div>
                         </div>
                       </div>
                     </div>

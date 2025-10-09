@@ -26,6 +26,17 @@ export default function ServicesPage() {
   const { user } = useAuth()
   const { hasActiveSubscription } = useSubscription()
   
+  // Preload Calendly script on page load
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
+
   const rollerImages = [
     "/roller/roller7.jpg",
     "/roller/roller8.jpg",
@@ -53,28 +64,8 @@ export default function ServicesPage() {
     }
 
     if (hasActiveSubscription) {
-      // Redirect to customer portal for existing subscribers
-      try {
-        const response = await fetch('/api/create-customer-portal-session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: user.id,
-          }),
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to create portal session')
-        }
-
-        window.location.href = data.sessionUrl
-      } catch (error) {
-        console.error('Error opening customer portal:', error)
-      }
+      // Redirect to dashboard coaching page for existing subscribers
+      window.location.href = '/dashboard/coaching'
       return
     }
 
@@ -267,98 +258,100 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <Card className="bg-card/80 border-2 border-orange-500/30 backdrop-blur-sm shadow-2xl rounded-2xl">
-                                             <CardHeader className="text-center pb-4 sm:pb-6 pt-8">
-                  <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
-                    Compare <span className="gradient-text">Training Tiers</span>
-                  </CardTitle>
-                  <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-6">
-                    Find the perfect level of support for your fitness journey
-                  </CardDescription>
-                  
-                  {/* Billing Toggle */}
-                  <div className="flex items-center justify-center gap-4 mb-6">
-                    <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
-                      Monthly
+              <CardHeader className="text-center pb-4 sm:pb-6 pt-8">
+                <CardTitle className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
+                  Compare <span className="gradient-text">Training Tiers</span>
+                </CardTitle>
+                <CardDescription className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-6">
+                  Find the perfect level of support for your fitness journey
+                </CardDescription>
+                
+                {/* Billing Toggle */}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
+                    Monthly
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={isAnnual}
+                    aria-label="Toggle billing period"
+                    onClick={() => setIsAnnual(!isAnnual)}
+                    className="relative inline-flex h-6 w-11 items-center rounded-full bg-surface border border-stroke transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-bg"
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        isAnnual ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
+                      Annual
                     </span>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={isAnnual}
-                      aria-label="Toggle billing period"
-                      onClick={() => setIsAnnual(!isAnnual)}
-                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-surface border border-stroke transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-bg"
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          isAnnual ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-white' : 'text-muted-foreground'}`}>
-                        Annual
+                    {isAnnual && (
+                      <span className="inline-flex items-center rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
+                        Save 15%
                       </span>
-                      {isAnnual && (
-                        <span className="inline-flex items-center rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
-                          Save 15%
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
-                </CardHeader>
-               <CardContent className="p-0">
-                 <div className="overflow-x-auto">
-                   <table className="w-full text-left">
-                     <thead className="sticky top-0 bg-card/95 backdrop-blur-sm z-10">
-                       <tr className="border-b-2 border-orange-500/30">
-                                                   <th className="py-6 px-6 text-base sm:text-lg md:text-xl font-bold text-left">
-                            <div>
-                              <div className="text-xl sm:text-2xl font-bold">Features</div>
-                              <div className="text-xs sm:text-sm text-muted-foreground">What's included in each tier</div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="p-0">
+                {/* Desktop Table View - Hidden on Mobile */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="sticky top-0 bg-card/95 backdrop-blur-sm z-10">
+                      <tr className="border-b-2 border-orange-500/30">
+                        <th className="py-6 px-6 text-base sm:text-lg md:text-xl font-bold text-left">
+                          <div>
+                            <div className="text-xl sm:text-2xl font-bold">Features</div>
+                            <div className="text-xs sm:text-sm text-muted-foreground">What's included in each tier</div>
+                          </div>
+                        </th>
+                        <th className="py-6 px-6 text-center">
+                          <div className="space-y-2">
+                            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
+                            <div className="text-xl font-bold text-orange-400">Foundation</div>
+                            <div className="text-3xl font-bold gradient-text">
+                              ${isAnnual ? '167' : '197'}
                             </div>
-                          </th>
-                         <th className="py-6 px-6 text-center">
-                           <div className="space-y-2">
-                             <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
-                             <div className="text-xl font-bold text-orange-400">Foundation</div>
-                             <div className="text-3xl font-bold gradient-text">
-                               ${isAnnual ? '167' : '197'}
-                             </div>
-                             <div className="text-sm text-muted-foreground">/month</div>
-                             {isAnnual && (
-                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
-                             )}
-                           </div>
-                         </th>
-                         <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
-                           <div className="space-y-2">
-                             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
-                             <div className="text-xl font-bold text-yellow-400">Accelerated</div>
-                             <div className="text-3xl font-bold gradient-text">
-                               ${isAnnual ? '252' : '297'}
-                             </div>
-                             <div className="text-sm text-muted-foreground">/month</div>
-                             {isAnnual && (
-                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
-                             )}
-                           </div>
-                         </th>
-                         <th className="py-6 px-6 text-center">
-                           <div className="space-y-2">
-                             <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
-                             <div className="text-xl font-bold text-orange-300">Premium</div>
-                             <div className="text-3xl font-bold gradient-text">
-                               ${isAnnual ? '422' : '497'}
-                             </div>
-                             <div className="text-sm text-muted-foreground">/month</div>
-                             {isAnnual && (
-                               <div className="text-xs text-green-400 font-medium">Save 15%</div>
-                             )}
-                           </div>
-                         </th>
-                       </tr>
-                     </thead>
-                                           <tbody className="text-sm sm:text-base md:text-lg">
+                            <div className="text-sm text-muted-foreground">/month</div>
+                            {isAnnual && (
+                              <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                            )}
+                          </div>
+                        </th>
+                        <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
+                          <div className="space-y-2">
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
+                            <div className="text-xl font-bold text-yellow-400">Accelerated</div>
+                            <div className="text-3xl font-bold gradient-text">
+                              ${isAnnual ? '252' : '297'}
+                            </div>
+                            <div className="text-sm text-muted-foreground">/month</div>
+                            {isAnnual && (
+                              <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                            )}
+                          </div>
+                        </th>
+                        <th className="py-6 px-6 text-center">
+                          <div className="space-y-2">
+                            <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
+                            <div className="text-xl font-bold text-orange-300">Premium</div>
+                            <div className="text-3xl font-bold gradient-text">
+                              ${isAnnual ? '422' : '497'}
+                            </div>
+                            <div className="text-sm text-muted-foreground">/month</div>
+                            {isAnnual && (
+                              <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                            )}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm sm:text-base md:text-lg">
                        <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                          <td className="py-5 px-6 font-semibold">
                            <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
@@ -675,8 +668,365 @@ export default function ServicesPage() {
                          </td>
                        </tr>
                      </tbody>
-                   </table>
-                 </div>
+                  </table>
+                </div>
+                
+                {/* Mobile Card View - Visible on Mobile Only */}
+                <div className="md:hidden px-4 py-6 space-y-6">
+                  {/* Foundation Tier Card */}
+                  <div className="border-2 border-orange-500/30 rounded-xl overflow-hidden bg-card/50">
+                    <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 p-4 border-b border-orange-500/30">
+                      <div className="text-center space-y-2">
+                        <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
+                        <div className="text-xl font-bold text-orange-400">Foundation</div>
+                        <div className="text-3xl font-bold gradient-text">
+                          ${isAnnual ? '167' : '197'}
+                        </div>
+                        <div className="text-sm text-muted-foreground">/month</div>
+                        {isAnnual && (
+                          <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {/* Feature: Monthly Check-ins */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <Clock className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Monthly Check-ins</div>
+                          <div className="text-xs text-muted-foreground">1x per month</div>
+                        </div>
+                      </div>
+                      {/* Feature: Custom Program Design */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Custom Program Design</div>
+                          <div className="text-xs text-muted-foreground">Personalized workout plans</div>
+                        </div>
+                      </div>
+                      {/* Feature: Form Review */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Form Review & Feedback</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Video Analysis */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Video Analysis</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Tension Coaching */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Tension Coaching</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Mobility Prioritization */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Mobility Prioritization</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Email Support */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Email Support</div>
+                          <div className="text-xs text-muted-foreground">Basic communication</div>
+                        </div>
+                      </div>
+                      {/* Feature: Priority Support */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Priority Support</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Training Progression */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Training Progression</div>
+                          <div className="text-xs text-muted-foreground">Systematic advancement</div>
+                        </div>
+                      </div>
+                      {/* Feature: Nutrition Guidance */}
+                      <div className="flex items-start gap-3 py-2">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Nutrition Guidance</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* CTA Button */}
+                      <div className="pt-4">
+                        <Button 
+                          className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all"
+                          onClick={() => handleSubscriptionCheckout('foundation', 'Foundation Plan')}
+                          disabled={subscriptionLoading}
+                        >
+                          {subscriptionLoading ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                              Processing...
+                            </>
+                          ) : hasActiveSubscription ? (
+                            'Manage Subscription'
+                          ) : (
+                            'Subscribe Now'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Accelerated Tier Card */}
+                  <div className="border-2 border-yellow-500/30 rounded-xl overflow-hidden bg-yellow-500/5">
+                    <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 p-4 border-b border-yellow-500/30">
+                      <div className="text-center space-y-2">
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
+                        <div className="text-xl font-bold text-yellow-400">Accelerated</div>
+                        <div className="text-3xl font-bold gradient-text">
+                          ${isAnnual ? '252' : '297'}
+                        </div>
+                        <div className="text-sm text-muted-foreground">/month</div>
+                        {isAnnual && (
+                          <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {/* Feature: Monthly Check-ins */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <Clock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Monthly Check-ins</div>
+                          <div className="text-xs text-muted-foreground">2x per month</div>
+                        </div>
+                      </div>
+                      {/* Feature: Custom Program Design */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Custom Program Design</div>
+                          <div className="text-xs text-muted-foreground">Personalized workout plans</div>
+                        </div>
+                      </div>
+                      {/* Feature: Form Review */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Form Review & Feedback</div>
+                          <div className="text-xs text-muted-foreground">Video analysis & corrections</div>
+                        </div>
+                      </div>
+                      {/* Feature: Video Analysis */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Video Analysis</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Tension Coaching */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Tension Coaching</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Mobility Prioritization */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm text-muted-foreground">Mobility Prioritization</div>
+                          <div className="text-xs text-muted-foreground">Not included</div>
+                        </div>
+                      </div>
+                      {/* Feature: Email Support */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Email Support</div>
+                          <div className="text-xs text-muted-foreground">Basic communication</div>
+                        </div>
+                      </div>
+                      {/* Feature: Priority Support */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Priority Support</div>
+                          <div className="text-xs text-muted-foreground">Faster response times</div>
+                        </div>
+                      </div>
+                      {/* Feature: Training Progression */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Training Progression</div>
+                          <div className="text-xs text-muted-foreground">Systematic advancement</div>
+                        </div>
+                      </div>
+                      {/* Feature: Nutrition Guidance */}
+                      <div className="flex items-start gap-3 py-2">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Nutrition Guidance</div>
+                          <div className="text-xs text-muted-foreground">Diet & meal planning support</div>
+                        </div>
+                      </div>
+                      {/* CTA Button */}
+                      <div className="pt-4">
+                        <Button 
+                          className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all"
+                          onClick={() => handleSubscriptionCheckout('growth', 'Growth Plan')}
+                          disabled={subscriptionLoading}
+                        >
+                          {subscriptionLoading ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                              Processing...
+                            </>
+                          ) : hasActiveSubscription ? (
+                            'Manage Subscription'
+                          ) : (
+                            'Subscribe Now'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Premium Tier Card */}
+                  <div className="border-2 border-orange-500/30 rounded-xl overflow-hidden bg-card/50">
+                    <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 p-4 border-b border-orange-500/30">
+                      <div className="text-center space-y-2">
+                        <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
+                        <div className="text-xl font-bold text-orange-300">Premium</div>
+                        <div className="text-3xl font-bold gradient-text">
+                          ${isAnnual ? '422' : '497'}
+                        </div>
+                        <div className="text-sm text-muted-foreground">/month</div>
+                        {isAnnual && (
+                          <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {/* Feature: Monthly Check-ins */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <Clock className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Monthly Check-ins</div>
+                          <div className="text-xs text-muted-foreground">Weekly</div>
+                        </div>
+                      </div>
+                      {/* Feature: Custom Program Design */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Custom Program Design</div>
+                          <div className="text-xs text-muted-foreground">Personalized workout plans</div>
+                        </div>
+                      </div>
+                      {/* Feature: Form Review */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Form Review & Feedback</div>
+                          <div className="text-xs text-muted-foreground">Video analysis & corrections</div>
+                        </div>
+                      </div>
+                      {/* Feature: Video Analysis */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Video Analysis</div>
+                          <div className="text-xs text-muted-foreground">Detailed movement breakdown</div>
+                        </div>
+                      </div>
+                      {/* Feature: Tension Coaching */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Tension Coaching</div>
+                          <div className="text-xs text-muted-foreground">Myofascial release guidance</div>
+                        </div>
+                      </div>
+                      {/* Feature: Mobility Prioritization */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Mobility Prioritization</div>
+                          <div className="text-xs text-muted-foreground">Flexibility & range of motion</div>
+                        </div>
+                      </div>
+                      {/* Feature: Email Support */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Email Support</div>
+                          <div className="text-xs text-muted-foreground">Basic communication</div>
+                        </div>
+                      </div>
+                      {/* Feature: Priority Support */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Priority Support</div>
+                          <div className="text-xs text-muted-foreground">Faster response times</div>
+                        </div>
+                      </div>
+                      {/* Feature: Training Progression */}
+                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Training Progression</div>
+                          <div className="text-xs text-muted-foreground">Systematic advancement</div>
+                        </div>
+                      </div>
+                      {/* Feature: Nutrition Guidance */}
+                      <div className="flex items-start gap-3 py-2">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Nutrition Guidance</div>
+                          <div className="text-xs text-muted-foreground">Diet & meal planning support</div>
+                        </div>
+                      </div>
+                      {/* CTA Button */}
+                      <div className="pt-4">
+                        <Button 
+                          className="w-full gradient-orange-yellow text-black font-bold hover:scale-105 transition-all"
+                          onClick={() => handleSubscriptionCheckout('elite', 'Elite Plan')}
+                          disabled={subscriptionLoading}
+                        >
+                          {subscriptionLoading ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                              Processing...
+                            </>
+                          ) : hasActiveSubscription ? (
+                            'Manage Subscription'
+                          ) : (
+                            'Subscribe Now'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                  
                </CardContent>
             </Card>

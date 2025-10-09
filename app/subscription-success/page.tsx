@@ -16,11 +16,15 @@ function SubscriptionSuccessContent() {
   const { refreshSubscription, subscription, loading } = useSubscription()
   const [isLoading, setIsLoading] = useState(true)
   const [sessionData, setSessionData] = useState<any>(null)
+  const [hasRefreshed, setHasRefreshed] = useState(false)
 
   const sessionId = searchParams.get('session_id')
 
   useEffect(() => {
-    if (sessionId && user) {
+    // Only run once when component mounts with sessionId and user
+    if (sessionId && user && !hasRefreshed) {
+      setHasRefreshed(true)
+      
       // First, try to get session data from Stripe
       fetch(`/api/get-checkout-session?session_id=${sessionId}`)
         .then(res => res.json())
@@ -31,16 +35,12 @@ function SubscriptionSuccessContent() {
         })
         .catch(err => console.error('Error fetching session:', err))
         .finally(() => {
-          // Only refresh subscription data if we don't already have it
-          if (!subscription) {
-            refreshSubscription().finally(() => {
-              setIsLoading(false)
-            })
-          } else {
+          // Refresh subscription data from Stripe
+          refreshSubscription().finally(() => {
             setIsLoading(false)
-          }
+          })
         })
-    } else {
+    } else if (!sessionId || !user) {
       setIsLoading(false)
     }
 
@@ -50,7 +50,7 @@ function SubscriptionSuccessContent() {
     }, 10000) // 10 seconds timeout
 
     return () => clearTimeout(timeout)
-  }, [sessionId, user, refreshSubscription, subscription])
+  }, [sessionId, user])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

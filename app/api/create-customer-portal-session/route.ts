@@ -12,8 +12,11 @@ export async function POST(request: NextRequest) {
     
     console.log('=== CUSTOMER PORTAL SESSION CREATION ===')
     console.log('User ID:', userId)
+    console.log('Stripe Secret Key exists:', !!process.env.STRIPE_SECRET_KEY)
+    console.log('Supabase Admin exists:', !!supabaseAdmin)
 
     if (!userId) {
+      console.error('❌ No user ID provided')
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
@@ -87,6 +90,10 @@ export async function POST(request: NextRequest) {
     const returnUrl = `${baseUrl}/dashboard`
 
     // Create customer portal session
+    console.log('Creating portal session with:')
+    console.log('- Customer ID:', stripeCustomerId)
+    console.log('- Return URL:', returnUrl)
+    
     const session = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
       return_url: returnUrl,
@@ -102,8 +109,23 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Error creating customer portal session:', error)
+    console.error('❌ Error type:', typeof error)
+    console.error('❌ Error details:', error instanceof Error ? error.message : 'Unknown error')
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
+    // Log full error object for Stripe errors
+    if (error && typeof error === 'object' && 'type' in error) {
+      console.error('❌ Stripe Error Type:', (error as any).type)
+      console.error('❌ Stripe Error Code:', (error as any).code)
+      console.error('❌ Stripe Error Message:', (error as any).message)
+      console.error('❌ Stripe Error Raw:', (error as any).raw)
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create customer portal session' },
+      { 
+        error: 'Failed to create customer portal session',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

@@ -604,7 +604,7 @@ export default function CheckoutPage() {
                     {!profileData || (!profileData.address && !profileData.city && !profileData.state) && (
                       <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-lg">
                         <p className="text-blue-300 text-sm">
-                          💡 <strong>Tip:</strong> You can save time by adding your address information to your profile. 
+                          <strong>Tip:</strong> You can save time by adding your address information to your profile. 
                           <Link href="/dashboard/profile" className="text-blue-400 hover:text-blue-300 underline ml-1">
                             Update your profile
                           </Link> to use it for future purchases.

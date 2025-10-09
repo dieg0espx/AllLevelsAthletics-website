@@ -176,46 +176,41 @@ export async function POST(request: NextRequest) {
     console.log('📊 Order ID:', orderData.id)
     console.log('📦 Items count:', orderItems.length)
     
-    // Send order confirmation emails (async, don't wait for response)
+    // Send order confirmation emails (call directly, don't use fetch)
     try {
       const orderNumber = `ORD-${orderData.id.toString().padStart(6, '0')}`
       
-      console.log('📧 ===== STARTING EMAIL SENDING PROCESS =====')
-      console.log('📧 Order Number:', orderNumber)
-      console.log('📧 Customer Email:', shippingInfo.email)
-      console.log('📧 Customer Name:', `${shippingInfo.firstName} ${shippingInfo.lastName}`)
-      console.log('📧 Total Amount:', totalAmount)
+      console.log('===== STARTING EMAIL SENDING PROCESS =====')
+      console.log('Order Number:', orderNumber)
+      console.log('Customer Email:', shippingInfo.email)
+      console.log('Customer Name:', `${shippingInfo.firstName} ${shippingInfo.lastName}`)
+      console.log('Total Amount:', totalAmount)
       
-      const emailResponse = await fetch('/api/send-order-confirmation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: orderData.id,
-          orderNumber: orderNumber,
-          customerEmail: shippingInfo.email,
-          customerName: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
-          items: items,
-          totalAmount: totalAmount,
-          shippingAddress: shippingInfo,
-          orderDate: orderData.created_at
-        })
+      // Import and call the email function directly instead of using fetch
+      const { sendOrderConfirmationEmail } = await import('./send-order-confirmation-helper')
+      
+      const emailResult = await sendOrderConfirmationEmail({
+        orderId: orderData.id,
+        orderNumber: orderNumber,
+        customerEmail: shippingInfo.email,
+        customerName: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+        items: items,
+        totalAmount: totalAmount,
+        shippingAddress: shippingInfo,
+        orderDate: orderData.created_at
       })
+
       
-      if (emailResponse.ok) {
-        const emailResult = await emailResponse.json()
-        console.log('✅ Email API response:', emailResult)
+      if (emailResult.success) {
+        console.log('Email sent successfully:', emailResult)
       } else {
-        console.error('❌ Email API failed with status:', emailResponse.status)
-        const errorText = await emailResponse.text()
-        console.error('❌ Email API error response:', errorText)
+        console.error('Email sending failed:', emailResult.error)
       }
       
     } catch (error) {
-      console.error('🚨 ===== EMAIL SENDING ERROR =====')
-      console.error('❌ Error sending order confirmation emails:', error)
-      console.error('❌ Error details:', error instanceof Error ? error.message : 'Unknown error')
+      console.error('===== EMAIL SENDING ERROR =====')
+      console.error('Error sending order confirmation emails:', error)
+      console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
     }
     
     return NextResponse.json({ 

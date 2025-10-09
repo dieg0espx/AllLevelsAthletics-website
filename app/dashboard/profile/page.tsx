@@ -92,37 +92,41 @@ export default function ProfilePage() {
       
       if (response.ok) {
         console.log('📋 Profile fetch response:', JSON.stringify(data, null, 2))
-        if (data.profile) {
-          console.log('📋 Profile data from API:', JSON.stringify(data.profile, null, 2))
-          // Parse phone number if it includes country code
-          const phoneData = parsePhoneNumber(data.profile.phone || "")
-          
-          // Parse full_name back into first and last name
-          const fullName = data.profile.full_name || ""
-          const nameParts = fullName.trim().split(" ")
-          const firstName = nameParts[0] || ""
-          const lastName = nameParts.slice(1).join(" ") || ""
-          
-          const newProfileData = {
-            firstName: firstName,
-            lastName: lastName,
-            email: user?.email || "", // Get email from auth user, not profile
-            phoneCountryCode: phoneData.countryCode,
-            phone: phoneData.number,
-            address: data.profile.address || "",
-            city: data.profile.city || "",
-            state: data.profile.state || "",
-            zipCode: data.profile.zip_code || "",
-            country: data.profile.country || "United States",
-            dateOfBirth: data.profile.date_of_birth || ""
-          }
-          
-          console.log('📋 Processed profile data:', JSON.stringify(newProfileData, null, 2))
-          setProfileData(newProfileData)
-          setOriginalData(newProfileData)
-        } else {
-          console.log('⚠️ No profile data returned from API')
+        
+        // Get full name from profile OR fall back to auth metadata
+        let fullName = ""
+        if (data.profile?.full_name) {
+          fullName = data.profile.full_name
+        } else if (user?.user_metadata?.full_name) {
+          fullName = user.user_metadata.full_name
+          console.log('📋 Using full_name from auth metadata:', fullName)
         }
+        
+        // Parse full_name into first and last name
+        const nameParts = fullName.trim().split(" ")
+        const firstName = nameParts[0] || ""
+        const lastName = nameParts.slice(1).join(" ") || ""
+        
+        // Parse phone number if it includes country code
+        const phoneData = parsePhoneNumber(data.profile?.phone || "")
+        
+        const newProfileData = {
+          firstName: firstName,
+          lastName: lastName,
+          email: user?.email || "", // Get email from auth user, not profile
+          phoneCountryCode: phoneData.countryCode,
+          phone: phoneData.number,
+          address: data.profile?.address || "",
+          city: data.profile?.city || "",
+          state: data.profile?.state || "",
+          zipCode: data.profile?.zip_code || "",
+          country: data.profile?.country || "United States",
+          dateOfBirth: data.profile?.date_of_birth || ""
+        }
+        
+        console.log('📋 Processed profile data:', JSON.stringify(newProfileData, null, 2))
+        setProfileData(newProfileData)
+        setOriginalData(newProfileData)
       } else {
         console.error('❌ Profile fetch failed:', response.status, data)
       }
@@ -152,7 +156,6 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -442,34 +445,34 @@ export default function ProfilePage() {
       {/* Header */}
       <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-0 sm:h-16 gap-3 sm:gap-0">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/dashboard')}
-                className="text-white/90 hover:text-orange-400 hover:bg-white/10"
+                className="text-white/90 hover:text-orange-400 hover:bg-white/10 text-xs sm:text-sm"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                Back
               </Button>
-              <h1 className="text-2xl font-bold text-orange-400">My Information</h1>
+              <h1 className="text-lg sm:text-2xl font-bold text-orange-400">My Information</h1>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/')}
-                className="text-white/90 hover:text-orange-400 hover:bg-white/10"
+                className="text-white/90 hover:text-orange-400 hover:bg-white/10 text-xs sm:text-sm flex-1 sm:flex-initial"
               >
-                Back to Site
+                Site
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-white/90 hover:text-red-400 hover:bg-white/10"
+                className="text-white/90 hover:text-red-400 hover:bg-white/10 text-xs sm:text-sm flex-1 sm:flex-initial"
               >
                 Sign Out
               </Button>
@@ -479,38 +482,38 @@ export default function ProfilePage() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 sm:px-8 lg:px-12 xl:px-16 py-8">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                <User className="w-6 h-6 text-orange-400" />
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                <User className="w-5 h-5 sm:w-6 sm:h-6 text-orange-400" />
                 Profile Information
               </h2>
-              <p className="text-white/70">Update your personal information and preferences</p>
+              <p className="text-white/70 text-sm sm:text-base">Update your personal information and preferences</p>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <Button
                 variant="outline"
                 onClick={() => router.push('/dashboard')}
-                className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300"
+                className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-300 w-full sm:w-auto text-sm"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                 Back to Dashboard
               </Button>
             
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 flex-1 sm:flex-initial">
               {!isEditing ? (
                 <Button 
                   onClick={() => {
                     console.log('🖱️ Edit Profile clicked, setting isEditing to true')
                     setIsEditing(true)
                   }} 
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="bg-orange-500 hover:bg-orange-600 w-full sm:w-auto text-sm"
                 >
-                  <Edit className="w-4 h-4 mr-2" />
+                  <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   Edit Profile
                 </Button>
               ) : (
@@ -518,7 +521,7 @@ export default function ProfilePage() {
                   <Button 
                     onClick={handleCancel} 
                     variant="outline" 
-                    className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                    className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 flex-1 sm:flex-initial text-sm"
                   >
                     Cancel
                   </Button>
@@ -528,9 +531,9 @@ export default function ProfilePage() {
                       handleSave()
                     }} 
                     disabled={isSaving} 
-                    className="bg-orange-500 hover:bg-orange-600"
+                    className="bg-orange-500 hover:bg-orange-600 flex-1 sm:flex-initial text-sm"
                   >
-                    <Save className="w-4 h-4 mr-2" />
+                    <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                     {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
                 </>
@@ -540,115 +543,113 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Main Profile Information */}
-          <div className="lg:col-span-2 space-y-6 pt-4">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Personal Information */}
             <Card className="bg-white/5 border-orange-500/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <User className="w-5 h-5 text-orange-400" />
+              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+                <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                   Personal Information
                 </CardTitle>
-                <CardDescription className="text-white/70">Your basic profile details</CardDescription>
+                <CardDescription className="text-white/70 text-sm">Your basic profile details</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-white/90">First Name</Label>
+                    <Label htmlFor="firstName" className="text-white/90 text-sm sm:text-base">First Name</Label>
                     <Input
                       id="firstName"
                       value={profileData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       disabled={!isEditing}
-                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-white/90">Last Name</Label>
+                    <Label htmlFor="lastName" className="text-white/90 text-sm sm:text-base">Last Name</Label>
                     <Input
                       id="lastName"
                       value={profileData.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       disabled={!isEditing}
-                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                     />
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white/90">Email</Label>
+                    <Label htmlFor="email" className="text-white/90 text-sm sm:text-base">Email</Label>
                     <Input
                       id="email"
                       value={profileData.email}
                       disabled
-                      className="bg-white/5 border-gray-500/30 text-white/50"
+                      className="bg-white/5 border-gray-500/30 text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                     />
                     <p className="text-xs text-white/50 mt-1">Email cannot be changed</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="dateOfBirth" className="text-white/90">Date of Birth</Label>
+                    <Label htmlFor="dateOfBirth" className="text-white/90 text-sm sm:text-base">Date of Birth</Label>
                     <Input
                       id="dateOfBirth"
                       type="date"
                       value={profileData.dateOfBirth}
                       onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                       disabled={!isEditing}
-                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                     />
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white/90 flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-orange-400" />
-                      Phone Number
-                    </Label>
-                    <div className="flex gap-2">
-                      <Select
-                        value={profileData.phoneCountryCode}
-                        onValueChange={(value) => handleInputChange('phoneCountryCode', value)}
-                        disabled={!isEditing}
-                      >
-                        <SelectTrigger className="w-24 bg-white/10 border-orange-500/30 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-orange-500/30">
-                          <SelectItem value="+1" className="text-white hover:bg-orange-500/20">🇺🇸 +1</SelectItem>
-                          <SelectItem value="+52" className="text-white hover:bg-orange-500/20">🇲🇽 +52</SelectItem>
-                          <SelectItem value="+33" className="text-white hover:bg-orange-500/20">🇫🇷 +33</SelectItem>
-                          <SelectItem value="+44" className="text-white hover:bg-orange-500/20">🇬🇧 +44</SelectItem>
-                          <SelectItem value="+49" className="text-white hover:bg-orange-500/20">🇩🇪 +49</SelectItem>
-                          <SelectItem value="+39" className="text-white hover:bg-orange-500/20">🇮🇹 +39</SelectItem>
-                          <SelectItem value="+34" className="text-white hover:bg-orange-500/20">🇪🇸 +34</SelectItem>
-                          <SelectItem value="+55" className="text-white hover:bg-orange-500/20">🇧🇷 +55</SelectItem>
-                          <SelectItem value="+86" className="text-white hover:bg-orange-500/20">🇨🇳 +86</SelectItem>
-                          <SelectItem value="+81" className="text-white hover:bg-orange-500/20">🇯🇵 +81</SelectItem>
-                          <SelectItem value="+91" className="text-white hover:bg-orange-500/20">🇮🇳 +91</SelectItem>
-                          <SelectItem value="+61" className="text-white hover:bg-orange-500/20">🇦🇺 +61</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    <Input
-                      id="phone"
-                        type="tel"
-                      value={profileData.phone}
-                        onChange={(e) => {
-                          const formatted = formatPhoneNumber(e.target.value, profileData.phoneCountryCode)
-                          handleInputChange('phone', formatted)
-                        }}
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-white/90 flex items-center gap-2 text-sm sm:text-base">
+                    <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" />
+                    Phone Number
+                  </Label>
+                  <div className="flex gap-2">
+                    <Select
+                      value={profileData.phoneCountryCode}
+                      onValueChange={(value) => handleInputChange('phoneCountryCode', value)}
                       disabled={!isEditing}
-                        className="flex-1 bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
-                        placeholder="Enter your phone number"
-                      />
-                    </div>
-                    {profileData.phone && !validatePhoneNumber(profileData.phone, profileData.phoneCountryCode) && (
-                      <p className="text-red-400 text-sm mt-1">
-                        Please enter a valid phone number for {profileData.phoneCountryCode}
-                      </p>
-                    )}
+                    >
+                      <SelectTrigger className="w-20 sm:w-24 bg-white/10 border-orange-500/30 text-white h-10 sm:h-11 text-xs sm:text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-900 border-orange-500/30">
+                        <SelectItem value="+1" className="text-white hover:bg-orange-500/20 text-sm">🇺🇸 +1</SelectItem>
+                        <SelectItem value="+52" className="text-white hover:bg-orange-500/20 text-sm">🇲🇽 +52</SelectItem>
+                        <SelectItem value="+33" className="text-white hover:bg-orange-500/20 text-sm">🇫🇷 +33</SelectItem>
+                        <SelectItem value="+44" className="text-white hover:bg-orange-500/20 text-sm">🇬🇧 +44</SelectItem>
+                        <SelectItem value="+49" className="text-white hover:bg-orange-500/20 text-sm">🇩🇪 +49</SelectItem>
+                        <SelectItem value="+39" className="text-white hover:bg-orange-500/20 text-sm">🇮🇹 +39</SelectItem>
+                        <SelectItem value="+34" className="text-white hover:bg-orange-500/20 text-sm">🇪🇸 +34</SelectItem>
+                        <SelectItem value="+55" className="text-white hover:bg-orange-500/20 text-sm">🇧🇷 +55</SelectItem>
+                        <SelectItem value="+86" className="text-white hover:bg-orange-500/20 text-sm">🇨🇳 +86</SelectItem>
+                        <SelectItem value="+81" className="text-white hover:bg-orange-500/20 text-sm">🇯🇵 +81</SelectItem>
+                        <SelectItem value="+91" className="text-white hover:bg-orange-500/20 text-sm">🇮🇳 +91</SelectItem>
+                        <SelectItem value="+61" className="text-white hover:bg-orange-500/20 text-sm">🇦🇺 +61</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  <Input
+                    id="phone"
+                      type="tel"
+                    value={profileData.phone}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value, profileData.phoneCountryCode)
+                        handleInputChange('phone', formatted)
+                      }}
+                    disabled={!isEditing}
+                      className="flex-1 bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
+                      placeholder="Enter your phone number"
+                    />
                   </div>
+                  {profileData.phone && !validatePhoneNumber(profileData.phone, profileData.phoneCountryCode) && (
+                    <p className="text-red-400 text-xs sm:text-sm mt-1">
+                      Please enter a valid phone number for {profileData.phoneCountryCode}
+                    </p>
+                  )}
                 </div>
                 
                 {/* Role field removed - only admins can change roles */}
@@ -657,17 +658,17 @@ export default function ProfilePage() {
 
             {/* Address Information */}
             <Card className="bg-white/5 border-orange-500/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-orange-400" />
+              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+                <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                   Address Information
                 </CardTitle>
-                <CardDescription className="text-white/70">Your shipping and billing address</CardDescription>
+                <CardDescription className="text-white/70 text-sm">Your shipping and billing address</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="text-white/90 flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-orange-400" />
+                  <Label htmlFor="address" className="text-white/90 flex items-center gap-2 text-sm sm:text-base">
+                    <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" />
                     Street Address
                   </Label>
                   <Input
@@ -675,36 +676,36 @@ export default function ProfilePage() {
                     value={profileData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
                     disabled={!isEditing}
-                    className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                    className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                     placeholder="123 Main Street, Apt 4B"
                   />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="city" className="text-white/90">City</Label>
+                    <Label htmlFor="city" className="text-white/90 text-sm sm:text-base">City</Label>
                     <Input
                       id="city"
                       value={profileData.city}
                       onChange={(e) => handleInputChange('city', e.target.value)}
                       disabled={!isEditing}
-                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                       placeholder="New York"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="state" className="text-white/90">State/Province</Label>
+                    <Label htmlFor="state" className="text-white/90 text-sm sm:text-base">State/Province</Label>
                     <Select
                       value={profileData.state}
                       onValueChange={(value) => handleInputChange('state', value)}
                       disabled={!isEditing}
                     >
-                      <SelectTrigger className="bg-white/10 border-orange-500/30 text-white">
+                      <SelectTrigger className="bg-white/10 border-orange-500/30 text-white h-10 sm:h-11 text-sm sm:text-base">
                         <SelectValue placeholder="Select state/province" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-900 border-orange-500/30 max-h-60">
                         {getStateOptions(profileData.country).map((state) => (
-                          <SelectItem key={state.value} value={state.value} className="text-white hover:bg-orange-500/20">
+                          <SelectItem key={state.value} value={state.value} className="text-white hover:bg-orange-500/20 text-sm">
                             {state.label}
                           </SelectItem>
                         ))}
@@ -712,7 +713,7 @@ export default function ProfilePage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="zipCode" className="text-white/90">ZIP/Postal Code</Label>
+                    <Label htmlFor="zipCode" className="text-white/90 text-sm sm:text-base">ZIP/Postal Code</Label>
                     <Input
                       id="zipCode"
                       value={profileData.zipCode}
@@ -735,37 +736,37 @@ export default function ProfilePage() {
                         handleInputChange('zipCode', formatted)
                       }}
                       disabled={!isEditing}
-                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50"
+                      className="bg-white/10 border-orange-500/30 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm sm:text-base"
                       placeholder={profileData.country === "United States" ? "12345" : profileData.country === "Canada" ? "A1A 1A1" : "12345"}
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="country" className="text-white/90">Country</Label>
+                  <Label htmlFor="country" className="text-white/90 text-sm sm:text-base">Country</Label>
                   <Select
                     value={profileData.country}
                     onValueChange={(value) => handleInputChange('country', value)}
                     disabled={!isEditing}
                   >
-                    <SelectTrigger className="bg-white/10 border-orange-500/30 text-white">
+                    <SelectTrigger className="bg-white/10 border-orange-500/30 text-white h-10 sm:h-11 text-sm sm:text-base">
                       <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-900 border-orange-500/30 max-h-60">
-                      <SelectItem value="United States" className="text-white hover:bg-orange-500/20">🇺🇸 United States</SelectItem>
-                      <SelectItem value="Canada" className="text-white hover:bg-orange-500/20">🇨🇦 Canada</SelectItem>
-                      <SelectItem value="Mexico" className="text-white hover:bg-orange-500/20">🇲🇽 Mexico</SelectItem>
-                      <SelectItem value="United Kingdom" className="text-white hover:bg-orange-500/20">🇬🇧 United Kingdom</SelectItem>
-                      <SelectItem value="France" className="text-white hover:bg-orange-500/20">🇫🇷 France</SelectItem>
-                      <SelectItem value="Germany" className="text-white hover:bg-orange-500/20">🇩🇪 Germany</SelectItem>
-                      <SelectItem value="Italy" className="text-white hover:bg-orange-500/20">🇮🇹 Italy</SelectItem>
-                      <SelectItem value="Spain" className="text-white hover:bg-orange-500/20">🇪🇸 Spain</SelectItem>
-                      <SelectItem value="Brazil" className="text-white hover:bg-orange-500/20">🇧🇷 Brazil</SelectItem>
-                      <SelectItem value="Australia" className="text-white hover:bg-orange-500/20">🇦🇺 Australia</SelectItem>
-                      <SelectItem value="Japan" className="text-white hover:bg-orange-500/20">🇯🇵 Japan</SelectItem>
-                      <SelectItem value="China" className="text-white hover:bg-orange-500/20">🇨🇳 China</SelectItem>
-                      <SelectItem value="India" className="text-white hover:bg-orange-500/20">🇮🇳 India</SelectItem>
-                      <SelectItem value="Other" className="text-white hover:bg-orange-500/20">🌍 Other</SelectItem>
+                      <SelectItem value="United States" className="text-white hover:bg-orange-500/20 text-sm">🇺🇸 United States</SelectItem>
+                      <SelectItem value="Canada" className="text-white hover:bg-orange-500/20 text-sm">🇨🇦 Canada</SelectItem>
+                      <SelectItem value="Mexico" className="text-white hover:bg-orange-500/20 text-sm">🇲🇽 Mexico</SelectItem>
+                      <SelectItem value="United Kingdom" className="text-white hover:bg-orange-500/20 text-sm">🇬🇧 United Kingdom</SelectItem>
+                      <SelectItem value="France" className="text-white hover:bg-orange-500/20 text-sm">🇫🇷 France</SelectItem>
+                      <SelectItem value="Germany" className="text-white hover:bg-orange-500/20 text-sm">🇩🇪 Germany</SelectItem>
+                      <SelectItem value="Italy" className="text-white hover:bg-orange-500/20 text-sm">🇮🇹 Italy</SelectItem>
+                      <SelectItem value="Spain" className="text-white hover:bg-orange-500/20 text-sm">🇪🇸 Spain</SelectItem>
+                      <SelectItem value="Brazil" className="text-white hover:bg-orange-500/20 text-sm">🇧🇷 Brazil</SelectItem>
+                      <SelectItem value="Australia" className="text-white hover:bg-orange-500/20 text-sm">🇦🇺 Australia</SelectItem>
+                      <SelectItem value="Japan" className="text-white hover:bg-orange-500/20 text-sm">🇯🇵 Japan</SelectItem>
+                      <SelectItem value="China" className="text-white hover:bg-orange-500/20 text-sm">🇨🇳 China</SelectItem>
+                      <SelectItem value="India" className="text-white hover:bg-orange-500/20 text-sm">🇮🇳 India</SelectItem>
+                      <SelectItem value="Other" className="text-white hover:bg-orange-500/20 text-sm">🌍 Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -775,29 +776,29 @@ export default function ProfilePage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Account Status */}
             <Card className="bg-white/5 border-orange-500/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-orange-400" />
+              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+                <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
+                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                   Account Status
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 px-4 sm:px-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-white/70">Status</span>
-                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
+                  <span className="text-white/70 text-sm sm:text-base">Status</span>
+                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-xs sm:text-sm">
                     Active
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-white/70">Member Since</span>
-                  <span className="text-white">{new Date(user.created_at || Date.now()).toLocaleDateString()}</span>
+                  <span className="text-white/70 text-sm sm:text-base">Member Since</span>
+                  <span className="text-white text-sm sm:text-base">{new Date(user.created_at || Date.now()).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-white/70">Last Login</span>
-                  <span className="text-white">{new Date().toLocaleDateString()}</span>
+                  <span className="text-white/70 text-sm sm:text-base">Last Login</span>
+                  <span className="text-white text-sm sm:text-base">{new Date().toLocaleDateString()}</span>
                 </div>
               </CardContent>
             </Card>
@@ -805,18 +806,18 @@ export default function ProfilePage() {
 
             {/* Quick Actions */}
             <Card className="bg-white/5 border-orange-500/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-orange-400" />
+              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+                <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
+                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                   Account Security
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 px-4 sm:px-6">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                  className="w-full justify-start border-orange-500/30 text-orange-400 hover:bg-orange-500/10 text-sm sm:text-base h-10 sm:h-11"
                 >
-                  <Lock className="w-4 h-4 mr-2" />
+                  <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   Change Password
                 </Button>
               </CardContent>

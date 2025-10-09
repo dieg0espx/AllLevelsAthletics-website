@@ -27,6 +27,7 @@ export default function ClientDashboard() {
   const [subscriptionData, setSubscriptionData] = useState<any>(null)
   const [hasCoachingSubscription, setHasCoachingSubscription] = useState(false)
   const [userPrograms, setUserPrograms] = useState<any[]>([])
+  const [refreshingSubscription, setRefreshingSubscription] = useState(false)
 
   useEffect(() => {
     // Wait for auth to finish loading before checking user
@@ -96,8 +97,13 @@ export default function ClientDashboard() {
   }
 
   const fetchSubscriptionData = async () => {
-    if (!user?.id) return
+    if (!user?.id) {
+      console.log('⚠️ No user ID, skipping subscription fetch')
+      return
+    }
 
+    console.log('🔄 Fetching subscription for user:', user.id)
+    
     try {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
@@ -107,24 +113,97 @@ export default function ClientDashboard() {
       })
       clearTimeout(timeoutId)
       
+      console.log('📡 Subscription API response status:', response.status, response.ok)
+      
       if (response.ok) {
         const data = await response.json()
+        console.log('💳 Subscription data received:', JSON.stringify(data, null, 2))
+        console.log('💳 Subscription object:', data.subscription)
+        console.log('💳 Subscription status:', data.subscription?.status)
+        console.log('💳 Subscription plan_name:', data.subscription?.plan_name)
         setSubscriptionData(data)
         
-        // Check if user has an active coaching subscription
-        if (data.subscription && data.subscription.status === 'active') {
+        // Check if user has an active coaching subscription (active or trialing)
+        if (data.subscription && (data.subscription.status === 'active' || data.subscription.status === 'trialing')) {
+          console.log('✅ Has active subscription:', data.subscription.plan_name)
           setHasCoachingSubscription(true)
+        } else {
+          console.log('❌ No active subscription found. Data:', data.subscription)
+          setHasCoachingSubscription(false)
+          
+          // Auto-sync if we have a Stripe customer ID but no subscription
+          if (data.userProfile?.stripe_customer_id && !data.subscription) {
+            console.log('🔄 Auto-syncing: Found Stripe customer ID but no subscription in database')
+            console.log('🔄 This likely means the webhook didn\'t fire. Attempting manual sync...')
+            
+            // Try to sync from Stripe automatically
+            setTimeout(async () => {
+              try {
+                const syncResponse = await fetch('/api/sync-subscription-status', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ userId: user.id })
+                })
+                
+                const syncData = await syncResponse.json()
+                
+                if (syncResponse.ok) {
+                  console.log('✅ Auto-sync successful! Refreshing page...')
+                  // Refresh the page to show the synced subscription
+                  window.location.reload()
+                } else {
+                  console.log('⚠️ Auto-sync failed:', syncData.error)
+                }
+              } catch (error) {
+                console.error('❌ Auto-sync error:', error)
+              }
+            }, 1000) // Wait 1 second before auto-syncing
+          }
         }
+      } else {
+        const errorData = await response.text()
+        console.error('❌ Subscription API failed:', response.status, errorData)
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
         console.log('Fetch aborted for subscription data')
         return
       }
-      console.error('Error fetching subscription data:', error)
+      console.error('💥 Error fetching subscription data:', error)
       // Set default values on error
       setSubscriptionData(null)
       setHasCoachingSubscription(false)
+    }
+  }
+
+  const handleRefreshSubscription = async () => {
+    setRefreshingSubscription(true)
+    try {
+      console.log('🔄 Manual sync - fetching subscription from Stripe...')
+      
+      // First, try to sync from Stripe
+      const syncResponse = await fetch('/api/sync-subscription-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?.id })
+      })
+      
+      const syncData = await syncResponse.json()
+      
+      if (syncResponse.ok) {
+        console.log('✅ Subscription synced from Stripe:', syncData)
+        alert('✅ Subscription synced successfully! Refreshing...')
+      } else {
+        console.log('⚠️ Sync failed, trying regular fetch:', syncData.error)
+      }
+      
+      // Then fetch the updated data
+      await fetchSubscriptionData()
+    } catch (error) {
+      console.error('❌ Error refreshing subscription:', error)
+      alert('Failed to refresh subscription. Please try again.')
+    } finally {
+      setRefreshingSubscription(false)
     }
   }
 
@@ -278,7 +357,6 @@ export default function ClientDashboard() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
   }
 
   const formatTimeAgo = (dateString: string) => {
@@ -316,7 +394,7 @@ export default function ClientDashboard() {
 
   return (
     <AdminRedirect>
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Header */}
       <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -353,40 +431,44 @@ export default function ClientDashboard() {
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Dashboard Navigation */}
-        <nav className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur-md border border-orange-500/30 rounded-lg p-4 mb-8">
-          <div className="flex flex-wrap items-center justify-center space-x-6">
-            <Link href="/dashboard/programs" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <BookOpen className="w-5 h-5 inline mr-2" />
-              Programs
+        <nav className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur-md border border-orange-500/30 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 sm:gap-6 overflow-x-auto">
+            <Link href="/dashboard/programs" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Programs</span>
+              <span className="sm:hidden">Programs</span>
             </Link>
-            <Link href="/dashboard/coaching" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <Users className="w-5 h-5 inline mr-2" />
-              1-on-1 Coaching
+            <Link href="/dashboard/coaching" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">1-on-1 Coaching</span>
+              <span className="sm:hidden">Coaching</span>
             </Link>
-            <Link href="/dashboard/products" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <ShoppingBag className="w-5 h-5 inline mr-2" />
-              Purchased Products
+            <Link href="/dashboard/products" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Purchased Products</span>
+              <span className="sm:hidden">Products</span>
             </Link>
-            <Link href="/dashboard/profile" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium">
-              <User className="w-5 h-5 inline mr-2" />
-              My Information
+            <Link href="/dashboard/profile" className="text-white/90 hover:text-orange-400 hover:scale-105 transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center p-2 sm:p-0">
+              <User className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">My Information</span>
+              <span className="sm:hidden">Profile</span>
             </Link>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <div className="relative mb-8 overflow-hidden">
+        <div className="relative mb-6 sm:mb-8 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-yellow-500/10 to-orange-500/20 rounded-2xl"></div>
-          <div className="relative p-8 text-center">
-            <div className="mb-4">
-              <div className="w-20 h-20 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Dumbbell className="w-10 h-10 text-black" />
+          <div className="relative p-4 sm:p-6 md:p-8 text-center">
+            <div className="mb-3 sm:mb-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+                <Dumbbell className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
               </div>
             </div>
-            <h2 className="text-4xl font-bold text-white mb-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-3">
               Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Athlete'}!
             </h2>
-            <p className="text-white/80 text-xl mb-4">
+            <p className="text-white/80 text-lg sm:text-xl mb-3 sm:mb-4">
               Ready to crush your fitness goals today?
             </p>
           </div>
@@ -402,7 +484,7 @@ export default function ClientDashboard() {
 
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Programs Summary */}
           <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 cursor-pointer" onClick={() => router.push('/dashboard/programs')}>
             <CardHeader>
@@ -432,38 +514,9 @@ export default function ClientDashboard() {
                   <>
                     <h3 className="text-lg font-semibold text-white mb-2">No Programs Yet</h3>
                     <p className="text-white/70 text-sm mb-3">Start your fitness journey</p>
-                    <div className="space-y-2">
-                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600 w-full">
-                        Explore Programs
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10 w-full text-xs"
-                        onClick={async () => {
-                          console.log('🧪 Testing database...')
-                          try {
-                            const response = await fetch('/api/test-program', { 
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ userId: user?.id })
-                            })
-                            const data = await response.json()
-                            console.log('Database test response:', data)
-                            if (response.ok) {
-                              alert('✅ Database test passed! Table exists and works.')
-                            } else {
-                              alert('❌ Database test failed: ' + data.error + '\n\nPlease run the SQL setup from SETUP_DATABASE.md')
-                            }
-                          } catch (error) {
-                            console.error('Database test error:', error)
-                            alert('❌ Database test failed: ' + error)
-                          }
-                        }}
-                      >
-                        Test Database
-                      </Button>
-                    </div>
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                      Explore Programs
+                    </Button>
                   </>
                 )}
               </div>
@@ -489,9 +542,44 @@ export default function ClientDashboard() {
                 <p className="text-white/70 text-sm mb-3">
                   {hasCoachingSubscription ? 'Active coaching subscription' : 'Start your coaching journey'}
                 </p>
-                <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
-                  {hasCoachingSubscription ? 'View Details' : 'Get Started'}
-                </Button>
+                {hasCoachingSubscription ? (
+                  <Button 
+                    size="sm" 
+                    className="bg-orange-500 hover:bg-orange-600"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push('/dashboard/coaching')
+                    }}
+                  >
+                    View Details
+                  </Button>
+                ) : (
+                  <div className="flex gap-2 justify-center">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push('/services')
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-orange-400 hover:bg-orange-500/10 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleRefreshSubscription()
+                      }}
+                      disabled={refreshingSubscription}
+                    >
+                      {refreshingSubscription ? '⟳' : 'Refresh'}
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -515,7 +603,7 @@ export default function ClientDashboard() {
                 <p className="text-white/70 text-sm mb-3">
                   {purchasedProductsCount > 0 ? 'Track your orders' : 'Start shopping'}
                 </p>
-                <Button size="sm" variant="outline" className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
+                <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
                   {purchasedProductsCount > 0 ? 'View Details' : 'Browse Products'}
                 </Button>
               </div>

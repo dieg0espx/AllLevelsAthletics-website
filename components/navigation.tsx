@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Menu, X, Zap, User, LogOut, ShoppingCart as ShoppingCartIcon } from "lucide-react"
 import { AuthModal } from "@/components/auth-modal"
 import { ShoppingCart } from "@/components/shopping-cart"
+import CalendlyPopup from "@/components/calendly-popup"
 import { useAuth } from "@/contexts/auth-context"
 import { useCart } from "@/contexts/cart-context"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
@@ -15,11 +16,23 @@ import { siteConfig, replacePlaceholders } from "@/lib/config"
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const [isSigningOut, setIsSigningOut] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut } = useAuth()
   const { toggleCart, getTotalItems } = useCart()
+
+  // Preload Calendly script on component mount
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+  }, [])
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true
@@ -47,17 +60,17 @@ export function Navigation() {
   return (
     <>
       <nav className="fixed top-0 w-full z-50 bg-black/95 backdrop-blur-md">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-18 md:h-20">
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16 md:h-20">
             {/* Logo and Brand */}
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group">
+            <Link href="/" className="flex items-center space-x-1 sm:space-x-3 group">
               <div className="relative">
                 <Image
                   src="/logo.png"
                   alt={siteConfig.name}
                   width={50}
                   height={50}
-                  className="h-8 w-auto sm:h-10 md:h-12 group-hover:scale-105 transition-transform duration-300"
+                  className="h-6 w-auto sm:h-10 md:h-12 group-hover:scale-105 transition-transform duration-300"
                   priority
                 />
                 <div className={`absolute inset-0 bg-gradient-to-br ${siteConfig.styles.button.primary} rounded-lg opacity-0 group-hover:opacity-10 blur-sm transition-opacity duration-300`}></div>
@@ -182,12 +195,11 @@ export function Navigation() {
                 // User is not logged in
                 siteConfig.navigation.showUserIcon && (
                   <Button 
-                    variant="ghost" 
-                    size="icon"
+                    variant="ghost"
                     onClick={openAuthModal}
-                    className={`text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 rounded-full p-3 group`}
+                    className={`text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 rounded-full p-4 group`}
                   >
-                    <User className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    <User className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
                   </Button>
                 )
               )}
@@ -214,7 +226,10 @@ export function Navigation() {
                ) : (
                  // User is not logged in - show start trial
                  siteConfig.navigation.showStartTrial && (
-                   <Button className={`${siteConfig.styles.button.primary} px-6 xl:px-8 py-2 xl:py-3 ${siteConfig.styles.button.rounded} ${siteConfig.styles.button.hover} transition-all duration-300 group text-sm xl:text-base`}>
+                   <Button 
+                     className={`${siteConfig.styles.button.primary} px-6 xl:px-8 py-2 xl:py-3 ${siteConfig.styles.button.rounded} ${siteConfig.styles.button.hover} transition-all duration-300 group text-sm xl:text-base`}
+                     onClick={() => setIsCalendlyOpen(true)}
+                   >
                      <span className="flex items-center gap-2">
                        {siteConfig.navigation.startTrialText}
                        <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
@@ -226,20 +241,20 @@ export function Navigation() {
 
             {/* Mobile Menu Button */}
             <button 
-              className="md:hidden text-white/90 hover:text-orange-400 transition-colors duration-300 p-2 rounded-lg hover:bg-white/10 hover:scale-110 active:scale-95 touch-manipulation"
+              className="md:hidden text-white/90 hover:text-orange-400 transition-colors duration-300 p-1.5 rounded-lg hover:bg-white/10 hover:scale-110 active:scale-95 touch-manipulation"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle navigation menu"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
 
           {/* Mobile Navigation */}
           {isOpen && (
-            <div className="md:hidden py-4 sm:py-6 space-y-2 sm:space-y-3 border-t border-orange-500/30 bg-black/95 backdrop-blur-md shadow-2xl">
+            <div className="md:hidden py-3 space-y-1 border-t border-orange-500/30 bg-black/95 backdrop-blur-md shadow-2xl">
               <Link 
                 href="/" 
-                className={`block transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                className={`block transition-all duration-300 font-semibold py-2 px-3 rounded-lg hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-sm ${
                   isActive("/") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
                 }`}
                 onClick={() => setIsOpen(false)}
@@ -248,7 +263,7 @@ export function Navigation() {
               </Link>
               <Link 
                 href="/about" 
-                className={`block transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                className={`block transition-all duration-300 font-semibold py-2 px-3 rounded-lg hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-sm ${
                   isActive("/about") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
                 }`}
                 onClick={() => setIsOpen(false)}
@@ -257,7 +272,7 @@ export function Navigation() {
               </Link>
               <Link 
                 href="/services" 
-                className={`block transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                className={`block transition-all duration-300 font-semibold py-2 px-3 rounded-lg hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-sm ${
                   isActive("/services") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
                 }`}
                 onClick={() => setIsOpen(false)}
@@ -266,7 +281,7 @@ export function Navigation() {
               </Link>
               <Link 
                 href="/programs" 
-                className={`block transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                className={`block transition-all duration-300 font-semibold py-2 px-3 rounded-lg hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-sm ${
                   isActive("/programs") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
                 }`}
                 onClick={() => setIsOpen(false)}
@@ -275,7 +290,7 @@ export function Navigation() {
               </Link>
               <Link 
                 href="/contact" 
-                className={`block transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                className={`block transition-all duration-300 font-semibold py-2 px-3 rounded-lg hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-sm ${
                   isActive("/contact") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
                 }`}
                 onClick={() => setIsOpen(false)}
@@ -289,15 +304,15 @@ export function Navigation() {
                   toggleCart()
                   setIsOpen(false)
                 }}
-                className={`block w-full text-left transition-all duration-300 font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-base sm:text-lg ${
+                className={`block w-full text-left transition-all duration-300 font-semibold py-2 px-3 rounded-lg hover:bg-white/5 hover:scale-105 active:scale-95 touch-manipulation text-sm ${
                   isActive("/services") ? "text-orange-400 bg-orange-500/10 border border-orange-500/30" : "text-white/90 hover:text-orange-400"
                 }`}
               >
-                <span className="flex items-center gap-3">
-                  <ShoppingCartIcon className="w-5 h-5" />
-                  Shopping Cart
+                <span className="flex items-center gap-2">
+                  <ShoppingCartIcon className="w-4 h-4" />
+                  Cart
                   {getTotalItems() > 0 && (
-                    <div className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    <div className="bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
                       {getTotalItems()}
                     </div>
                   )}
@@ -306,25 +321,42 @@ export function Navigation() {
               
               {/* Mobile Login/Register or User Info */}
               {user ? (
-                <div className="pt-2 space-y-2">
-                  <div className="px-4 py-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                    <p className="text-white/90 text-sm">
+                <div className="pt-1 space-y-1">
+                  <div className="px-3 py-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                    <p className="text-white/90 text-xs">
                       {replacePlaceholders(siteConfig.labels.navigation.welcomeMessage, {
                         name: user.user_metadata?.full_name || user.email
                       })}
                     </p>
                   </div>
                   <Button 
+                    className={`w-full ${siteConfig.styles.button.primary} py-2 ${siteConfig.styles.button.rounded} shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation`}
+                    onClick={() => {
+                      // Determine user role and redirect accordingly
+                      const userRole = user.user_metadata?.role || 'client'
+                      if (userRole === 'admin') {
+                        router.push('/admin')
+                      } else {
+                        router.push('/dashboard')
+                      }
+                      setIsOpen(false) // Close mobile menu
+                    }}
+                  >
+                    <span className="text-sm">
+                      {user.user_metadata?.role === 'admin' ? 'Admin Dashboard' : 'My Account'}
+                    </span>
+                  </Button>
+                  <Button 
                     variant="ghost" 
                     onClick={handleSignOut}
                     disabled={isSigningOut}
-                    className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-3 rounded-lg group disabled:opacity-50`}
+                    className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-2 rounded-lg group disabled:opacity-50`}
                   >
                     <span className="flex items-center justify-center gap-2">
                       {isSigningOut ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
-                        <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                        <LogOut className="w-3 h-3 group-hover:scale-110 transition-transform duration-300" />
                       )}
                       {isSigningOut ? 'Signing out...' : siteConfig.labels.navigation.signOut}
                     </span>
@@ -332,14 +364,14 @@ export function Navigation() {
                 </div>
               ) : (
                 siteConfig.navigation.showUserIcon && (
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <Button 
                       variant="ghost" 
                       onClick={openAuthModal}
-                      className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-3 rounded-lg group`}
+                      className={`w-full text-white/90 hover:text-${siteConfig.colors.accent} hover:bg-white/10 transition-all duration-300 font-medium py-2 rounded-lg group`}
                     >
                       <span className="flex items-center justify-center gap-2">
-                        <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                        <User className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                         {siteConfig.labels.navigation.loginButton}
                       </span>
                     </Button>
@@ -347,40 +379,22 @@ export function Navigation() {
                 )
               )}
               
-                             {/* Dashboard or Start Trial Button for Mobile */}
-               {user ? (
-                 // User is logged in - show dashboard
-                 <div className="pt-2">
+                             {/* Start Trial Button for Mobile (only for non-logged in users) */}
+               {!user && siteConfig.navigation.showStartTrial && (
+                 <div className="pt-1">
                    <Button 
-                     className={`w-full ${siteConfig.styles.button.primary} py-3 sm:py-4 ${siteConfig.styles.button.rounded} shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation`}
+                     className={`w-full ${siteConfig.styles.button.primary} py-2 ${siteConfig.styles.button.rounded} shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation`}
                      onClick={() => {
-                       // Determine user role and redirect accordingly
-                       const userRole = user.user_metadata?.role || 'client'
-                       if (userRole === 'admin') {
-                         router.push('/admin')
-                       } else {
-                         router.push('/dashboard')
-                       }
-                       setIsOpen(false) // Close mobile menu
+                       setIsCalendlyOpen(true)
+                       setIsOpen(false)
                      }}
                    >
-                                                                                       <span className="text-base sm:text-lg">
-                         {user.user_metadata?.role === 'admin' ? 'Admin Dashboard' : 'My Account'}
-                       </span>
+                     <span className="flex items-center justify-center gap-2 text-sm">
+                       {siteConfig.navigation.startTrialText}
+                       <Zap className="w-3 h-3" />
+                     </span>
                    </Button>
                  </div>
-               ) : (
-                 // User is not logged in - show start trial
-                 siteConfig.navigation.showStartTrial && (
-                   <div className="pt-2">
-                     <Button className={`w-full ${siteConfig.styles.button.primary} py-3 sm:py-4 ${siteConfig.styles.button.rounded} shadow-lg hover:shadow-orange-500/25 hover:scale-105 active:scale-95 transition-all duration-300 touch-manipulation`}>
-                       <span className="flex items-center justify-center gap-2 text-base sm:text-lg">
-                         {siteConfig.navigation.startTrialText}
-                         <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
-                       </span>
-                     </Button>
-                   </div>
-                 )
                )}
             </div>
           )}
@@ -396,6 +410,12 @@ export function Navigation() {
       
       {/* Shopping Cart */}
       <ShoppingCart />
+
+      {/* Calendly Popup */}
+      <CalendlyPopup 
+        isOpen={isCalendlyOpen} 
+        onClose={() => setIsCalendlyOpen(false)} 
+      />
     </>
   )
 }

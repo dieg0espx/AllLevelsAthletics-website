@@ -1,163 +1,137 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { supabaseAdmin } from '@/lib/supabase'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia',
 })
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await request.json()
     
-    console.log('=== SYNCING SUBSCRIPTION STATUS ===')
-    console.log('User ID:', userId)
+    console.log('🔄 MANUAL SYNC - Syncing subscription for user:', userId)
 
     if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      )
     }
 
-    // Get user's subscription from database
-    const { data: subscription, error: subError } = await supabaseAdmin
-      .from('user_subscriptions')
-      .select('*')
+    // Get user's Stripe customer ID from profile
+    const { data: userProfile, error: profileError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('stripe_customer_id')
       .eq('user_id', userId)
-      .order('updated_at', { ascending: false })
       .single()
 
-    if (subError || !subscription) {
-      console.error('Error fetching subscription:', subError)
-      return NextResponse.json({ error: 'Subscription not found' }, { status: 404 })
+    if (profileError || !userProfile?.stripe_customer_id) {
+      console.log('❌ No Stripe customer ID found in profile')
+      return NextResponse.json(
+        { error: 'No Stripe customer found. Please complete checkout first.' },
+        { status: 404 }
+      )
     }
 
-    console.log('Database subscription status:', subscription.status)
-    console.log('Stripe subscription ID:', subscription.stripe_subscription_id)
+    const stripeCustomerId = userProfile.stripe_customer_id
+    console.log('🔍 Found Stripe customer ID:', stripeCustomerId)
 
-    // Get Stripe subscription details
-    if (!subscription.stripe_subscription_id) {
-      return NextResponse.json({ error: 'No Stripe subscription ID found' }, { status: 400 })
+    // Fetch all subscriptions for this customer from Stripe
+    const subscriptions = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      limit: 10,
+    })
+
+    console.log('📋 Found', subscriptions.data.length, 'subscription(s) in Stripe')
+
+    if (subscriptions.data.length === 0) {
+      return NextResponse.json(
+        { error: 'No subscriptions found in Stripe for this customer' },
+        { status: 404 }
+      )
     }
 
-    const stripeSubscription = await stripe.subscriptions.retrieve(subscription.stripe_subscription_id)
-    console.log('Stripe subscription status:', stripeSubscription.status)
+    // Get the most recent active or trialing subscription
+    const activeSubscription = subscriptions.data.find(
+      sub => sub.status === 'active' || sub.status === 'trialing'
+    ) || subscriptions.data[0]
 
-    // Compare statuses and sync if different
-    if (subscription.status !== stripeSubscription.status) {
-      console.log(`Status mismatch detected: DB=${subscription.status}, Stripe=${stripeSubscription.status}`)
-      
-      // Update database to match Stripe
-      const { error: updateError } = await supabaseAdmin
-        .from('user_subscriptions')
-        .update({
-          status: stripeSubscription.status,
-          current_period_start: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', subscription.id)
+    console.log('💳 Processing subscription:', activeSubscription.id)
+    console.log('💳 Status:', activeSubscription.status)
+    console.log('💳 Metadata:', activeSubscription.metadata)
 
-      if (updateError) {
-        console.error('Error updating subscription status:', updateError)
-        return NextResponse.json({ error: 'Failed to update subscription status' }, { status: 500 })
-      }
+    // Determine plan details from metadata or price
+    const planId = activeSubscription.metadata?.planId || 'foundation'
+    const planName = activeSubscription.metadata?.planName || 'Foundation Plan'
+    const billingPeriod = activeSubscription.metadata?.billingPeriod || 'monthly'
 
-      console.log('✅ Subscription status synced successfully')
-      
-      return NextResponse.json({
-        success: true,
-        message: 'Subscription status synced successfully',
-        previousStatus: subscription.status,
-        newStatus: stripeSubscription.status,
-        subscription: {
-          id: subscription.id,
-          status: stripeSubscription.status,
-          current_period_start: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
-        }
-      })
-    } else {
-      console.log('✅ Subscription statuses are already in sync')
-      
-      return NextResponse.json({
-        success: true,
-        message: 'Subscription statuses are already in sync',
-        status: subscription.status,
-        subscription: {
-          id: subscription.id,
-          status: subscription.status,
-          current_period_start: subscription.current_period_start,
-          current_period_end: subscription.current_period_end,
-        }
-      })
+    // Create/update subscription in database
+    const subscriptionData = {
+      user_id: userId,
+      stripe_customer_id: stripeCustomerId,
+      stripe_subscription_id: activeSubscription.id,
+      plan_id: planId,
+      plan_name: planName,
+      status: activeSubscription.status,
+      current_period_start: new Date(activeSubscription.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(activeSubscription.current_period_end * 1000).toISOString(),
+      cancel_at_period_end: activeSubscription.cancel_at_period_end,
+      canceled_at: activeSubscription.canceled_at 
+        ? new Date(activeSubscription.canceled_at * 1000).toISOString() 
+        : null,
+      trial_start: activeSubscription.trial_start 
+        ? new Date(activeSubscription.trial_start * 1000).toISOString() 
+        : null,
+      trial_end: activeSubscription.trial_end 
+        ? new Date(activeSubscription.trial_end * 1000).toISOString() 
+        : null,
     }
 
-  } catch (error) {
-    console.error('Error syncing subscription status:', error)
-    return NextResponse.json({ error: 'Failed to sync subscription status' }, { status: 500 })
-  }
-}
-
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
-    console.log('=== CHECKING SUBSCRIPTION SYNC STATUS ===')
-    console.log('User ID:', userId)
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
-
-    // Get user's subscription from database
-    const { data: subscription, error: subError } = await supabaseAdmin
+    const { data: savedSubscription, error: saveError } = await supabaseAdmin
       .from('user_subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .order('updated_at', { ascending: false })
+      .upsert(subscriptionData, { 
+        onConflict: 'stripe_subscription_id',
+        ignoreDuplicates: false 
+      })
+      .select()
       .single()
 
-    if (subError || !subscription) {
-      console.error('Error fetching subscription:', subError)
-      return NextResponse.json({ error: 'Subscription not found' }, { status: 404 })
+    if (saveError) {
+      console.error('❌ Error saving subscription:', saveError)
+      return NextResponse.json(
+        { error: 'Failed to save subscription', details: saveError.message },
+        { status: 500 }
+      )
     }
 
-    // Get Stripe subscription details
-    if (!subscription.stripe_subscription_id) {
-      return NextResponse.json({ 
-        error: 'No Stripe subscription ID found',
-        databaseStatus: subscription.status 
-      }, { status: 400 })
+    // Update user profile with subscription info
+    const { error: profileUpdateError } = await supabaseAdmin
+      .from('user_profiles')
+      .update({
+        current_plan: planId,
+        subscription_status: activeSubscription.status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', userId)
+
+    if (profileUpdateError) {
+      console.error('❌ Error updating user profile:', profileUpdateError)
     }
 
-    const stripeSubscription = await stripe.subscriptions.retrieve(subscription.stripe_subscription_id)
+    console.log('✅ Subscription synced successfully!')
 
-    const isInSync = subscription.status === stripeSubscription.status
-
-    return NextResponse.json({
+    return NextResponse.json({ 
       success: true,
-      isInSync,
-      database: {
-        status: subscription.status,
-        current_period_start: subscription.current_period_start,
-        current_period_end: subscription.current_period_end,
-      },
-      stripe: {
-        status: stripeSubscription.status,
-        current_period_start: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
-      },
-      needsSync: !isInSync
+      subscription: savedSubscription || subscriptionData,
+      message: 'Subscription synced successfully'
     })
 
   } catch (error) {
-    console.error('Error checking subscription sync status:', error)
-    return NextResponse.json({ error: 'Failed to check subscription sync status' }, { status: 500 })
+    console.error('❌ Error syncing subscription:', error)
+    return NextResponse.json(
+      { error: 'Failed to sync subscription', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
   }
 }
-

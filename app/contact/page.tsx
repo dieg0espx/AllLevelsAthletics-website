@@ -11,18 +11,35 @@ export default function ContactPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
 
-  // Load Calendly script
+  // Preload Calendly script and CSS on page load for inline widget
   useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://assets.calendly.com/assets/external/widget.js'
-    script.async = true
-    document.body.appendChild(script)
+    // Load Calendly CSS
+    const existingCSS = document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')
+    if (!existingCSS) {
+      const link = document.createElement('link')
+      link.href = 'https://assets.calendly.com/assets/external/widget.css'
+      link.rel = 'stylesheet'
+      document.head.appendChild(link)
+    }
 
-    return () => {
-      // Cleanup script on unmount
-      const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')
-      if (existingScript) {
-        document.body.removeChild(existingScript)
+    // Load Calendly script
+    const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')
+    
+    if (!existingScript) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      script.onload = () => {
+        // Initialize inline widget after script loads
+        if ((window as any).Calendly) {
+          console.log('Calendly script loaded and ready for inline widget')
+        }
+      }
+      document.head.appendChild(script)
+    } else {
+      // Script already exists, check if Calendly is ready
+      if ((window as any).Calendly) {
+        console.log('Calendly already available for inline widget')
       }
     }
   }, [])

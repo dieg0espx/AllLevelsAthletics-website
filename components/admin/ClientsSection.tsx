@@ -21,7 +21,9 @@ import {
   BarChart3,
   Star,
   Shield,
-  Lock
+  Lock,
+  BookOpen,
+  TrendingUp
 } from "lucide-react"
 
 interface Client {
@@ -39,8 +41,21 @@ interface Client {
   products: Array<{
     name: string
     price: number
-    purchaseDate: string
+    orderDate?: string
+    purchaseDate?: string
   }>
+  programs?: Array<{
+    program_name: string
+    program_id: string
+    progress: number
+    status: string
+    start_date: string
+  }>
+  subscription?: {
+    plan_name: string
+    status: string
+    current_period_end?: string
+  }
 }
 
 interface ClientsSectionProps {
@@ -142,27 +157,14 @@ export function ClientsSection({
             onClick={() => onSelectClient(client)}
           >
             <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <Users className="w-5 h-5 text-orange-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold">{client.full_name || 'Unknown'}</h3>
-                    <p className="text-white/70 text-sm">{client.email || 'No email'}</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-orange-400" />
                 </div>
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleEditClick(client)
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
+                <div>
+                  <h3 className="text-white font-semibold">{client.full_name || 'Unknown'}</h3>
+                  <p className="text-white/70 text-sm">{client.email || 'No email'}</p>
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -181,6 +183,16 @@ export function ClientsSection({
                   </div>
                 )}
               </div>
+              
+              {/* Quick indicators */}
+              {client.subscription && (
+                <div className="mt-3 pt-3 border-t border-white/10">
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs w-full justify-start">
+                    <Star className="w-3 h-3 mr-1" />
+                    1-on-1 Coaching
+                  </Badge>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
@@ -198,47 +210,53 @@ export function ClientsSection({
 
       {/* Client Details Modal */}
       <Dialog open={!!selectedClient} onOpenChange={() => onSelectClient(null)}>
-        <DialogContent 
-          className="bg-gray-900 border-orange-500/30 text-white max-h-[90vh] overflow-y-auto"
-          style={{ width: '60vw', maxWidth: 'none' }}
-        >
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-orange-400" />
-              Client Details
-            </DialogTitle>
-          </DialogHeader>
-          
-          {selectedClient && (
-            <div className="space-y-6">
-              {/* Client Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="bg-white/5 border-orange-500/30">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-orange-400" />
+        <DialogContent className="bg-gray-900 border-orange-500/30 text-white w-[96vw] sm:max-w-[600px] md:max-w-3xl lg:max-w-4xl max-h-[92vh] p-0">
+          <div className="overflow-y-auto max-h-[92vh] p-4 sm:p-5 md:p-6">
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-white flex items-center gap-2 text-base md:text-lg">
+                <Users className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+                Client Details
+              </DialogTitle>
+            </DialogHeader>
+            
+            {selectedClient && (
+              <div className="space-y-4">
+                {/* Client Info */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-white flex items-center gap-2 text-sm md:text-base">
+                      <Shield className="w-4 h-4 text-orange-400" />
                       Personal Information
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3">
                     <div>
-                      <Label className="text-white/70 text-sm">Full Name</Label>
-                      <div className="text-white font-semibold">{selectedClient.full_name}</div>
+                      <Label className="text-white/70 text-xs mb-1 block">Full Name</Label>
+                      <div className="text-white font-semibold text-sm break-words">{selectedClient.full_name}</div>
                     </div>
                     <div>
-                      <Label className="text-white/70 text-sm">Email</Label>
-                      <div className="text-white font-semibold">{selectedClient.email}</div>
+                      <Label className="text-white/70 text-xs mb-1 block">Email</Label>
+                      <div className="text-white font-semibold text-sm break-all">
+                        <a href={`mailto:${selectedClient.email}`} className="text-blue-400 hover:text-blue-300">
+                          {selectedClient.email}
+                        </a>
+                      </div>
                     </div>
                     {selectedClient.phone && (
                       <div>
-                        <Label className="text-white/70 text-sm">Phone</Label>
-                        <div className="text-white font-semibold">{selectedClient.phone}</div>
+                        <Label className="text-white/70 text-xs mb-1 block">Phone</Label>
+                        <div className="text-white font-semibold text-sm">
+                          <a href={`tel:${selectedClient.phone}`} className="text-blue-400 hover:text-blue-300">
+                            {selectedClient.phone}
+                          </a>
+                        </div>
                       </div>
                     )}
                     {(selectedClient.address || selectedClient.city || selectedClient.state) && (
                       <div>
-                        <Label className="text-white/70 text-sm">Address</Label>
-                        <div className="text-white font-semibold">
+                        <Label className="text-white/70 text-xs mb-1 block">Address</Label>
+                        <div className="text-white font-semibold text-sm break-words">
                           {[selectedClient.address, selectedClient.city, selectedClient.state, selectedClient.zip_code]
                             .filter(Boolean)
                             .join(', ')}
@@ -248,166 +266,281 @@ export function ClientsSection({
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border-orange-500/30">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-orange-400" />
+                <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-white flex items-center gap-2 text-sm md:text-base">
+                      <BarChart3 className="w-4 h-4 text-orange-400" />
                       Statistics
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 rounded-lg p-4 text-center">
-                        <div className="text-3xl font-bold text-orange-400">{selectedClient.totalOrders}</div>
-                        <div className="text-white/70 text-sm">Total Orders</div>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-white/5 rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-orange-400">{selectedClient.totalOrders}</div>
+                        <div className="text-white/70 text-xs">Total Orders</div>
                       </div>
-                      <div className="bg-white/5 rounded-lg p-4 text-center">
-                        <div className="text-3xl font-bold text-orange-400">${selectedClient.totalSpent}</div>
-                        <div className="text-white/70 text-sm">Total Spent</div>
+                      <div className="bg-white/5 rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-orange-400">${selectedClient.totalSpent}</div>
+                        <div className="text-white/70 text-xs">Total Spent</div>
                       </div>
                     </div>
                     {selectedClient.lastOrderDate && (
                       <div>
-                        <Label className="text-white/70 text-sm">Last Order</Label>
-                        <div className="text-white font-semibold">{new Date(selectedClient.lastOrderDate).toLocaleDateString()}</div>
+                        <Label className="text-white/70 text-xs mb-1 block">Last Order</Label>
+                        <div className="text-white font-semibold text-sm">{new Date(selectedClient.lastOrderDate).toLocaleDateString()}</div>
                       </div>
                     )}
                   </CardContent>
                 </Card>
               </div>
 
+              {/* One-on-One Coaching Subscription */}
+              {selectedClient.subscription && (
+                <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-white flex items-center gap-2 text-sm md:text-base">
+                      <Star className="w-4 h-4 text-orange-400" />
+                      One-on-One Coaching
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-lg p-3 border border-orange-500/30">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className="w-8 h-8 bg-orange-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Star className="w-4 h-4 text-orange-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white font-semibold text-sm truncate">{selectedClient.subscription.plan_name}</div>
+                            <div className="text-white/70 text-xs">Active</div>
+                          </div>
+                        </div>
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
+                          {selectedClient.subscription.status}
+                        </Badge>
+                      </div>
+                      {selectedClient.subscription.current_period_end && (
+                        <div className="text-white/70 text-xs">
+                          Renews: {new Date(selectedClient.subscription.current_period_end).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Program Enrollment */}
+              <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-white flex items-center gap-2 text-sm md:text-base">
+                    <BookOpen className="w-4 h-4 text-orange-400" />
+                    Program Enrollment
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedClient.programs && selectedClient.programs.length > 0 ? (
+                    <div className="space-y-2">
+                      {selectedClient.programs.map((program, index) => (
+                        <div key={index} className="bg-white/5 rounded-lg p-3">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                <BookOpen className="w-4 h-4 text-orange-400" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-white font-semibold text-sm truncate">{program.program_name}</div>
+                                <div className="text-white/70 text-xs">{new Date(program.start_date).toLocaleDateString()}</div>
+                              </div>
+                            </div>
+                            <Badge className={
+                              program.status === 'active' 
+                                ? 'bg-green-500/20 text-green-400 border-green-500/30 text-xs'
+                                : 'bg-gray-500/20 text-gray-400 border-gray-500/30 text-xs'
+                            }>
+                              {program.status}
+                            </Badge>
+                          </div>
+                          
+                          {/* Progress Bar */}
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-white/70 text-xs flex items-center gap-1">
+                                <TrendingUp className="w-3 h-3" />
+                                Progress
+                              </span>
+                              <span className="text-orange-400 font-semibold text-xs">{program.progress}%</span>
+                            </div>
+                            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                              <div 
+                                className="bg-gradient-to-r from-orange-500 to-orange-400 h-full rounded-full transition-all"
+                                style={{ width: `${program.progress}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <BookOpen className="w-10 h-10 text-white/40 mx-auto mb-2" />
+                      <p className="text-white/60 text-sm">Not enrolled</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Purchase History */}
-              <Card className="bg-white/5 border-orange-500/30">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Package className="w-5 h-5 text-orange-400" />
+              <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-white flex items-center gap-2 text-sm md:text-base">
+                    <Package className="w-4 h-4 text-orange-400" />
                     Purchase History
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {selectedClient.products.length > 0 ? (
                     <div className="space-y-2">
-                      {selectedClient.products.slice(0, 3).map((product, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center">
-                              <Package className="w-4 h-4 text-orange-400" />
+                      {selectedClient.products.slice(0, 5).map((product, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-2.5">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className="w-7 h-7 bg-orange-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                              <Package className="w-3.5 h-3.5 text-orange-400" />
                             </div>
-                            <div>
-                              <div className="text-white font-medium text-sm">{product.name}</div>
-                              <div className="text-white/70 text-xs">{new Date(product.purchaseDate).toLocaleDateString()}</div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium text-sm truncate">{product.name}</div>
+                              <div className="text-white/70 text-xs">
+                                {product.orderDate || product.purchaseDate 
+                                  ? new Date(product.orderDate || product.purchaseDate).toLocaleDateString() 
+                                  : 'Date unavailable'}
+                              </div>
                             </div>
                           </div>
-                          <div className="text-orange-400 font-semibold">${product.price}</div>
+                          <div className="text-orange-400 font-semibold text-sm flex-shrink-0 ml-2">${product.price}</div>
                         </div>
                       ))}
-                      {selectedClient.products.length > 3 && (
-                        <div className="text-center text-white/60 text-sm py-2">
-                          +{selectedClient.products.length - 3} more purchases
+                      {selectedClient.products.length > 5 && (
+                        <div className="text-center text-white/60 text-xs py-2">
+                          +{selectedClient.products.length - 5} more
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="text-center py-8">
-                      <Package className="w-12 h-12 text-white/40 mx-auto mb-3" />
-                      <p className="text-white/60">No purchases yet</p>
+                    <div className="text-center py-6">
+                      <Package className="w-10 h-10 text-white/40 mx-auto mb-2" />
+                      <p className="text-white/60 text-sm">No purchases yet</p>
                     </div>
                   )}
                 </CardContent>
               </Card>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Edit Client Modal */}
       <Dialog open={!!editingClient} onOpenChange={onCancelEdit}>
-        <DialogContent className="bg-gray-900 border-orange-500/30 text-white max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Edit className="w-5 h-5 text-orange-400" />
-              Edit Client Information
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="full_name" className="text-white">Full Name</Label>
-                <Input
-                  id="full_name"
-                  value={editForm.full_name}
-                  onChange={(e) => setEditForm({...editForm, full_name: e.target.value})}
-                  className="bg-white/5 border-orange-500/30 text-white"
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone" className="text-white">Phone</Label>
-                <Input
-                  id="phone"
-                  value={editForm.phone}
-                  onChange={(e) => setEditForm({...editForm, phone: e.target.value})}
-                  className="bg-white/5 border-orange-500/30 text-white"
-                />
-              </div>
-            </div>
+        <DialogContent className="bg-gray-900 border-orange-500/30 text-white w-[96vw] sm:max-w-[600px] md:max-w-3xl max-h-[92vh] p-0">
+          <div className="overflow-y-auto max-h-[92vh] p-4 sm:p-5 md:p-6">
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-white flex items-center gap-2 text-base md:text-lg">
+                <Edit className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+                Edit Client Information
+              </DialogTitle>
+            </DialogHeader>
             
-            <div>
-              <Label htmlFor="address" className="text-white">Address</Label>
-              <Input
-                id="address"
-                value={editForm.address}
-                onChange={(e) => setEditForm({...editForm, address: e.target.value})}
-                className="bg-white/5 border-orange-500/30 text-white"
-              />
-            </div>
+            <div className="space-y-4">
+            <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-white text-sm md:text-base">Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="full_name" className="text-white text-sm mb-2 block">Full Name</Label>
+                    <Input
+                      id="full_name"
+                      value={editForm.full_name}
+                      onChange={(e) => setEditForm({...editForm, full_name: e.target.value})}
+                      className="bg-white/5 border-orange-500/30 text-white h-11"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone" className="text-white text-sm mb-2 block">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm({...editForm, phone: e.target.value})}
+                      className="bg-white/5 border-orange-500/30 text-white h-11"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/5 border-orange-500/30 overflow-hidden">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-white text-sm md:text-base">Address Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="address" className="text-white text-sm mb-2 block">Street Address</Label>
+                  <Input
+                    id="address"
+                    value={editForm.address}
+                    onChange={(e) => setEditForm({...editForm, address: e.target.value})}
+                    className="bg-white/5 border-orange-500/30 text-white h-11"
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="city" className="text-white text-sm mb-2 block">City</Label>
+                    <Input
+                      id="city"
+                      value={editForm.city}
+                      onChange={(e) => setEditForm({...editForm, city: e.target.value})}
+                      className="bg-white/5 border-orange-500/30 text-white h-11"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state" className="text-white text-sm mb-2 block">State</Label>
+                    <Input
+                      id="state"
+                      value={editForm.state}
+                      onChange={(e) => setEditForm({...editForm, state: e.target.value})}
+                      className="bg-white/5 border-orange-500/30 text-white h-11"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="zip_code" className="text-white text-sm mb-2 block">ZIP Code</Label>
+                    <Input
+                      id="zip_code"
+                      value={editForm.zip_code}
+                      onChange={(e) => setEditForm({...editForm, zip_code: e.target.value})}
+                      className="bg-white/5 border-orange-500/30 text-white h-11"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="city" className="text-white">City</Label>
-                <Input
-                  id="city"
-                  value={editForm.city}
-                  onChange={(e) => setEditForm({...editForm, city: e.target.value})}
-                  className="bg-white/5 border-orange-500/30 text-white"
-                />
-              </div>
-              <div>
-                <Label htmlFor="state" className="text-white">State</Label>
-                <Input
-                  id="state"
-                  value={editForm.state}
-                  onChange={(e) => setEditForm({...editForm, state: e.target.value})}
-                  className="bg-white/5 border-orange-500/30 text-white"
-                />
-              </div>
-              <div>
-                <Label htmlFor="zip_code" className="text-white">ZIP Code</Label>
-                <Input
-                  id="zip_code"
-                  value={editForm.zip_code}
-                  onChange={(e) => setEditForm({...editForm, zip_code: e.target.value})}
-                  className="bg-white/5 border-orange-500/30 text-white"
-                />
-              </div>
-            </div>
-            
-            <div className="flex gap-3 justify-end">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
               <Button
                 onClick={onCancelEdit}
                 variant="outline"
-                className="border-gray-500/30 text-gray-400 hover:bg-gray-500/10"
+                className="border-gray-500/30 text-gray-400 hover:bg-gray-500/10 h-11 flex-1 sm:flex-initial"
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-orange-500 hover:bg-orange-600 text-white h-11 flex-1 sm:flex-initial"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save Changes
               </Button>
+            </div>
             </div>
           </div>
         </DialogContent>
