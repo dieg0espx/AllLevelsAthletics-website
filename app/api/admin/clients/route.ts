@@ -59,6 +59,46 @@ export async function GET(request: NextRequest) {
 
     console.log('📊 Orders data:', orders?.length || 0, 'orders found')
     console.log('📊 Profiles data:', profiles?.length || 0, 'profiles found')
+
+    // Get all user programs to show enrollment and progress
+    const { data: userPrograms, error: programsError } = await supabaseAdmin
+      .from('user_programs')
+      .select('*')
+
+    if (programsError) {
+      console.error('❌ Error fetching user programs:', programsError)
+      console.error('Error details:', programsError.message)
+    }
+
+    console.log('📊 User programs data:', userPrograms?.length || 0, 'enrollments found')
+    
+    // Debug: Show programs by user
+    if (userPrograms && userPrograms.length > 0) {
+      console.log('📚 Programs by user:')
+      userPrograms.forEach((program: any) => {
+        console.log(`  User ${program.user_id}: ${program.program_name} - ${program.progress}% progress`)
+      })
+    }
+
+    // Get all user subscriptions to show one-on-one coaching enrollments
+    const { data: userSubscriptions, error: subscriptionsError } = await supabaseAdmin
+      .from('user_subscriptions')
+      .select('*')
+
+    if (subscriptionsError) {
+      console.error('❌ Error fetching user subscriptions:', subscriptionsError)
+      console.error('Error details:', subscriptionsError.message)
+    }
+
+    console.log('💳 User subscriptions data:', userSubscriptions?.length || 0, 'subscriptions found')
+    
+    // Debug: Show subscriptions by user
+    if (userSubscriptions && userSubscriptions.length > 0) {
+      console.log('💳 Subscriptions by user:')
+      userSubscriptions.forEach((sub: any) => {
+        console.log(`  User ${sub.user_id}: ${sub.plan_name} - ${sub.status}`)
+      })
+    }
     
     // Debug: Show all orders with their user_ids
     if (orders && orders.length > 0) {
@@ -97,22 +137,51 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Get auth user data for all profiles (SAME AS COACHING-CLIENTS)
+    const authUsers: { [key: string]: any } = {}
+    for (const profile of profiles) {
+      try {
+        const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(profile.user_id)
+        if (authUser?.user) {
+          authUsers[profile.user_id] = authUser.user
+        }
+      } catch (error) {
+        console.log('⚠️ Error fetching auth user for:', profile.user_id)
+      }
+    }
+
     // Create a map to group clients by email
     const clientsByEmail: { [email: string]: any } = {}
 
-    // Process each profile and group by email
+    // Process each profile - use ONLY auth user data, one user per email
     profiles.forEach((profile: any) => {
+      // Get auth user for this profile
+      const authUser = authUsers[profile.user_id]
+      
+      // Get the real email - MUST come from auth user to ensure uniqueness
+      const realEmail = authUser?.email || userEmails[profile.user_id]
+      
+      // Skip profiles without a valid email (shouldn't happen but safety check)
+      if (!realEmail) {
+        console.log(`⚠️ Skipping profile ${profile.user_id} - no valid email found`)
+        return
+      }
+      
+      // If we already have this email, skip it (first one wins)
+      if (clientsByEmail[realEmail]) {
+        console.log(`⚠️ Duplicate email detected: ${realEmail} - Skipping profile ${profile.user_id} (already have ${clientsByEmail[realEmail].user_id})`)
+        return
+      }
+      
       const userOrders = orders ? orders.filter((order: any) => order.user_id === profile.user_id) : []
       
-      // Get the real email and name from shipping addresses, fallback to placeholder if no orders exist
-      const realEmail = userEmails[profile.user_id] || `user-${profile.user_id.slice(0, 8)}@example.com`
-      const realName = userNames[profile.user_id] || profile.full_name || 'Unknown'
+      const realName = authUser?.user_metadata?.full_name || 
+                      profile.full_name || 
+                      userNames[profile.user_id] || 
+                      authUser?.email?.split('@')[0] || 
+                      'Unknown'
       
-      console.log(`👤 Processing client: ${profile.full_name || 'Unknown'} (${profile.user_id}) - Email: ${realEmail}`)
-      console.log(`📦 Found ${userOrders.length} orders for user ${profile.user_id}:`, userOrders.map(o => `Order ${o.id} - $${o.total_amount}`))
-      console.log(`   Profile data:`, { full_name: profile.full_name, phone: profile.phone, role: profile.role })
-      console.log(`   Real name from shipping: ${userNames[profile.user_id] || 'Not found'}`)
-      console.log(`   Final name: ${realName}`)
+      console.log(`👤 Processing client: ${realName} (${profile.user_id}) - Email: ${realEmail}`)
       
       // Debug: Check if we're accidentally counting order items
       if (userOrders.length > 0) {
@@ -120,94 +189,80 @@ export async function GET(request: NextRequest) {
         console.log(`   📊 Order items total: ${totalOrderItems} (should be different from order count: ${userOrders.length})`)
       }
 
-      // If we already have this email, merge the data
-      if (clientsByEmail[realEmail]) {
-        const existingClient = clientsByEmail[realEmail]
-        
-        // Merge orders - ensure we don't duplicate orders
-        const existingOrderIds = new Set(existingClient.userOrders.map((o: any) => o.id))
-        const newUniqueOrders = userOrders.filter((order: any) => !existingOrderIds.has(order.id))
-        const allOrders = [...existingClient.userOrders, ...newUniqueOrders]
-        
-        const totalSpent = allOrders.reduce((sum: number, order: any) => sum + order.total_amount, 0)
-        const lastOrder = allOrders.length > 0 ? allOrders.sort((a: any, b: any) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )[0] : null
+      // Create client entry (no merging - one email = one client)
+      const totalSpent = userOrders.reduce((sum: number, order: any) => sum + order.total_amount, 0)
+      const lastOrder = userOrders.length > 0 ? userOrders.sort((a: any, b: any) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0] : null
 
-        console.log(`🔄 Merging client ${realEmail}: existing orders: ${existingClient.userOrders.length}, new orders: ${userOrders.length}, unique new: ${newUniqueOrders.length}, total: ${allOrders.length}`)
-        console.log(`   Existing order IDs: [${existingClient.userOrders.map((o: any) => o.id).join(', ')}]`)
-        console.log(`   New order IDs: [${userOrders.map((o: any) => o.id).join(', ')}]`)
-        console.log(`   Final order IDs: [${allOrders.map((o: any) => o.id).join(', ')}]`)
+      // Get all products purchased by this user
+      const products = userOrders.flatMap((order: any) => 
+        order.order_items.map((item: any) => ({
+          name: item.product_name,
+          quantity: item.quantity,
+          price: item.unit_price,
+          orderDate: order.created_at
+        }))
+      )
 
-        // Merge products
-        const allProducts = allOrders.flatMap((order: any) => 
-          order.order_items.map((item: any) => ({
-            name: item.product_name,
-            quantity: item.quantity,
-            price: item.unit_price,
-            orderDate: order.created_at
-          }))
-        )
+      console.log(`🆕 Creating client ${realEmail}: orders: ${userOrders.length}`)
 
-        // Update the existing client with merged data
-        clientsByEmail[realEmail] = {
-          ...existingClient,
-          userIds: [...existingClient.userIds, profile.user_id], // Keep track of all user IDs
-          totalOrders: allOrders.length, // This is now the correct total count
-          totalSpent: totalSpent,
-          lastOrderDate: lastOrder ? lastOrder.created_at : null,
-          products: allProducts,
-          // Use the most recent profile data for name and phone
-          fullName: realName || existingClient.fullName,
-          phone: profile.phone || existingClient.phone,
-          userOrders: allOrders // Update the userOrders for potential future merges
-        }
-      } else {
-        // First time seeing this email, create new client
-        const totalSpent = userOrders.reduce((sum: number, order: any) => sum + order.total_amount, 0)
-        const lastOrder = userOrders.length > 0 ? userOrders.sort((a: any, b: any) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )[0] : null
-
-        // Get all products purchased by this user
-        const products = userOrders.flatMap((order: any) => 
-          order.order_items.map((item: any) => ({
-            name: item.product_name,
-            quantity: item.quantity,
-            price: item.unit_price,
-            orderDate: order.created_at
-          }))
-        )
-
-        console.log(`🆕 Creating new client ${realEmail}: orders: ${userOrders.length}`)
-
-        clientsByEmail[realEmail] = {
-          id: profile.id,
-          userIds: [profile.user_id], // Array to track all user IDs for this email
-          email: realEmail,
-          fullName: realName,
-          phone: profile.phone || null,
-          role: profile.role || 'client',
-          totalOrders: userOrders.length,
-          totalSpent: totalSpent,
-          lastOrderDate: lastOrder ? lastOrder.created_at : null,
-          products: products,
-          oneOnOneSessions: 0, // TODO: Implement when one-on-one sessions are added
-          programs: [], // TODO: Implement when programs are added
-          userOrders: userOrders // Keep for merging
-        }
+      clientsByEmail[realEmail] = {
+        id: profile.id,
+        user_id: profile.user_id, // Single user_id
+        email: realEmail,
+        full_name: realName,
+        phone: profile.phone || null,
+        role: profile.role || 'client',
+        totalOrders: userOrders.length,
+        totalSpent: totalSpent,
+        lastOrderDate: lastOrder ? lastOrder.created_at : null,
+        products: products,
+        oneOnOneSessions: 0
       }
     })
 
-    // Convert the map back to an array
+    // Convert the map back to an array and add program enrollments and subscriptions
     const clients = Object.values(clientsByEmail).map((client: any) => {
-      // Remove the temporary userOrders field
-      const { userOrders, ...clientData } = client
-      return clientData
+      // Get programs for this single user_id
+      const clientPrograms = userPrograms ? userPrograms.filter((p: any) => 
+        p.user_id === client.user_id
+      ) : []
+      
+      // Get active subscription for this user_id
+      const clientSubscription = userSubscriptions ? userSubscriptions.find((s: any) => 
+        s.user_id === client.user_id && (s.status === 'active' || s.status === 'trialing')
+      ) : null
+      
+      console.log(`👤 Client ${client.email} (${client.user_id}): ${clientPrograms.length} program(s), ${clientSubscription ? 'HAS subscription' : 'NO subscription'}`)
+      if (clientPrograms.length > 0) {
+        console.log(`   📚 Programs:`, clientPrograms.map((p: any) => `${p.program_name} (${p.progress}%)`).join(', '))
+      }
+      if (clientSubscription) {
+        console.log(`   💳 Subscription: ${clientSubscription.plan_name} (${clientSubscription.status})`)
+      }
+      
+      return {
+        ...client,
+        programs: clientPrograms.map((p: any) => ({
+          program_name: p.program_name,
+          program_id: p.program_id,
+          progress: p.progress || 0,
+          status: p.status,
+          start_date: p.start_date
+        })),
+        subscription: clientSubscription ? {
+          plan_name: clientSubscription.plan_name,
+          status: clientSubscription.status,
+          current_period_end: clientSubscription.current_period_end
+        } : null
+      }
     })
 
     console.log('✅ Admin: Fetched clients:', clients.length)
     console.log('📊 Client order counts:', clients.map(c => `${c.email}: ${c.totalOrders} orders`))
+    console.log('📚 Client program enrollments:', clients.map(c => `${c.email}: ${c.programs?.length || 0} programs`))
+    console.log('💳 Client subscriptions:', clients.map(c => `${c.email}: ${c.subscription ? c.subscription.plan_name : 'None'}`))
 
     return NextResponse.json({ 
       clients: clients,

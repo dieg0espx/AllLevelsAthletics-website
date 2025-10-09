@@ -251,11 +251,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       })
 
       if (response.ok) {
-        fetchCheckIns()
-        // Refresh available hours after cancelling a check-in
-        fetchAvailableHours(selectedDate)
         setShowCancelModal(false)
         setCheckInToCancel(null)
+        // Refresh the page to show updated data
+        window.location.reload()
       } else {
         console.error('Error cancelling check-in')
       }

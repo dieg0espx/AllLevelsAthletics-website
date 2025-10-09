@@ -490,64 +490,6 @@ export default function CoachingPage() {
           </Card>
         </div>
 
-        {/* Upgrade Options - Only show if user has an active subscription */}
-        {subscriptionData?.subscription?.status === 'active' && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Crown className="w-6 h-6 text-orange-400" />
-            Upgrade Your Plan
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {upgradePlans.map((plan) => (
-              <Card key={plan.id} className={`bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 ${plan.popular ? 'ring-2 ring-yellow-500/50' : ''}`}>
-                <CardHeader>
-                  <div className="text-center">
-                    {plan.badge && (
-                      <Badge className={`${plan.badgeColor} mb-3`}>
-                        {plan.badge}
-                      </Badge>
-                    )}
-                    <CardTitle className="text-white text-xl">{plan.name}</CardTitle>
-                    <CardDescription className="text-white/70">{plan.subtitle}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="text-center">
-                      <span className="text-3xl font-bold text-orange-400">${plan.monthlyPrice}</span>
-                      <span className="text-white/70">/month</span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-white">What's included:</h4>
-                      <ul className="space-y-1">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2 text-sm text-white/80">
-                            <CheckCircle className="w-4 h-4 text-orange-400" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <Button 
-                      onClick={() => handleUpgrade(plan.planId, plan.name)}
-                      disabled={upgrading === plan.planId}
-                      className={`w-full ${plan.popular ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-orange-500 hover:bg-orange-600'} disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      <Zap className="w-4 h-4 mr-2" />
-                      {upgrading === plan.planId ? 'Processing...' : `Upgrade to ${plan.name}`}
-                    </Button>
-                    
-                    {/* Manual upgrade button for testing */}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-        )}
 
         {/* Subscribe Options - Show if user doesn't have an active subscription */}
         {(!subscriptionData?.subscription || subscriptionData?.subscription?.status !== 'active') && (
