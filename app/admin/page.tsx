@@ -8,13 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Users,
   Package,
-  BookOpen
+  BookOpen,
+  Percent
 } from "lucide-react"
 
 // Import section components
 import { ClientsSection } from "@/components/admin/ClientsSection"
 import { OrdersSection } from "@/components/admin/OrdersSection"
 import { CoachingManagementSection } from "@/components/admin/CoachingManagementSection"
+import { DiscountManagementSection } from "@/components/admin/DiscountManagementSection"
 
 interface Client {
   id: string
@@ -278,6 +280,13 @@ export default function AdminPage() {
               <Package className="w-4 h-4 mr-2" />
               Orders
             </TabsTrigger>
+            <TabsTrigger 
+              value="discounts" 
+              className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-white/70"
+            >
+              <Percent className="w-4 h-4 mr-2" />
+              Discounts
+            </TabsTrigger>
           </TabsList>
 
           {/* Coaching Management Section */}
@@ -314,6 +323,11 @@ export default function AdminPage() {
               ordersLoading={ordersLoading}
               onUpdateOrder={handleUpdateOrder}
             />
+          </TabsContent>
+
+          {/* Discounts Section */}
+          <TabsContent value="discounts">
+            <DiscountManagementSection />
           </TabsContent>
         </Tabs>
       </div>

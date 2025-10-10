@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award, Play, Mail, Trophy, Star, Info, ShoppingCart, MessageCircle } from "lucide-react"
+import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award, Play, Mail, Trophy, Star, Info, ShoppingCart, MessageCircle, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
 import AddToCart from "@/components/stripe-checkout"
 import { useCart } from "@/contexts/cart-context"
@@ -23,9 +23,28 @@ export default function ServicesPage() {
   const [isAnnual, setIsAnnual] = useState(false)
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+  const [coachingDiscount, setCoachingDiscount] = useState(0)
+  const [productsDiscount, setProductsDiscount] = useState(0)
   const { user } = useAuth()
   const { hasActiveSubscription } = useSubscription()
   
+  // Fetch discounts on page load
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        const response = await fetch('/api/discounts')
+        if (response.ok) {
+          const data = await response.json()
+          setCoachingDiscount(data.coaching || 0)
+          setProductsDiscount(data.products || 0)
+        }
+      } catch (error) {
+        console.error('Error fetching discounts:', error)
+      }
+    }
+    fetchDiscounts()
+  }, [])
+
   // Preload Calendly script on page load
   useEffect(() => {
     // Check if script already exists
@@ -55,6 +74,13 @@ export default function ServicesPage() {
     "/roller/roller14.jpg",
     "/roller/roller15.jpg"
   ]
+
+  // Helper function to calculate discounted price
+  const calculateDiscountedPrice = (originalPrice: number, discountPercentage: number) => {
+    if (discountPercentage === 0) return originalPrice
+    const discount = originalPrice * (discountPercentage / 100)
+    return Math.round(originalPrice - discount)
+  }
 
   // Function to handle subscription checkout
   const handleSubscriptionCheckout = async (planId: string, planName: string) => {
@@ -193,7 +219,6 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-
       {/* Enhanced Hero Section */}
       <section className="relative overflow-hidden pt-40 sm:pt-44 md:pt-48 lg:pt-52 pb-24 sm:pb-28 md:pb-32 lg:pb-36 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
@@ -310,42 +335,129 @@ export default function ServicesPage() {
                             <div className="text-xs sm:text-sm text-muted-foreground">What's included in each tier</div>
                           </div>
                         </th>
-                        <th className="py-6 px-6 text-center">
+                        <th className="py-6 px-6 text-center relative">
                           <div className="space-y-2">
                             <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
                             <div className="text-xl font-bold text-orange-400">Foundation</div>
-                            <div className="text-3xl font-bold gradient-text">
-                              ${isAnnual ? '167' : '197'}
+                            <div className="relative">
+                              {coachingDiscount > 0 ? (
+                                <div className="space-y-1">
+                                  <div className="relative inline-block">
+                                    <div className="text-lg text-muted-foreground opacity-60">
+                                      ${isAnnual ? '167' : '197'}
+                                    </div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                                    </div>
+                                  </div>
+                                  <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                                    ${calculateDiscountedPrice(isAnnual ? 167 : 197, coachingDiscount)}
+                                  </div>
+                                  <div className="text-xs text-green-400 font-semibold">
+                                    Save ${(isAnnual ? 167 : 197) - calculateDiscountedPrice(isAnnual ? 167 : 197, coachingDiscount)}/mo
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-3xl font-bold gradient-text">
+                                  ${isAnnual ? '167' : '197'}
+                                </div>
+                              )}
                             </div>
                             <div className="text-sm text-muted-foreground">/month</div>
+                            {coachingDiscount > 0 && (
+                              <div className="flex justify-center">
+                                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse flex items-center gap-1">
+                                  <Sparkles className="w-3 h-3 text-yellow-300" />
+                                  <span>{coachingDiscount}% OFF</span>
+                                </div>
+                              </div>
+                            )}
                             {isAnnual && (
-                              <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                              <div className="text-xs text-green-400 font-medium">Annual Save 15%</div>
                             )}
                           </div>
                         </th>
-                        <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20">
+                        <th className="py-6 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 relative">
                           <div className="space-y-2">
                             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
                             <div className="text-xl font-bold text-yellow-400">Accelerated</div>
-                            <div className="text-3xl font-bold gradient-text">
-                              ${isAnnual ? '252' : '297'}
+                            <div className="relative">
+                              {coachingDiscount > 0 ? (
+                                <div className="space-y-1">
+                                  <div className="relative inline-block">
+                                    <div className="text-lg text-muted-foreground opacity-60">
+                                      ${isAnnual ? '252' : '297'}
+                                    </div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                                    </div>
+                                  </div>
+                                  <div className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                                    ${calculateDiscountedPrice(isAnnual ? 252 : 297, coachingDiscount)}
+                                  </div>
+                                  <div className="text-xs text-green-400 font-semibold">
+                                    Save ${(isAnnual ? 252 : 297) - calculateDiscountedPrice(isAnnual ? 252 : 297, coachingDiscount)}/mo
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-3xl font-bold gradient-text">
+                                  ${isAnnual ? '252' : '297'}
+                                </div>
+                              )}
                             </div>
                             <div className="text-sm text-muted-foreground">/month</div>
+                            {coachingDiscount > 0 && (
+                              <div className="flex justify-center">
+                                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse flex items-center gap-1">
+                                  <Sparkles className="w-3 h-3 text-yellow-300" />
+                                  <span>{coachingDiscount}% OFF</span>
+                                </div>
+                              </div>
+                            )}
                             {isAnnual && (
-                              <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                              <div className="text-xs text-green-400 font-medium">Annual Save 15%</div>
                             )}
                           </div>
                         </th>
-                        <th className="py-6 px-6 text-center">
+                        <th className="py-6 px-6 text-center relative">
                           <div className="space-y-2">
                             <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
                             <div className="text-xl font-bold text-orange-300">Premium</div>
-                            <div className="text-3xl font-bold gradient-text">
-                              ${isAnnual ? '422' : '497'}
+                            <div className="relative">
+                              {coachingDiscount > 0 ? (
+                                <div className="space-y-1">
+                                  <div className="relative inline-block">
+                                    <div className="text-lg text-muted-foreground opacity-60">
+                                      ${isAnnual ? '422' : '497'}
+                                    </div>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                                    </div>
+                                  </div>
+                                  <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                                    ${calculateDiscountedPrice(isAnnual ? 422 : 497, coachingDiscount)}
+                                  </div>
+                                  <div className="text-xs text-green-400 font-semibold">
+                                    Save ${(isAnnual ? 422 : 497) - calculateDiscountedPrice(isAnnual ? 422 : 497, coachingDiscount)}/mo
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-3xl font-bold gradient-text">
+                                  ${isAnnual ? '422' : '497'}
+                                </div>
+                              )}
                             </div>
                             <div className="text-sm text-muted-foreground">/month</div>
+                            {coachingDiscount > 0 && (
+                              <div className="flex justify-center">
+                                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse flex items-center gap-1">
+                                  <Sparkles className="w-3 h-3 text-yellow-300" />
+                                  <span>{coachingDiscount}% OFF</span>
+                                </div>
+                              </div>
+                            )}
                             {isAnnual && (
-                              <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                              <div className="text-xs text-green-400 font-medium">Annual Save 15%</div>
                             )}
                           </div>
                         </th>
@@ -674,17 +786,44 @@ export default function ServicesPage() {
                 {/* Mobile Card View - Visible on Mobile Only */}
                 <div className="md:hidden px-4 py-6 space-y-6">
                   {/* Foundation Tier Card */}
-                  <div className="border-2 border-orange-500/30 rounded-xl overflow-hidden bg-card/50">
+                  <div className="border-2 border-orange-500/30 rounded-xl overflow-hidden bg-card/50 relative">
                     <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 p-4 border-b border-orange-500/30">
                       <div className="text-center space-y-2">
                         <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">STARTER</Badge>
                         <div className="text-xl font-bold text-orange-400">Foundation</div>
-                        <div className="text-3xl font-bold gradient-text">
-                          ${isAnnual ? '167' : '197'}
-                        </div>
+                        {coachingDiscount > 0 ? (
+                          <div className="space-y-1">
+                            <div className="relative inline-block">
+                              <div className="text-lg text-muted-foreground opacity-60">
+                                ${isAnnual ? '167' : '197'}
+                              </div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                              </div>
+                            </div>
+                            <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                              ${calculateDiscountedPrice(isAnnual ? 167 : 197, coachingDiscount)}
+                            </div>
+                            <div className="text-xs text-green-400 font-semibold">
+                              Save ${(isAnnual ? 167 : 197) - calculateDiscountedPrice(isAnnual ? 167 : 197, coachingDiscount)}/mo
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-3xl font-bold gradient-text">
+                            ${isAnnual ? '167' : '197'}
+                          </div>
+                        )}
                         <div className="text-sm text-muted-foreground">/month</div>
+                        {coachingDiscount > 0 && (
+                          <div className="flex justify-center">
+                            <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse flex items-center gap-1.5">
+                              <Sparkles className="w-4 h-4 text-yellow-300" />
+                              <span>{coachingDiscount}% OFF</span>
+                            </div>
+                          </div>
+                        )}
                         {isAnnual && (
-                          <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                          <div className="text-xs text-green-400 font-medium">Annual Save 15%</div>
                         )}
                       </div>
                     </div>
@@ -792,17 +931,44 @@ export default function ServicesPage() {
                   </div>
 
                   {/* Accelerated Tier Card */}
-                  <div className="border-2 border-yellow-500/30 rounded-xl overflow-hidden bg-yellow-500/5">
+                  <div className="border-2 border-yellow-500/30 rounded-xl overflow-hidden bg-yellow-500/5 relative">
                     <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 p-4 border-b border-yellow-500/30">
                       <div className="text-center space-y-2">
                         <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">GROWTH</Badge>
                         <div className="text-xl font-bold text-yellow-400">Accelerated</div>
-                        <div className="text-3xl font-bold gradient-text">
-                          ${isAnnual ? '252' : '297'}
-                        </div>
+                        {coachingDiscount > 0 ? (
+                          <div className="space-y-1">
+                            <div className="relative inline-block">
+                              <div className="text-lg text-muted-foreground opacity-60">
+                                ${isAnnual ? '252' : '297'}
+                              </div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                              </div>
+                            </div>
+                            <div className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                              ${calculateDiscountedPrice(isAnnual ? 252 : 297, coachingDiscount)}
+                            </div>
+                            <div className="text-xs text-green-400 font-semibold">
+                              Save ${(isAnnual ? 252 : 297) - calculateDiscountedPrice(isAnnual ? 252 : 297, coachingDiscount)}/mo
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-3xl font-bold gradient-text">
+                            ${isAnnual ? '252' : '297'}
+                          </div>
+                        )}
                         <div className="text-sm text-muted-foreground">/month</div>
+                        {coachingDiscount > 0 && (
+                          <div className="flex justify-center">
+                            <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse flex items-center gap-1.5">
+                              <Sparkles className="w-4 h-4 text-yellow-300" />
+                              <span>{coachingDiscount}% OFF</span>
+                            </div>
+                          </div>
+                        )}
                         {isAnnual && (
-                          <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                          <div className="text-xs text-green-400 font-medium">Annual Save 15%</div>
                         )}
                       </div>
                     </div>
@@ -910,17 +1076,44 @@ export default function ServicesPage() {
                   </div>
 
                   {/* Premium Tier Card */}
-                  <div className="border-2 border-orange-500/30 rounded-xl overflow-hidden bg-card/50">
+                  <div className="border-2 border-orange-500/30 rounded-xl overflow-hidden bg-card/50 relative">
                     <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 p-4 border-b border-orange-500/30">
                       <div className="text-center space-y-2">
                         <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs">ELITE</Badge>
                         <div className="text-xl font-bold text-orange-300">Premium</div>
-                        <div className="text-3xl font-bold gradient-text">
-                          ${isAnnual ? '422' : '497'}
-                        </div>
+                        {coachingDiscount > 0 ? (
+                          <div className="space-y-1">
+                            <div className="relative inline-block">
+                              <div className="text-lg text-muted-foreground opacity-60">
+                                ${isAnnual ? '422' : '497'}
+                              </div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                              </div>
+                            </div>
+                            <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                              ${calculateDiscountedPrice(isAnnual ? 422 : 497, coachingDiscount)}
+                            </div>
+                            <div className="text-xs text-green-400 font-semibold">
+                              Save ${(isAnnual ? 422 : 497) - calculateDiscountedPrice(isAnnual ? 422 : 497, coachingDiscount)}/mo
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-3xl font-bold gradient-text">
+                            ${isAnnual ? '422' : '497'}
+                          </div>
+                        )}
                         <div className="text-sm text-muted-foreground">/month</div>
+                        {coachingDiscount > 0 && (
+                          <div className="flex justify-center">
+                            <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse flex items-center gap-1.5">
+                              <Sparkles className="w-4 h-4 text-yellow-300" />
+                              <span>{coachingDiscount}% OFF</span>
+                            </div>
+                          </div>
+                        )}
                         {isAnnual && (
-                          <div className="text-xs text-green-400 font-medium">Save 15%</div>
+                          <div className="text-xs text-green-400 font-medium">Annual Save 15%</div>
                         )}
                       </div>
                     </div>
@@ -1303,15 +1496,47 @@ export default function ServicesPage() {
 
                    {/* Price Card - Right (End) */}
                    <div className="lg:col-span-1">
-                     <Card className="bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border-2 border-orange-500/30 p-4 sm:p-6">
-                       <div className="text-center mb-4 sm:mb-6">
-                        <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">$99</div>
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Free Shipping</p>
-                         <div className="space-y-2 sm:space-y-3">
+                     <Card className="bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border-2 border-orange-500/30 p-4 sm:p-6 relative">
+                       {productsDiscount > 0 && (
+                         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                           <div className="relative">
+                             <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse flex items-center gap-1.5">
+                               <Sparkles className="w-4 h-4 text-yellow-300" />
+                               <span>{productsDiscount}% OFF</span>
+                             </div>
+                             <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 rounded-full blur-md opacity-50 animate-pulse"></div>
+                           </div>
+                         </div>
+                       )}
+                       <div className="text-center mb-4 sm:mb-6 pt-2">
+                        {productsDiscount > 0 ? (
+                          <div className="space-y-2">
+                            <div className="relative inline-block">
+                              <div className="text-xl sm:text-2xl text-muted-foreground opacity-60">
+                                $99
+                              </div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                              </div>
+                            </div>
+                            <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                              ${calculateDiscountedPrice(99, productsDiscount)}
+                            </div>
+                            <div className="text-sm text-green-400 font-semibold">
+                              You save ${99 - calculateDiscountedPrice(99, productsDiscount)}!
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                            $99
+                          </div>
+                        )}
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-3">Free Shipping</p>
+                         <div className="space-y-2 sm:space-y-3 mt-6">
                            <AddToCart
                              productId="knot-roller"
                             productName="MFRoller"
-                             price={99}
+                             price={calculateDiscountedPrice(99, productsDiscount)}
                              image="/roller/roller5.jpeg"
                              description="Professional myofascial release tool for athletes and fitness enthusiasts"
                              className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"

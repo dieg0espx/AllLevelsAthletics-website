@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/auth-context"
 import { CartProvider } from "@/contexts/cart-context"
 import { SubscriptionProvider } from "@/contexts/subscription-context"
 import { AdminRedirect } from "@/components/admin-redirect"
+import { DiscountBanner } from "@/components/discount-banner"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -264,6 +265,7 @@ export default function RootLayout({
               {/* Temporarily disable AdminRedirect to fix redirect loop */}
               {/* <AdminRedirect> */}
                 <Navigation />
+                <DiscountBanner />
                 <main>{children}</main>
                 <Footer />
               {/* </AdminRedirect> */}
