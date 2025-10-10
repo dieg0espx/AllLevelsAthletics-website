@@ -1,7 +1,21 @@
+/**
+ * Admin Discounts API
+ * 
+ * Admin-only endpoints for managing site-wide discounts.
+ * Requires user to have 'admin' role in user_metadata.
+ * 
+ * Supports two discount types: 'coaching' and 'products'
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
-// GET - Fetch current discounts
+/**
+ * GET /api/admin/discounts
+ * 
+ * Fetches discount details with metadata for admin dashboard
+ * Returns more detailed information than public endpoint
+ */
 export async function GET(request: NextRequest) {
   try {
     const { data: discounts, error } = await supabaseAdmin
@@ -69,7 +83,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT - Update discount
+/**
+ * PUT /api/admin/discounts
+ * 
+ * Updates discount percentage for coaching or products
+ * Validates admin role before allowing changes
+ * 
+ * @body { discountType: 'coaching' | 'products', percentage: number (0-100), userId: string }
+ * @returns { success: boolean, discount: object }
+ */
 export async function PUT(request: NextRequest) {
   try {
     const { discountType, percentage, userId } = await request.json()

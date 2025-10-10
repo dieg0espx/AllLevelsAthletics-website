@@ -1,12 +1,23 @@
 "use client"
 
+/**
+ * Discount Context
+ * 
+ * Manages site-wide discount state for coaching packages and products.
+ * Automatically fetches and refreshes discounts every 60 seconds to ensure
+ * all users see the latest pricing set by admins.
+ * 
+ * @example
+ * const { coachingDiscount, productsDiscount } = useDiscount()
+ */
+
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 interface DiscountContextType {
-  coachingDiscount: number
-  productsDiscount: number
-  loading: boolean
-  refreshDiscounts: () => Promise<void>
+  coachingDiscount: number        // Percentage discount for coaching (0-100)
+  productsDiscount: number         // Percentage discount for products (0-100)
+  loading: boolean                 // Initial loading state
+  refreshDiscounts: () => Promise<void>  // Manual refresh function
 }
 
 const DiscountContext = createContext<DiscountContextType>({
@@ -16,11 +27,18 @@ const DiscountContext = createContext<DiscountContextType>({
   refreshDiscounts: async () => {},
 })
 
+/**
+ * Provider component that fetches and manages discount state
+ * Automatically refreshes every 60 seconds
+ */
 export function DiscountProvider({ children }: { children: React.ReactNode }) {
   const [coachingDiscount, setCoachingDiscount] = useState(0)
   const [productsDiscount, setProductsDiscount] = useState(0)
   const [loading, setLoading] = useState(true)
 
+  /**
+   * Fetches current active discounts from the database
+   */
   const fetchDiscounts = async () => {
     try {
       const response = await fetch('/api/discounts')
