@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer"
 import { AuthProvider } from "@/contexts/auth-context"
 import { CartProvider } from "@/contexts/cart-context"
 import { SubscriptionProvider } from "@/contexts/subscription-context"
+import { DiscountProvider } from "@/contexts/discount-context"
 import { AdminRedirect } from "@/components/admin-redirect"
 import { DiscountBanner } from "@/components/discount-banner"
 
@@ -262,13 +263,15 @@ export default function RootLayout({
         <AuthProvider>
           <SubscriptionProvider>
             <CartProvider>
-              {/* Temporarily disable AdminRedirect to fix redirect loop */}
-              {/* <AdminRedirect> */}
-                <Navigation />
-                <DiscountBanner />
-                <main>{children}</main>
-                <Footer />
-              {/* </AdminRedirect> */}
+              <DiscountProvider>
+                {/* Temporarily disable AdminRedirect to fix redirect loop */}
+                {/* <AdminRedirect> */}
+                  <Navigation />
+                  <DiscountBanner />
+                  <main>{children}</main>
+                  <Footer />
+                {/* </AdminRedirect> */}
+              </DiscountProvider>
             </CartProvider>
           </SubscriptionProvider>
         </AuthProvider>

@@ -101,6 +101,11 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Prevent double submission
+    if (isLoading) {
+      return
+    }
+    
     const validationError = validateForm()
     if (validationError) {
       setMessage({ type: 'error', text: validationError })
@@ -121,24 +126,23 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           setMessage({ type: 'error', text: error.message })
         } else {
           setMessage({ type: 'success', text: 'Successfully logged in!' })
-          // Close modal after successful login with shorter delay
-          setTimeout(() => {
-            onClose();
-            setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
-            setMessage(null);
-            // Smart redirect: if redirectTo is provided, go there; otherwise check user role
-            if (redirectTo) {
-              router.push(redirectTo);
+          // Close modal and redirect immediately for better UX
+          onClose();
+          setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
+          setMessage(null);
+          
+          // Immediate redirect - no delay
+          if (redirectTo) {
+            router.push(redirectTo);
+          } else {
+            // Check user role and redirect accordingly
+            const userRole = user?.user_metadata?.role || 'client'
+            if (userRole === 'admin') {
+              router.push('/admin');
             } else {
-              // Check user role and redirect accordingly
-              const userRole = user?.user_metadata?.role || 'client'
-              if (userRole === 'admin') {
-                router.push('/admin');
-              } else {
-                router.push('/dashboard');
-              }
+              router.push('/dashboard');
             }
-          }, 800); // Reduced from 1500ms to 800ms
+          }
         }
       } else {
         const { user, error } = await authService.register({
@@ -407,7 +411,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           <Button
             type="submit"
             disabled={isLoading}
-            className={`w-full ${siteConfig.styles.button.primary} ${siteConfig.styles.button.rounded} ${siteConfig.styles.button.hover} transition-all duration-300 group h-12 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+            className={`w-full ${siteConfig.styles.button.primary} ${siteConfig.styles.button.rounded} ${siteConfig.styles.button.hover} transition-all duration-300 group h-12 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none active:scale-95`}
           >
             <span className="flex items-center justify-center gap-2">
               {isLoading ? (

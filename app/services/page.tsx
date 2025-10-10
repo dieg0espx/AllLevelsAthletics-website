@@ -9,6 +9,7 @@ import AddToCart from "@/components/stripe-checkout"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
 import { useSubscription } from "@/contexts/subscription-context"
+import { useDiscount } from "@/contexts/discount-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
 import CalendlyPopup from "@/components/calendly-popup"
@@ -23,28 +24,10 @@ export default function ServicesPage() {
   const [isAnnual, setIsAnnual] = useState(false)
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
-  const [coachingDiscount, setCoachingDiscount] = useState(0)
-  const [productsDiscount, setProductsDiscount] = useState(0)
   const { user } = useAuth()
   const { hasActiveSubscription } = useSubscription()
+  const { coachingDiscount, productsDiscount } = useDiscount()
   
-  // Fetch discounts on page load
-  useEffect(() => {
-    const fetchDiscounts = async () => {
-      try {
-        const response = await fetch('/api/discounts')
-        if (response.ok) {
-          const data = await response.json()
-          setCoachingDiscount(data.coaching || 0)
-          setProductsDiscount(data.products || 0)
-        }
-      } catch (error) {
-        console.error('Error fetching discounts:', error)
-      }
-    }
-    fetchDiscounts()
-  }, [])
-
   // Preload Calendly script on page load
   useEffect(() => {
     // Check if script already exists

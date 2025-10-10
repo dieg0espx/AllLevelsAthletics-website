@@ -1,28 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import { Flame } from "lucide-react"
+import { useDiscount } from "@/contexts/discount-context"
 
 export function DiscountBanner() {
-  const [coachingDiscount, setCoachingDiscount] = useState(0)
-  const [productsDiscount, setProductsDiscount] = useState(0)
+  const pathname = usePathname()
+  const { coachingDiscount, productsDiscount } = useDiscount()
 
-  // Fetch discounts on component mount
-  useEffect(() => {
-    const fetchDiscounts = async () => {
-      try {
-        const response = await fetch('/api/discounts')
-        if (response.ok) {
-          const data = await response.json()
-          setCoachingDiscount(data.coaching || 0)
-          setProductsDiscount(data.products || 0)
-        }
-      } catch (error) {
-        console.error('Error fetching discounts:', error)
-      }
-    }
-    fetchDiscounts()
-  }, [])
+  // Hide banner on dashboard and admin pages
+  const isDashboard = pathname?.startsWith('/dashboard')
+  const isAdmin = pathname?.startsWith('/admin')
+  
+  if (isDashboard || isAdmin) {
+    return null
+  }
 
   // Don't render if no discounts
   if (coachingDiscount === 0 && productsDiscount === 0) {
