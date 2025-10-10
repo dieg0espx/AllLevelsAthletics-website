@@ -23,15 +23,25 @@ import {
   MessageCircle,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
 } from "lucide-react"
 
 import Stars from "@/components/Stars"
 import { useEffect, useState } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
+import { useDiscount } from "@/contexts/discount-context"
 
 export default function HomePage() {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const { coachingDiscount } = useDiscount()
+
+  // Helper function to calculate discounted price
+  const calculateDiscountedPrice = (originalPrice: number, discountPercentage: number) => {
+    if (discountPercentage === 0) return originalPrice
+    const discount = originalPrice * (discountPercentage / 100)
+    return Math.round(originalPrice - discount)
+  }
 
   // Testimonials data
   const testimonials = [
@@ -492,7 +502,25 @@ export default function HomePage() {
                 </Badge>
                 <CardTitle className="font-heading text-xl sm:text-2xl mb-2 sm:mb-3">Foundation</CardTitle>
                 <div className="space-y-1 mb-2 sm:mb-3">
-                  <div className="text-3xl sm:text-4xl font-black gradient-text">$197</div>
+                  {coachingDiscount > 0 ? (
+                    <div className="space-y-1">
+                      <div className="relative inline-block">
+                        <div className="text-lg sm:text-xl text-muted-foreground opacity-60">$197</div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                        </div>
+                      </div>
+                      <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                        ${calculateDiscountedPrice(197, coachingDiscount)}
+                      </div>
+                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs flex items-center gap-1 w-fit mx-auto">
+                        <Sparkles className="w-3 h-3" />
+                        {coachingDiscount}% OFF
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="text-3xl sm:text-4xl font-black gradient-text">$197</div>
+                  )}
                   <CardDescription className="text-sm sm:text-base text-muted-foreground">/month</CardDescription>
                 </div>
                 <p className="text-white/80 text-sm sm:text-base">Perfect for beginners ready to start their fitness journey</p>
@@ -546,7 +574,25 @@ export default function HomePage() {
                 </Badge>
                 <CardTitle className="font-heading text-lg sm:text-xl mb-2 sm:mb-3">Accelerated</CardTitle>
                 <div className="space-y-1 mb-2 sm:mb-3">
-                  <div className="text-2xl sm:text-3xl font-black gradient-text">$297</div>
+                  {coachingDiscount > 0 ? (
+                    <div className="space-y-1">
+                      <div className="relative inline-block">
+                        <div className="text-base sm:text-lg text-muted-foreground opacity-60">$297</div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                        ${calculateDiscountedPrice(297, coachingDiscount)}
+                      </div>
+                      <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs flex items-center gap-1 w-fit mx-auto">
+                        <Sparkles className="w-3 h-3" />
+                        {coachingDiscount}% OFF
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="text-2xl sm:text-3xl font-black gradient-text">$297</div>
+                  )}
                   <CardDescription className="text-xs sm:text-sm text-muted-foreground">/month</CardDescription>
                 </div>
                 <p className="text-white/80 text-xs sm:text-sm">Ideal for committed individuals seeking faster results</p>
@@ -595,7 +641,25 @@ export default function HomePage() {
                 </Badge>
                 <CardTitle className="font-heading text-xl sm:text-2xl mb-2 sm:mb-3">Premium</CardTitle>
                 <div className="space-y-1 mb-2 sm:mb-3">
-                  <div className="text-3xl sm:text-4xl font-black gradient-text">$497</div>
+                  {coachingDiscount > 0 ? (
+                    <div className="space-y-1">
+                      <div className="relative inline-block">
+                        <div className="text-lg sm:text-xl text-muted-foreground opacity-60">$497</div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
+                        </div>
+                      </div>
+                      <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                        ${calculateDiscountedPrice(497, coachingDiscount)}
+                      </div>
+                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs flex items-center gap-1 w-fit mx-auto">
+                        <Sparkles className="w-3 h-3" />
+                        {coachingDiscount}% OFF
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="text-3xl sm:text-4xl font-black gradient-text">$497</div>
+                  )}
                   <CardDescription className="text-sm sm:text-base text-muted-foreground">/month</CardDescription>
                 </div>
                 <p className="text-white/80 text-sm sm:text-base">Maximum support for serious athletes and professionals</p>

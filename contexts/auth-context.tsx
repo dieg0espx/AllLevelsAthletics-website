@@ -25,37 +25,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserRole = async (userId: string) => {
     // Check cache first
     if (roleCache.has(userId)) {
-      console.log('🎯 Using cached role for user:', userId, 'role:', roleCache.get(userId))
       setUserRole(roleCache.get(userId)!)
       return
     }
 
     try {
-      console.log('🔄 Fetching user role for:', userId)
-      
       // First try to get role from user metadata (fastest)
       const { data: { user } } = await supabase.auth.getUser()
       
-      console.log('👤 User metadata:', user?.user_metadata)
-      
       if (user?.user_metadata?.role) {
         const role = user.user_metadata.role
-        console.log('✅ Found role in user metadata:', role)
         setUserRole(role)
         setRoleCache(prev => new Map(prev).set(userId, role))
         return
       }
 
-      console.log('📞 No role in metadata, calling API...')
-      
       // Fallback to API call only if needed
-      const response = await fetch(`/api/user-profile?userId=${userId}`)
+      const response = await fetch(`/api/user-profile?userId=${userId}`, {
+        cache: 'no-store' // Prevent caching issues
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user profile')
+      }
+      
       const data = await response.json()
+      const role = data.profile?.role || 'client'
       
-      console.log('📡 API response:', data)
-      
-      const role = (response.ok && data.profile?.role) ? data.profile.role : 'client'
-      console.log('🎯 Final role determined:', role)
       setUserRole(role)
       setRoleCache(prev => new Map(prev).set(userId, role))
     } catch (error) {
@@ -67,12 +63,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    let mounted = true
     let isInitialLoad = true
 
     // Get initial session
     const getInitialSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!mounted) return
+        
         setUser(session?.user ?? null)
         if (session?.user) {
           await fetchUserRole(session.user.id)
@@ -80,8 +80,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Error getting initial session:', error)
       } finally {
-        setLoading(false)
-        isInitialLoad = false
+        if (mounted) {
+          setLoading(false)
+          isInitialLoad = false
+        }
       }
     }
 
@@ -90,10 +92,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // Skip the initial session event since we already handled it
+        if (!mounted) return
+        
+        // Skip duplicate initial session events
         if (isInitialLoad && event === 'INITIAL_SESSION') {
           return
         }
+        
+        // Log auth events for debugging
+        console.log('🔐 Auth state changed:', event)
         
         setUser(session?.user ?? null)
         if (session?.user) {
@@ -106,11 +113,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setUserRole(null)
         }
-        setLoading(false)
+        
+        if (mounted) {
+          setLoading(false)
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const refreshUser = async () => {
