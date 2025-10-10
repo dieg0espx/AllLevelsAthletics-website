@@ -112,13 +112,22 @@ export default function HomePage() {
 
               {/* Main headline */}
                 <div className="space-y-4 sm:space-y-6">
-                <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-none tracking-tight text-center lg:text-left">
+                <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-6">
+                  <Image 
+                    src="/logoAllLevels.png" 
+                    alt="All Levels Athletics Logo" 
+                    width={80} 
+                    height={80} 
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
+                  />
+                  <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-none tracking-tight">
                     <span className="block text-foreground transition-all duration-500 ease-out hover:text-orange-400 hover:scale-105 transform cursor-default">ALL LEVELS</span>
                     <span className="block text-orange-500 transition-all duration-500 ease-out hover:bg-gradient-to-r hover:from-orange-500 hover:via-yellow-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent hover:drop-shadow-[0_0_20px_rgba(251,146,60,0.5)] hover:scale-105 transform cursor-default relative group">
                       ATHLETICS
                       <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out blur-sm scale-110"></div>
                     </span>
-                </h1>
+                  </h1>
+                </div>
                   
                   {/* Enhanced Energy Drawing */}
                   <div className="flex items-center gap-4 relative justify-center lg:justify-start">

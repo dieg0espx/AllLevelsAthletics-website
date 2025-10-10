@@ -40,6 +40,23 @@ export async function POST(request: NextRequest) {
     console.log('Billing Period:', billingPeriod)
     console.log('User ID:', userId)
 
+    // Fetch active coaching discount
+    const { data: discounts, error: discountError } = await supabaseAdmin
+      .from('discounts')
+      .select('discount_percentage')
+      .eq('discount_type', 'coaching')
+      .eq('is_active', true)
+      .single()
+    
+    // Default to 0 if table doesn't exist or no discount found
+    let coachingDiscount = 0
+    if (discountError) {
+      console.log('No discount found (table may not exist yet):', discountError.message)
+    } else if (discounts?.discount_percentage) {
+      coachingDiscount = parseFloat(discounts.discount_percentage)
+    }
+    console.log('Coaching Discount:', coachingDiscount + '%')
+
     // Validate required fields
     if (!planId || !billingPeriod || !userId) {
       return NextResponse.json(
@@ -185,8 +202,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe checkout session for subscription
-    const session = await stripe.checkout.sessions.create({
+    // Create or get Stripe coupon if discount is active
+    let stripeCouponId: string | undefined
+    if (coachingDiscount > 0) {
+      const couponId = `coaching-${Math.round(coachingDiscount)}`
+      
+      try {
+        // Try to retrieve existing coupon
+        await stripe.coupons.retrieve(couponId)
+        stripeCouponId = couponId
+        console.log('Using existing Stripe coupon:', couponId)
+      } catch (error) {
+        // Coupon doesn't exist, create it
+        try {
+          const coupon = await stripe.coupons.create({
+            id: couponId,
+            percent_off: coachingDiscount,
+            duration: 'forever',
+            name: `Coaching ${Math.round(coachingDiscount)}% Discount`,
+          })
+          stripeCouponId = coupon.id
+          console.log('Created new Stripe coupon:', coupon.id)
+        } catch (createError) {
+          console.error('Error creating Stripe coupon:', createError)
+          // Continue without coupon if creation fails
+        }
+      }
+    }
+
+    // Prepare session configuration
+    const sessionConfig: any = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -213,8 +258,21 @@ export async function POST(request: NextRequest) {
         billingPeriod: billingPeriod,
         type: 'subscription',
       },
-      allow_promotion_codes: true,
-    })
+    }
+
+    // Auto-apply discount if available, otherwise allow promo codes
+    if (stripeCouponId) {
+      sessionConfig.discounts = [{
+        coupon: stripeCouponId
+      }]
+      console.log('Auto-applying discount coupon:', stripeCouponId)
+    } else {
+      // Only allow promotion codes if we're not auto-applying a discount
+      sessionConfig.allow_promotion_codes = true
+    }
+
+    // Create Stripe checkout session for subscription
+    const session = await stripe.checkout.sessions.create(sessionConfig)
 
     console.log('✅ Stripe subscription checkout session created successfully')
     console.log('Session ID:', session.id)
