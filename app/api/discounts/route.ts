@@ -1,7 +1,23 @@
+/**
+ * Public Discounts API
+ * 
+ * Provides public access to active discount percentages.
+ * Used by frontend to display discounted prices site-wide.
+ * 
+ * Returns default values (0% discount) if table doesn't exist yet.
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
-// GET - Fetch active discounts (public endpoint)
+/**
+ * GET /api/discounts
+ * 
+ * Fetches active discounts for coaching packages and products
+ * Public endpoint - no authentication required
+ * 
+ * @returns { coaching: number, products: number }
+ */
 export async function GET(request: NextRequest) {
   try {
     const { data: discounts, error } = await supabaseAdmin

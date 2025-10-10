@@ -1,29 +1,54 @@
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+# ===================================
+# ALL LEVELS ATHLETICS - ENVIRONMENT VARIABLES TEMPLATE
+# ===================================
+# Copy this file to .env.local and replace all placeholder values
+# NEVER commit .env.local to version control!
 
-# Stripe Configuration
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+# -----------------------------------
+# SUPABASE CONFIGURATION
+# -----------------------------------
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your_service_role_key_here
 
-# Email Configuration (for order confirmations and coaching appointments)
+# -----------------------------------
+# STRIPE CONFIGURATION
+# -----------------------------------
+# Use TEST keys for development (pk_test_ and sk_test_)
+# Use LIVE keys for production (pk_live_ and sk_live_)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+STRIPE_SECRET_KEY=sk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+STRIPE_WEBHOOK_SECRET=whsec_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Stripe Subscription Price IDs
+STRIPE_FOUNDATION_MONTHLY_PRICE_ID=price_XXXXXXXXXXXXXX
+STRIPE_FOUNDATION_ANNUAL_PRICE_ID=price_XXXXXXXXXXXXXX
+STRIPE_GROWTH_MONTHLY_PRICE_ID=price_XXXXXXXXXXXXXX
+STRIPE_GROWTH_ANNUAL_PRICE_ID=price_XXXXXXXXXXXXXX
+STRIPE_ELITE_MONTHLY_PRICE_ID=price_XXXXXXXXXXXXXX
+STRIPE_ELITE_ANNUAL_PRICE_ID=price_XXXXXXXXXXXXXX
+
+# -----------------------------------
+# EMAIL CONFIGURATION (Gmail SMTP)
+# -----------------------------------
+# Requires Gmail App Password (16 characters)
+# Setup: Google Account → Security → App Passwords
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
+EMAIL_PASS=xxxx_xxxx_xxxx_xxxx
 
-# SMTP Configuration for Nodemailer (Coaching Appointment Confirmations)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=analytics@comcreate.org
-SMTP_PASS=thyqqgesftzajyug
-SMTP_FROM=analytics@comcreate.org
-CONTACT_EMAIL=aletxa.pascual@gmail.com
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=xxxx_xxxx_xxxx_xxxx
+SMTP_FROM=your_email@gmail.com
+CONTACT_EMAIL=your_email@gmail.com
 
-# App Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+# -----------------------------------
+# SITE URLS
+# -----------------------------------
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 SITE_URL=http://localhost:3000
+

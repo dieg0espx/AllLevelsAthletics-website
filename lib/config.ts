@@ -1,4 +1,13 @@
-// Website Configuration - Change these values for different projects
+/**
+ * Site Configuration
+ * 
+ * Central configuration file for the All Levels Athletics website.
+ * Modify these values to customize branding, colors, text, and behavior.
+ * 
+ * This approach makes the codebase reusable for other fitness businesses
+ * by simply updating this configuration file.
+ */
+
 export const siteConfig = {
   // Basic Site Information
   name: "All Levels Athletics",

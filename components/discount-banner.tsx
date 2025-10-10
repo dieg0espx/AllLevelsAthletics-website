@@ -1,5 +1,18 @@
 "use client"
 
+/**
+ * Discount Banner Component
+ * 
+ * Displays a site-wide discount notification banner at the top of pages
+ * when discounts are active. Automatically hides on dashboard and admin pages.
+ * 
+ * Features:
+ * - Animated flame icons
+ * - Dynamic messaging based on active discounts
+ * - Responsive design
+ * - Auto-updates when discounts change
+ */
+
 import { usePathname } from "next/navigation"
 import { Flame } from "lucide-react"
 import { useDiscount } from "@/contexts/discount-context"
@@ -8,7 +21,7 @@ export function DiscountBanner() {
   const pathname = usePathname()
   const { coachingDiscount, productsDiscount } = useDiscount()
 
-  // Hide banner on dashboard and admin pages
+  // Hide banner on dashboard and admin pages for cleaner UX
   const isDashboard = pathname?.startsWith('/dashboard')
   const isAdmin = pathname?.startsWith('/admin')
   
