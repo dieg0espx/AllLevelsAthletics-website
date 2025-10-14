@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { 
   Users,
@@ -1048,6 +1048,9 @@ export function CoachingManagementSection({
                   </div>
                   Client Profile
                 </DialogTitle>
+                <DialogDescription className="text-white/70">
+                  View client details and coaching history
+                </DialogDescription>
                 {selectedClientForDetails && (
                   <Badge className={`${selectedClientForDetails.subscription_status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-500/20 text-gray-400 border-gray-500/30'} text-xs flex-shrink-0`}>
                     {selectedClientForDetails.subscription_status}
@@ -1273,6 +1276,9 @@ export function CoachingManagementSection({
               </div>
               Monthly Limit Reached
             </DialogTitle>
+            <DialogDescription className="text-white/70">
+              This client has reached their monthly coaching session limit
+            </DialogDescription>
           </DialogHeader>
           
           {limitReachedClient && (
@@ -1366,6 +1372,9 @@ export function CoachingManagementSection({
                   </div>
               Cancel Session
             </DialogTitle>
+            <DialogDescription className="text-white/70">
+              Are you sure you want to cancel this coaching session?
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
@@ -1408,6 +1417,9 @@ export function CoachingManagementSection({
               <Calendar className="w-5 h-5 text-orange-400" />
               Session Notes
             </DialogTitle>
+            <DialogDescription className="text-white/70">
+              View and manage session notes and progress
+            </DialogDescription>
           </DialogHeader>
           
           {selectedCheckIn && (
@@ -1480,6 +1492,9 @@ export function CoachingManagementSection({
                 <Calendar className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
                 Schedule New Session
               </DialogTitle>
+              <DialogDescription className="text-white/70">
+                Schedule a new coaching session with a client
+              </DialogDescription>
             </DialogHeader>
           
           <div className="space-y-4 md:space-y-6">

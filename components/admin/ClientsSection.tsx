@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { 
   Users,
   Search,
@@ -217,6 +217,9 @@ export function ClientsSection({
                 <Users className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
                 Client Details
               </DialogTitle>
+              <DialogDescription className="text-white/70">
+                View and manage client information, orders, and progress
+              </DialogDescription>
             </DialogHeader>
             
             {selectedClient && (
@@ -447,6 +450,9 @@ export function ClientsSection({
                 <Edit className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
                 Edit Client Information
               </DialogTitle>
+              <DialogDescription className="text-white/70">
+                Update client details and contact information
+              </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">

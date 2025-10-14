@@ -84,11 +84,11 @@ export default function AboutPage() {
     <div className="min-h-screen bg-background">
 
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-36 sm:pt-40 md:pt-44 lg:pt-48 pb-20 sm:pb-24 md:pb-28 lg:pb-32 bg-gradient-to-br from-black via-gray-900 to-black">
+      <section className="relative overflow-hidden pt-40 sm:pt-44 md:pt-48 lg:pt-52 pb-24 sm:pb-28 md:pb-32 lg:pb-36 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
         <div className="absolute inset-0">
           <img
-            src="/woman.jpg"
+            src="/daniel/Photo Sep 20 2024, 5 35 42 PM.jpg"
             alt="Athletic woman background"
             className="w-full h-full object-cover"
           />
@@ -147,27 +147,30 @@ export default function AboutPage() {
         
         <div className="container mx-auto px-4 relative z-10">
           {/* Enhanced Statistics Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto relative items-center">
             {/* Shared background gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/5 rounded-3xl"></div>
             
             {/* Left side - Image Slideshow */}
-            <div className="relative overflow-hidden rounded-2xl h-auto shadow-2xl">
+            <div className="relative overflow-hidden rounded-2xl shadow-2xl h-[500px]">
               <div className="relative w-full h-full">
                 <img
-                  src="/athletic-person-gym.png"
+                  src="/daniel/Photo Apr 11 2021, 3 21 12 PM.jpg"
                   alt="Athletic training"
                                             className="w-full h-full object-cover"
+                                            style={{ objectPosition: 'center 60%' }}
                 />
                 <img
-                  src="/manexercising.jpg"
+                  src="/daniel/Photo May 19 2020, 9 46 42 PM.jpg"
                   alt="Man exercising"
                                             className="absolute inset-0 w-full h-full object-cover"
+                                            style={{ objectPosition: 'center 60%' }}
                 />
                 <img
-                  src="/dumbell.jpg"
+                  src="/daniel/Photo May 19 2020, 9 48 57 PM.jpg"
                   alt="Dumbbell training"
                                             className="absolute inset-0 w-full h-full object-cover"
+                                            style={{ objectPosition: 'center 60%' }}
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
@@ -369,9 +372,9 @@ export default function AboutPage() {
                                       <div className="relative group h-full">
                         <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
                           <img
-                            src="/gymTrainer.jpg"
+                            src="/daniel/Photo Oct 10 2024, 3 07 48 PM.jpg"
                             alt="Daniel Ledbetter - Founder & Lead Performance Coach"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="w-full h-full object-cover scale-125 group-hover:scale-[1.30] transition-transform duration-500"
                           />
                         </div>
                         {/* Glow effect */}

@@ -77,11 +77,11 @@ export default function ContactPage() {
     <div className="min-h-screen bg-background">
 
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-40 sm:pt-40 md:pt-48 lg:pt-56 pb-32 sm:pb-32 md:pb-40 lg:pb-48 bg-gradient-to-br from-black via-gray-900 to-black">
+      <section className="relative overflow-hidden pt-40 sm:pt-44 md:pt-48 lg:pt-52 pb-24 sm:pb-28 md:pb-32 lg:pb-36 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
         <div className="absolute inset-0">
           <img
-            src="/dumbell.jpg"
+            src="/daniel/Photo Feb 16 2025, 12 34 05 PM.jpg"
             alt="Athletic training background"
             className="w-full h-full object-cover"
           />
@@ -94,9 +94,6 @@ export default function ContactPage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-                         <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-base sm:text-lg px-4 sm:px-6 py-2">
-               Get In Touch
-             </Badge>
              <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-tight tracking-tight">
                <span className="block text-white mb-2 sm:mb-4">Ready to Start Your</span>
                <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Transformation?</span>
@@ -342,7 +339,7 @@ export default function ContactPage() {
                        {/* Main Image */}
                        <div className="relative h-full">
                          <img
-                           src="/womanexcercising.jpg"
+                           src="/daniel/Photo Feb 16 2025, 12 15 03 PM.jpg"
                            alt="Total Body Transformation"
                            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
                            style={{ 
@@ -351,7 +348,7 @@ export default function ContactPage() {
                            }}
                          />
                          <img
-                           src="/manexercising3.jpg"
+                           src="/daniel/Photo Apr 11 2021, 3 21 12 PM.jpg"
                            alt="Athletic Performance"
                            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
                            style={{ 
@@ -360,16 +357,17 @@ export default function ContactPage() {
                            }}
                          />
                          <img
-                           src="/womanexcercising2.jpg"
+                           src="/daniel/Photo May 19 2020, 9 46 42 PM.jpg"
                            alt="Movement Restoration"
                            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
                            style={{ 
                              opacity: currentSlide === 2 ? 1 : 0,
-                             transform: currentSlide === 2 ? 'scale(1.05)' : 'scale(1)'
+                             transform: currentSlide === 2 ? 'scale(1.05)' : 'scale(1)',
+                             objectPosition: 'center 30%'
                            }}
                          />
                          <img
-                           src="/manexercising4.jpg"
+                           src="/daniel/Photo Sep 20 2024, 5 35 42 PM.jpg"
                            alt="Strength Fundamentals"
                            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
                            style={{ 
@@ -378,7 +376,7 @@ export default function ContactPage() {
                            }}
                          />
                          <img
-                           src="/womanexcercising3.jpg"
+                           src="/daniel/Photo Oct 10 2024, 3 07 48 PM.jpg"
                            alt="Morning Movement"
                            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
                            style={{ 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -223,9 +223,9 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           <DialogTitle className={`text-2xl font-bold bg-gradient-to-r ${siteConfig.styles.button.primary} bg-clip-text text-transparent`}>
             {isLogin ? siteConfig.labels.login.title : siteConfig.labels.register.title}
           </DialogTitle>
-          <p className="text-white/70 mt-2">
+          <DialogDescription className="text-white/70 mt-2">
             {isLogin ? siteConfig.labels.login.subtitle : siteConfig.labels.register.subtitle}
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         {/* Message Display */}

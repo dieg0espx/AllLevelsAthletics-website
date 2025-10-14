@@ -226,9 +226,10 @@ export default function HomePage() {
                   {/* Main image container */}
                   <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl transition-transform duration-500 ease-out hover:scale-105">
                   <img
-                    src="/athletic-person-gym.png"
+                    src="/daniel/Photo Feb 16 2025, 12 15 03 PM.jpg"
                     alt="Professional athletic training"
                     className="w-full h-full object-cover"
+                    style={{ objectPosition: '90% center' }}
                   />
                     
                     {/* Gradient overlay for better integration */}
@@ -348,17 +349,6 @@ export default function HomePage() {
               itemType="https://schema.org/Review"
             >
               <div className="text-center mb-6">
-                <div className="relative w-18 h-18 mx-auto mb-4">
-                  <img
-                    src="/smiling-fitness-woman-headshot.png"
-                    alt="Jessica M. - Client Success Story"
-                    className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                    width={72}
-                    height={72}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
                 <div className="flex justify-center gap-1 mb-2">
                   <Stars rating={5} />
                   <span className="sr-only">5 out of 5 stars</span>
@@ -392,17 +382,6 @@ export default function HomePage() {
               itemType="https://schema.org/Review"
             >
               <div className="text-center mb-6">
-                <div className="relative w-18 h-18 mx-auto mb-4">
-                  <img
-                    src="/confident-man-athletic-wear-headshot.png"
-                    alt="Robert K. - Client Success Story"
-                    className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                    width={72}
-                    height={72}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
                 <div className="flex justify-center gap-1 mb-2">
                   <Stars rating={5} />
                   <span className="sr-only">5 out of 5 stars</span>
@@ -436,17 +415,6 @@ export default function HomePage() {
               itemType="https://schema.org/Review"
             >
               <div className="text-center mb-6">
-                <div className="relative w-18 h-18 mx-auto mb-4">
-                  <img
-                    src="/athletic-woman-headshot.png"
-                    alt="Amanda L. - Client Success Story"
-                    className="w-full h-full object-cover rounded-full ring-2 ring-amber-400/40"
-                    width={72}
-                    height={72}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
                 <div className="flex justify-center gap-1 mb-2">
                   <Stars rating={5} />
                   <span className="sr-only">5 out of 5 stars</span>
@@ -990,7 +958,7 @@ export default function HomePage() {
                         <div className="flex -space-x-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-background overflow-hidden">
                             <Image
-                              src="/person1.png"
+                              src="/daniel/Photo Sep 20 2024, 5 35 40 PM.jpg"
                               alt="Client 1"
                               width={32}
                               height={32}
@@ -999,7 +967,7 @@ export default function HomePage() {
                           </div>
                           <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-background overflow-hidden">
                             <Image
-                              src="/person2.png"
+                              src="/daniel/Photo Feb 16 2025, 12 17 37 PM.jpg"
                               alt="Client 2"
                               width={32}
                               height={32}
@@ -1008,7 +976,7 @@ export default function HomePage() {
                           </div>
                           <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-background overflow-hidden">
                             <Image
-                              src="/person3.png"
+                              src="/daniel/IMG_7546[1].jpg"
                               alt="Client 3"
                               width={32}
                               height={32}
@@ -1048,12 +1016,13 @@ export default function HomePage() {
               </Card>
 
               {/* Interactive Image Section */}
-              <div className="relative group cursor-pointer h-full">
-                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transform group-hover:scale-105 transition-all duration-500 hover:shadow-orange-500/25 h-full">
+              <div className="relative group cursor-pointer">
+                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transform group-hover:scale-105 transition-all duration-500 hover:shadow-orange-500/25 h-[500px]">
                   <img
-                    src="/tension-reset-coaching.png"
+                    src="/daniel/Photo Oct 02 2024, 7 53 42 PM.jpg"
                     alt="Daniel Ledbetter Professional Training"
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-500"
+                    style={{ objectPosition: 'center 20%' }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/40 transition-all duration-500"></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-transparent to-yellow-500/20 group-hover:from-orange-500/30 group-hover:to-yellow-500/30 transition-all duration-500"></div>

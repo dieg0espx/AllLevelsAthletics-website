@@ -89,13 +89,14 @@ export default function ProgramsPage() {
     <div className="min-h-screen bg-background">
 
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden pt-32 sm:pt-40 md:pt-48 lg:pt-52 pb-20 sm:pb-24 md:pb-28 lg:pb-32 bg-gradient-to-br from-black via-gray-900 to-black">
+      <section className="relative overflow-hidden pt-40 sm:pt-44 md:pt-48 lg:pt-52 pb-24 sm:pb-28 md:pb-32 lg:pb-36 bg-gradient-to-br from-black via-gray-900 to-black">
         {/* Background image */}
         <div className="absolute inset-0">
           <img
-            src="/manexercising.jpg"
+            src="/daniel/Photo Mar 05 2025, 6 13 10 PM.jpg"
             alt="Athletic training background"
             className="w-full h-full object-cover"
+            style={{ objectPosition: 'center 25%' }}
           />
         </div>
         {/* Enhanced background with depth and overlay */}
@@ -106,9 +107,6 @@ export default function ProgramsPage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="gradient-orange-yellow text-black font-bold mb-4 sm:mb-6 text-sm sm:text-base px-3 sm:px-4 py-1.5 sm:py-2">
-              Premium Training Programs
-            </Badge>
             <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 sm:mb-8 leading-tight tracking-tight">
               <span className="block text-white mb-2 sm:mb-3">Specialized Programs for</span>
               <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Every Goal</span>
@@ -218,7 +216,7 @@ export default function ProgramsPage() {
                 <div className="relative">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                     <img
-                      src="/womanexcercising.jpg"
+                      src="/daniel/Photo Feb 16 2025, 12 13 35 PM.jpg"
                       alt="Runner's Tension Score Program"
                       className="w-full h-80 object-cover"
                     />
