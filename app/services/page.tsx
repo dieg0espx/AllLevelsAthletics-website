@@ -207,7 +207,7 @@ export default function ServicesPage() {
         {/* Background image */}
         <div className="absolute inset-0">
           <img
-            src="/manexercising2.jpg"
+            src="/daniel/Photo Jan 12 2021, 3 43 05 PM.jpg"
             alt="Athletic training background"
             className="w-full h-full object-cover"
           />
@@ -220,9 +220,6 @@ export default function ServicesPage() {
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="gradient-orange-yellow text-black font-bold mb-6 sm:mb-8 text-base sm:text-lg px-4 sm:px-6 py-2">
-              Premium Training Services
-            </Badge>
             <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-8 sm:mb-10 leading-tight tracking-tight">
               <span className="block text-white mb-3 sm:mb-4">Choose Your Path to</span>
               <span className="block bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(251,146,60,0.3)]">Peak Performance</span>
