@@ -407,7 +407,8 @@ export default function CoachingPage() {
           <ProgressPanel userId={user?.id || ''} currentPlan={currentPlan.name} />
         ) : (
           <>
-        {/* Current Plan */}
+        {/* Current Plan - Only show if user has an active subscription */}
+        {subscriptionData?.subscription && subscriptionData?.subscription?.status === 'active' && (
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Users className="w-6 h-6 text-orange-400" />
@@ -489,6 +490,7 @@ export default function CoachingPage() {
             </CardContent>
           </Card>
         </div>
+        )}
 
 
         {/* Subscribe Options - Show if user doesn't have an active subscription */}

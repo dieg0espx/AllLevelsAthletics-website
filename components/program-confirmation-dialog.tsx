@@ -139,7 +139,7 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
               </DialogTitle>
               <div className="flex flex-wrap gap-2 mt-1">
                 <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs sm:text-sm">
-                  🆓 FREE Program
+                  FREE Program
                 </Badge>
                 <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs sm:text-sm">
                   ✓ No Subscription Required
