@@ -57,8 +57,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Add pricing information based on plan_id
+    const PLAN_PRICES = {
+      foundation: 197,
+      growth: 297,
+      elite: 497
+    }
+
+    // Enrich subscription data with price if plan_id exists
+    let enrichedSubscription = subscription
+    if (subscription && subscription.plan_id) {
+      enrichedSubscription = {
+        ...subscription,
+        plan_price: PLAN_PRICES[subscription.plan_id as keyof typeof PLAN_PRICES] || null
+      }
+    }
+
     return NextResponse.json({ 
-      subscription: subscription || null,
+      subscription: enrichedSubscription || null,
       userProfile: userProfile || null,
       success: true 
     })

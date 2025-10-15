@@ -34,19 +34,40 @@ export default function CoachingPage() {
   const [upgradeDetails, setUpgradeDetails] = useState<any>(null)
   const [upgradeSuccess, setUpgradeSuccess] = useState<string | null>(null)
 
-  // Default plan data - will be updated with real data from API
-  const [currentPlan, setCurrentPlan] = useState({
-    name: "Foundation",
-    status: "active",
-    startDate: "2024-01-01",
-    nextCheckIn: "2024-02-01",
-    features: [
+  // Plan features mapping
+  const PLAN_FEATURES = {
+    foundation: [
       "1x/month personalized check-ins",
       "Fully customized training program",
       "Email support & guidance",
       "Access to exercise library",
       "Nutrition guidelines"
     ],
+    growth: [
+      "2x/month detailed check-ins",
+      "Form review & video feedback",
+      "Progressive training adjustments",
+      "Priority email support",
+      "Meal planning assistance",
+      "Recovery optimization"
+    ],
+    elite: [
+      "Weekly personalized check-ins",
+      "Complete tension reset coaching",
+      "Video analysis & technique review",
+      "Mobility prioritization program",
+      "24/7 text support access",
+      "Supplement recommendations"
+    ]
+  }
+
+  // Default plan data - will be updated with real data from API
+  const [currentPlan, setCurrentPlan] = useState({
+    name: "Foundation",
+    status: "active",
+    startDate: "2024-01-01",
+    nextCheckIn: "2024-02-01",
+    features: PLAN_FEATURES.foundation,
     price: "$197/month"
   })
 
@@ -175,12 +196,16 @@ export default function CoachingPage() {
         // Update current plan with real data if available
         if (data.subscription) {
           const subscription = data.subscription
+          const planId = subscription.plan_id?.toLowerCase() || 'foundation'
+          const features = PLAN_FEATURES[planId as keyof typeof PLAN_FEATURES] || PLAN_FEATURES.foundation
+          
           setCurrentPlan(prev => ({
             ...prev,
             name: subscription.plan_name || prev.name,
             status: subscription.status || prev.status,
             startDate: subscription.created_at || prev.startDate,
-            price: subscription.plan_price ? `$${subscription.plan_price}/month` : prev.price
+            price: subscription.plan_price ? `$${subscription.plan_price}/month` : prev.price,
+            features: features
           }))
         }
       } else {
