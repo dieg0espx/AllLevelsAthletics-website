@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,7 @@ import { authService } from "@/lib/auth"
 import type { RegisterData, LoginData } from "@/lib/auth"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@/contexts/auth-context";
 
 interface AuthModalProps {
   isOpen: boolean
@@ -25,6 +26,9 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  // Import useAuth to check if user is already authenticated
+  const { user, loading } = useAuth()
+
   // Form state
   const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
     email: '',
@@ -32,6 +36,38 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     confirmPassword: '',
     full_name: '',
   })
+
+  // Auto-redirect if user is already authenticated
+  useEffect(() => {
+    if (!loading && user && isOpen) {
+      console.log('🔐 User already authenticated, redirecting...', { 
+        user: user.id, 
+        role: user.user_metadata?.role,
+        redirectTo 
+      })
+      
+      // Close modal first
+      onClose()
+      
+      // Determine redirect destination
+      const userRole = user.user_metadata?.role || 'client'
+      let redirectPath = '/dashboard' // default
+      
+      if (redirectTo) {
+        redirectPath = redirectTo
+        console.log('➡️ Redirecting to requested path:', redirectTo)
+      } else if (userRole === 'admin') {
+        redirectPath = '/admin'
+        console.log('➡️ Redirecting admin to: /admin')
+      } else {
+        redirectPath = '/dashboard'
+        console.log('➡️ Redirecting client to: /dashboard')
+      }
+      
+      // Redirect immediately
+      router.push(redirectPath)
+    }
+  }, [user, loading, isOpen, redirectTo, onClose, router])
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -210,6 +246,11 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     }
   };
 
+
+  // Don't render modal if user is already authenticated
+  if (!loading && user) {
+    return null
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
