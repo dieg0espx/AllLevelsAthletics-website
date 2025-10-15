@@ -116,6 +116,59 @@ export default function ServicesPage() {
     }
   }
 
+  // Function to handle general subscription (no specific plan)
+  const handleGeneralSubscription = async () => {
+    if (!user) {
+      setShowAuthModal(true)
+      return
+    }
+
+    if (hasActiveSubscription) {
+      // Redirect to dashboard coaching page for existing subscribers
+      window.location.href = '/dashboard/coaching'
+      return
+    }
+
+    setSubscriptionLoading(true)
+    try {
+      // Default to Foundation plan for general subscription
+      const response = await fetch('/api/create-subscription-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: 'foundation',
+          billingPeriod: billingPeriod,
+          userId: user.id,
+          isGeneralSubscription: true, // Flag to indicate this is a general subscription
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      // Redirect to Stripe checkout
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        })
+
+        if (error) {
+          console.error('Stripe checkout error:', error)
+        }
+      }
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }
+
   // Function to handle plan checkout (keep for backward compatibility)
   const handlePlanCheckout = async (plan: any, planName: string) => {
     // Check if user is logged in
