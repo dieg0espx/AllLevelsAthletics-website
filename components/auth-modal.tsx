@@ -125,27 +125,25 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
         if (error) {
           setMessage({ type: 'error', text: error.message })
         } else {
-          setMessage({ type: 'success', text: 'Successfully logged in!' })
-          
-          // Wait a moment for auth state to propagate
-          await new Promise(resolve => setTimeout(resolve, 500))
-          
-          // Close modal and redirect
+          // Success - redirect immediately without showing message
+          // Close modal first
           onClose();
           setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
-          setMessage(null);
           
-          // Redirect based on user role
-          if (redirectTo) {
-            router.push(redirectTo);
-          } else {
-            const userRole = user?.user_metadata?.role || 'client'
-            if (userRole === 'admin') {
-              router.push('/admin');
+          // Small delay to ensure modal closes before redirect
+          setTimeout(() => {
+            // Redirect based on user role
+            if (redirectTo) {
+              router.push(redirectTo);
             } else {
-              router.push('/dashboard');
+              const userRole = user?.user_metadata?.role || 'client'
+              if (userRole === 'admin') {
+                router.push('/admin');
+              } else {
+                router.push('/dashboard');
+              }
             }
-          }
+          }, 100)
         }
       } else {
         const { user, error } = await authService.register({
