@@ -135,26 +135,32 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           // Success - close modal and redirect
           console.log('🚪 Closing modal...')
           setIsLoading(false) // Reset loading state on success
-          onClose();
+          
+          // Clear form data
           setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
           
-          // Small delay to ensure modal closes before redirect
-          setTimeout(() => {
-            // Redirect based on user role
-            const userRole = user?.user_metadata?.role || 'client'
-            console.log('🔄 Redirecting...', { redirectTo, userRole })
-            
-            if (redirectTo) {
-              console.log('➡️ Redirecting to:', redirectTo)
-              router.push(redirectTo);
-            } else if (userRole === 'admin') {
-              console.log('➡️ Redirecting to: /admin')
-              router.push('/admin');
-            } else {
-              console.log('➡️ Redirecting to: /dashboard')
-              router.push('/dashboard');
-            }
-          }, 300)
+          // Close modal
+          onClose();
+          
+          // Determine redirect destination
+          const userRole = user?.user_metadata?.role || 'client'
+          console.log('🔄 Redirecting...', { redirectTo, userRole })
+          
+          let redirectPath = '/dashboard' // default
+          if (redirectTo) {
+            redirectPath = redirectTo
+            console.log('➡️ Redirecting to requested path:', redirectTo)
+          } else if (userRole === 'admin') {
+            redirectPath = '/admin'
+            console.log('➡️ Redirecting admin to: /admin')
+          } else {
+            redirectPath = '/dashboard'
+            console.log('➡️ Redirecting client to: /dashboard')
+          }
+          
+          // Immediate redirect without delay to prevent stuck state
+          console.log('🚀 Executing redirect to:', redirectPath)
+          router.push(redirectPath);
         }
       } else {
         const { user, error } = await authService.register({
@@ -179,7 +185,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
         }
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       setMessage({ type: 'error', text: siteConfig.labels.validation.unexpectedError })
     } finally {
       setIsLoading(false)
