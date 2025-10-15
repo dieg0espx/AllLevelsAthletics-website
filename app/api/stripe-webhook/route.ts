@@ -227,11 +227,23 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     const customerId = typeof customer === 'string' ? customer : customer.id
     console.log('📝 Customer ID:', customerId)
 
-    // DEBUG: Log the actual subscription object to see what we're receiving
-    console.log('📝 DEBUG - Subscription object keys:', Object.keys(subscription))
-    console.log('📝 DEBUG - current_period_start:', subscription.current_period_start, 'type:', typeof subscription.current_period_start)
-    console.log('📝 DEBUG - current_period_end:', subscription.current_period_end, 'type:', typeof subscription.current_period_end)
-    console.log('📝 DEBUG - Full subscription:', JSON.stringify(subscription, null, 2))
+    // Get period dates - in newer Stripe API versions, these might be in subscription items
+    let currentPeriodStart = subscription.current_period_start
+    let currentPeriodEnd = subscription.current_period_end
+    
+    // If not at subscription level, get from first subscription item
+    if (!currentPeriodStart || !currentPeriodEnd) {
+      if (subscription.items?.data?.[0]) {
+        currentPeriodStart = subscription.items.data[0].current_period_start
+        currentPeriodEnd = subscription.items.data[0].current_period_end
+        console.log('📝 Using period dates from subscription item')
+      }
+    }
+    
+    console.log('📝 Period dates:', {
+      start: currentPeriodStart,
+      end: currentPeriodEnd
+    })
 
     // Create or update subscription record
     const subscriptionData: any = {
@@ -245,13 +257,15 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     }
 
     // Add date fields using helper function for safe conversion
-    const periodStart = toISOStringFromTimestamp(subscription.current_period_start)
-    const periodEnd = toISOStringFromTimestamp(subscription.current_period_end)
+    const periodStart = toISOStringFromTimestamp(currentPeriodStart)
+    const periodEnd = toISOStringFromTimestamp(currentPeriodEnd)
     
     if (!periodStart || !periodEnd) {
       console.error('❌ Invalid period dates in subscription:', {
-        current_period_start: subscription.current_period_start,
-        current_period_end: subscription.current_period_end
+        currentPeriodStart,
+        currentPeriodEnd,
+        periodStart,
+        periodEnd
       })
       throw new Error('Invalid subscription period dates')
     }
