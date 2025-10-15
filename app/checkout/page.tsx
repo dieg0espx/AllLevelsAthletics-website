@@ -447,7 +447,7 @@ export default function CheckoutPage() {
                                </p>
                              </div>
                              <div className="text-right">
-                               <p className="text-2xl font-bold text-white">
+                               <p className="text-2xl font-bold text-orange-500">
                                  {formatPrice(item.price * item.quantity)}
                                </p>
                                <p className="text-sm text-gray-400">Total</p>
