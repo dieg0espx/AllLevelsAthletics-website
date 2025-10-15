@@ -218,7 +218,7 @@ export default function AboutPage() {
                       <Target className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-3xl sm:text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors" data-target="3">3</div>
+                      <div className="text-3xl sm:text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors" data-target="12">12</div>
                       <div className="text-white/80 font-semibold text-xs sm:text-sm">Years of Excellence</div>
                     </div>
                   </div>

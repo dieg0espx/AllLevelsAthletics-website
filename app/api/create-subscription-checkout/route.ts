@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-05-28.basil',
 })
 
 // Define the subscription plans with their Stripe price IDs

@@ -66,7 +66,7 @@ export default function TeamPage() {
                       <div className="text-sm text-muted-foreground">Success Rate</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold gradient-text mb-2">3+</div>
+                      <div className="text-3xl font-bold gradient-text mb-2">12+</div>
                       <div className="text-sm text-muted-foreground">Years Experience</div>
                     </div>
                     <div className="text-center">

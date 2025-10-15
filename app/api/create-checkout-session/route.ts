@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     let stripe: Stripe
     try {
       stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-        apiVersion: '2024-12-18.acacia',
+        apiVersion: '2025-05-28.basil',
         typescript: true,
         appInfo: {
           name: 'All Levels Athletics',
