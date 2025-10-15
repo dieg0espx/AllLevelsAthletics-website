@@ -43,8 +43,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get base URL from environment or fallback to localhost
-    baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    // Get base URL - force main domain for production
+    if (process.env.NODE_ENV === 'production') {
+      baseUrl = 'https://www.alllevelsathletics.com'
+    } else {
+      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    }
     
     console.log('Using baseUrl from env:', baseUrl)
     

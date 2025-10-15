@@ -125,8 +125,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get base URL
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    // Get base URL - force main domain for production
+    let baseUrl: string
+    if (process.env.NODE_ENV === 'production') {
+      baseUrl = 'https://www.alllevelsathletics.com'
+    } else {
+      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+    }
     
     // Create URLs for subscription checkout
     const successUrl = `${baseUrl}/subscription-success?session_id={CHECKOUT_SESSION_ID}`
