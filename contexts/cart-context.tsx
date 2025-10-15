@@ -109,6 +109,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: CartItem) => {
     dispatch({ type: 'ADD_ITEM', payload: item })
+    // Automatically open cart when item is added
+    if (!state.isOpen) {
+      dispatch({ type: 'TOGGLE_CART' })
+    }
   }
 
   const removeItem = (id: string) => {
