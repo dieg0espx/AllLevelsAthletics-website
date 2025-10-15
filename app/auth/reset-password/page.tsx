@@ -24,6 +24,11 @@ export default function ResetPasswordPage() {
 
   // Check if we have the necessary tokens from the URL and set up Supabase session
   useEffect(() => {
+    // Debug: Log full URL
+    console.log('🔍 Full URL:', window.location.href)
+    console.log('🔍 Hash:', window.location.hash)
+    console.log('🔍 Search:', window.location.search)
+    
     // Supabase sends tokens in the hash fragment (#), not query params (?)
     // First try to get from hash fragment
     const hash = window.location.hash
@@ -32,11 +37,18 @@ export default function ResetPasswordPage() {
     let type = null
     
     if (hash) {
+      console.log('📍 Raw hash:', hash)
       const hashParams = new URLSearchParams(hash.substring(1)) // Remove the '#'
       accessToken = hashParams.get('access_token')
       refreshToken = hashParams.get('refresh_token')
       type = hashParams.get('type')
-      console.log('Hash Parameters:', { accessToken, refreshToken, type })
+      console.log('📍 Hash Parameters:', { 
+        accessToken: accessToken ? `${accessToken.substring(0, 10)}...` : null, 
+        refreshToken: refreshToken ? `${refreshToken.substring(0, 10)}...` : null, 
+        type 
+      })
+    } else {
+      console.log('⚠️ No hash fragment found')
     }
     
     // Fallback to query params if not in hash
@@ -44,7 +56,11 @@ export default function ResetPasswordPage() {
       accessToken = searchParams.get('access_token')
       refreshToken = searchParams.get('refresh_token')
       type = searchParams.get('type')
-      console.log('Query Parameters:', { accessToken, refreshToken, type })
+      console.log('📍 Query Parameters:', { 
+        accessToken: accessToken ? `${accessToken.substring(0, 10)}...` : null, 
+        refreshToken: refreshToken ? `${refreshToken.substring(0, 10)}...` : null, 
+        type 
+      })
     }
     
     // Supabase password reset includes these parameters
