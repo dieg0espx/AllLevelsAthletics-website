@@ -123,27 +123,37 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
         })
 
         if (error) {
+          console.error('❌ Login error:', error)
           setMessage({ type: 'error', text: error.message })
         } else {
-          // Success - redirect immediately without showing message
-          // Close modal first
+          console.log('✅ Login successful!', { 
+            user: user?.id, 
+            role: user?.user_metadata?.role,
+            redirectTo 
+          })
+          
+          // Success - close modal and redirect
+          console.log('🚪 Closing modal...')
           onClose();
           setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
           
           // Small delay to ensure modal closes before redirect
           setTimeout(() => {
             // Redirect based on user role
+            const userRole = user?.user_metadata?.role || 'client'
+            console.log('🔄 Redirecting...', { redirectTo, userRole })
+            
             if (redirectTo) {
+              console.log('➡️ Redirecting to:', redirectTo)
               router.push(redirectTo);
+            } else if (userRole === 'admin') {
+              console.log('➡️ Redirecting to: /admin')
+              router.push('/admin');
             } else {
-              const userRole = user?.user_metadata?.role || 'client'
-              if (userRole === 'admin') {
-                router.push('/admin');
-              } else {
-                router.push('/dashboard');
-              }
+              console.log('➡️ Redirecting to: /dashboard')
+              router.push('/dashboard');
             }
-          }, 100)
+          }, 300)
         }
       } else {
         const { user, error } = await authService.register({
