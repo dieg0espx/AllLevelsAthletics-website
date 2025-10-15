@@ -459,12 +459,8 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       })
 
       if (response.ok) {
-        // Update the local state
-        setCheckIns(prev => prev.map(checkIn => 
-          checkIn.id === selectedCheckInForNotes.id 
-            ? { ...checkIn, notes: notesText }
-            : checkIn
-        ))
+        // Refresh check-ins data from server to ensure sync
+        await fetchCheckIns()
         
         setShowNotesModal(false)
         setSelectedCheckInForNotes(null)

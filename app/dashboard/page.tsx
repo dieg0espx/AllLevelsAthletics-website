@@ -524,7 +524,7 @@ export default function ClientDashboard() {
           </Card>
 
           {/* 1-on-1 Coaching Summary */}
-          <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 cursor-pointer" onClick={() => router.push('/dashboard/coaching')}>
+          <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 cursor-pointer" onClick={() => router.push(hasCoachingSubscription ? '/dashboard/coaching' : '/services')}>
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <Users className="w-5 h-5 text-orange-400" />
