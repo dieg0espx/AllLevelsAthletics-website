@@ -167,35 +167,73 @@ export async function POST(request: NextRequest) {
     }
 
     if (userProfile?.stripe_customer_id) {
-      // User already has a Stripe customer ID
-      stripeCustomerId = userProfile.stripe_customer_id
-      console.log('Using existing Stripe customer ID:', stripeCustomerId)
-    } else {
-      // Create new Stripe customer
-      const customerData: any = {
-        metadata: {
-          userId: userId,
-        },
+      // User already has a Stripe customer ID - verify it still exists in Stripe
+      try {
+        const existingCustomer = await stripe.customers.retrieve(userProfile.stripe_customer_id)
+        if (existingCustomer && !existingCustomer.deleted) {
+          stripeCustomerId = userProfile.stripe_customer_id
+          console.log('Using existing Stripe customer ID:', stripeCustomerId)
+        } else {
+          console.log('Stored customer ID is deleted, will create new one')
+          throw new Error('Customer deleted')
+        }
+      } catch (error) {
+        console.log('Error retrieving customer, will create new one:', error)
+        // Customer doesn't exist or was deleted, create a new one
+        userProfile.stripe_customer_id = null
       }
-
-      // Add email from Supabase auth (this is the primary source)
+    }
+    
+    if (!userProfile?.stripe_customer_id) {
+      // First, search for existing customer by email to avoid duplicates
       if (userEmail) {
-        customerData.email = userEmail
+        const existingCustomers = await stripe.customers.list({
+          email: userEmail,
+          limit: 1
+        })
+        
+        if (existingCustomers.data.length > 0 && !existingCustomers.data[0].deleted) {
+          stripeCustomerId = existingCustomers.data[0].id
+          console.log('Found existing Stripe customer by email:', stripeCustomerId)
+          
+          // Update user profile with this customer ID
+          if (userProfile) {
+            await supabaseAdmin
+              .from('user_profiles')
+              .update({ stripe_customer_id: stripeCustomerId })
+              .eq('user_id', userId)
+          }
+        }
       }
+      
+      // If still no customer, create new one
+      if (!stripeCustomerId) {
+        const customerData: any = {
+          metadata: {
+            userId: userId,
+          },
+        }
 
-      // Add name from Supabase auth or user profile
-      if (userName) {
-        customerData.name = userName
-      } else if (userProfile?.full_name) {
-        customerData.name = userProfile.full_name
+        // Add email from Supabase auth (this is the primary source)
+        if (userEmail) {
+          customerData.email = userEmail
+        }
+
+        // Add name from Supabase auth or user profile
+        if (userName) {
+          customerData.name = userName
+        } else if (userProfile?.full_name) {
+          customerData.name = userProfile.full_name
+        }
+
+        const customer = await stripe.customers.create(customerData)
+        stripeCustomerId = customer.id
+        console.log('Created new Stripe customer:', stripeCustomerId)
       }
+    }
 
-      const customer = await stripe.customers.create(customerData)
-      stripeCustomerId = customer.id
-      console.log('Created new Stripe customer:', stripeCustomerId)
-
-      // Try to update user profile with Stripe customer ID (if profile exists)
-      if (userProfile) {
+    // Try to update user profile with Stripe customer ID (if profile exists and not already set)
+    if (userProfile && stripeCustomerId) {
         const { error: updateError } = await supabaseAdmin
           .from('user_profiles')
           .update({ stripe_customer_id: stripeCustomerId })
