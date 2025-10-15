@@ -24,7 +24,6 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [showForgotPassword, setShowForgotPassword] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
@@ -200,36 +199,8 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     setIsLogin(!isLogin)
     setMessage(null)
     setFormData({ email: '', password: '', confirmPassword: '', full_name: '' })
-    setShowForgotPassword(false)
   }
 
-  const handleForgotPassword = async () => {
-    if (!formData.email) {
-      setMessage({ type: 'error', text: 'Please enter your email address first' })
-      return
-    }
-
-    setIsLoading(true)
-    setMessage(null)
-
-    try {
-      const { success, error } = await authService.resetPassword(formData.email)
-      
-      if (error) {
-        setMessage({ type: 'error', text: error.message })
-      } else {
-        setMessage({ type: 'success', text: 'Password reset email sent! Check your inbox for further instructions.' })
-        setTimeout(() => {
-          setShowForgotPassword(false)
-          setMessage(null)
-        }, 3000)
-      }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Failed to send password reset email. Please try again.' })
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleClose = (open: boolean) => {
     if (!open) {
@@ -407,28 +378,16 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           )}
 
           {isLogin && siteConfig.auth.enableRememberMe && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <input
-                  id="remember"
-                  type="checkbox"
-                  className={`w-4 h-4 text-${siteConfig.colors.primary}-500 ${siteConfig.styles.input.background} ${siteConfig.styles.input.border} rounded focus:ring-${siteConfig.colors.accent} focus:ring-2`}
-                  disabled={isLoading}
-                />
-                <Label htmlFor="remember" className="text-white/70 text-sm">
-                  {siteConfig.labels.fields.rememberMe}
-                </Label>
-              </div>
-                             {siteConfig.auth.enablePasswordReset && (
-                 <button
-                   type="button"
-                   onClick={handleForgotPassword}
-                   className={`text-${siteConfig.colors.accent} hover:text-${siteConfig.colors.accentHover} text-sm font-medium transition-colors disabled:opacity-50`}
-                   disabled={isLoading}
-                 >
-                   {siteConfig.labels.fields.forgotPassword}
-                 </button>
-               )}
+            <div className="flex items-center">
+              <input
+                id="remember"
+                type="checkbox"
+                className={`w-4 h-4 text-${siteConfig.colors.primary}-500 ${siteConfig.styles.input.background} ${siteConfig.styles.input.border} rounded focus:ring-${siteConfig.colors.accent} focus:ring-2`}
+                disabled={isLoading}
+              />
+              <Label htmlFor="remember" className="text-white/70 text-sm ml-2">
+                {siteConfig.labels.fields.rememberMe}
+              </Label>
             </div>
           )}
 
