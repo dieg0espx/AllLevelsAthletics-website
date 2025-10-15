@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
-import { useSubscription } from "@/contexts/subscription-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -31,7 +30,6 @@ import { courseVideos, CourseVideo } from "@/lib/course-videos"
 export default function TensionReleaseProgramPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const { canAccessContent, loading: subscriptionLoading } = useSubscription()
   const [isLoading, setIsLoading] = useState(true)
   const [currentVideo, setCurrentVideo] = useState<CourseVideo | null>(null)
   const [watchedVideos, setWatchedVideos] = useState<Set<number>>(new Set())
@@ -247,105 +245,7 @@ export default function TensionReleaseProgramPage() {
     return null
   }
 
-  // Access control check
-  if (!canAccessContent) {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <header className="bg-black/95 backdrop-blur-md border-b border-orange-500/30 sticky top-0 z-40">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push('/dashboard/programs')}
-                  className="text-white/90 hover:text-orange-400 hover:bg-white/10"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Programs
-                </Button>
-                <h1 className="text-2xl font-bold text-orange-400">Premium Program</h1>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-8">
-              <div className="w-24 h-24 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Lock className="w-12 h-12 text-orange-400" />
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-4">Premium Content Access Required</h2>
-              <p className="text-xl text-white/70 mb-8">
-                This comprehensive program requires an active subscription to access.
-              </p>
-            </div>
-
-            <Card className="bg-white/5 border-orange-500/30 mb-8">
-              <CardHeader>
-                <CardTitle className="text-white text-2xl">Comprehensive Tension Release & Performance Enhancement</CardTitle>
-                <CardDescription className="text-white/70 text-lg">
-                  Transform your running performance through our scientifically-backed methodology
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-white">Program Includes:</h4>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">18 comprehensive video modules</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">Tension release techniques</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">Performance enhancement methods</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">Progress tracking</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-white">Target Audience:</h4>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">All fitness levels</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Target className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">Runners & athletes</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Award className="w-5 h-5 text-orange-400" />
-                        <span className="text-white/80">Performance-focused individuals</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold hover:scale-105 transition-all"
-                    onClick={() => router.push('/dashboard/coaching')}
-                  >
-                    Get Premium Access
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </main>
-      </div>
-    )
-  }
+  // This program is now FREE - no subscription access control needed
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
