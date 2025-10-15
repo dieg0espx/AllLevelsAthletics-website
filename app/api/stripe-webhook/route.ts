@@ -250,96 +250,96 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     }
 
     console.log('✅ Subscription saved successfully')
+
+    // Check if user profile exists, if not create it
+    const { data: existingProfile, error: checkError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('id, role')
+      .eq('user_id', userId)
+      .single()
+
+    if (checkError && checkError.code === 'PGRST116') {
+      // Profile doesn't exist, create it
+      const { error: createError } = await supabaseAdmin
+        .from('user_profiles')
+        .insert([{
+          user_id: userId,
+          role: 'client',
+          current_plan: planId,
+          subscription_status: subscription.status,
+          stripe_customer_id: customerId,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }])
+
+      if (createError) {
+        console.error('❌ Error creating user profile:', createError)
+      } else {
+        console.log('✅ Created new user profile with role: client')
+      }
+    } else if (checkError) {
+      console.error('❌ Error checking user profile:', checkError)
+    } else {
+      // Profile exists, update it
+      const { error: profileError } = await supabaseAdmin
+        .from('user_profiles')
+        .update({
+          current_plan: planId,
+          subscription_status: subscription.status,
+          stripe_customer_id: customerId,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', userId)
+
+      if (profileError) {
+        console.error('❌ Error updating user profile:', profileError)
+      } else {
+        console.log('✅ Updated existing user profile')
+      }
+    }
+
+    // Send confirmation email
+    try {
+      const customerEmail = typeof customer !== 'string' && customer.email ? customer.email : null
+      
+      if (customerEmail) {
+        // Get plan price from subscription
+        const planPrice = subscription.items.data[0]?.price.unit_amount 
+          ? (subscription.items.data[0].price.unit_amount / 100).toString()
+          : '0'
+        
+        console.log('📧 Sending subscription confirmation email to:', customerEmail)
+        
+        const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/send-subscription-confirmation`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: customerEmail,
+            planName: planName,
+            planPrice: planPrice,
+            billingPeriod: billingPeriod,
+            trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null
+          })
+        })
+        
+        if (emailResponse.ok) {
+          console.log('✅ Subscription confirmation email sent successfully')
+        } else {
+          console.error('❌ Failed to send subscription confirmation email')
+        }
+      } else {
+        console.log('⚠️ No customer email found, skipping confirmation email')
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending subscription confirmation email:', emailError)
+      // Don't fail the webhook if email fails
+    }
+
+    console.log('✅ Subscription created and saved successfully')
   } catch (error) {
     console.error('❌ ERROR in handleSubscriptionCreated:', error)
     throw error
   }
-
-  // Check if user profile exists, if not create it
-  const { data: existingProfile, error: checkError } = await supabaseAdmin
-    .from('user_profiles')
-    .select('id, role')
-    .eq('user_id', userId)
-    .single()
-
-  if (checkError && checkError.code === 'PGRST116') {
-    // Profile doesn't exist, create it
-    const { error: createError } = await supabaseAdmin
-      .from('user_profiles')
-      .insert([{
-        user_id: userId,
-        role: 'client',
-        current_plan: planId,
-        subscription_status: subscription.status,
-        stripe_customer_id: customerId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }])
-
-    if (createError) {
-      console.error('❌ Error creating user profile:', createError)
-    } else {
-      console.log('✅ Created new user profile with role: client')
-    }
-  } else if (checkError) {
-    console.error('❌ Error checking user profile:', checkError)
-  } else {
-    // Profile exists, update it
-    const { error: profileError } = await supabaseAdmin
-      .from('user_profiles')
-      .update({
-        current_plan: planId,
-        subscription_status: subscription.status,
-        stripe_customer_id: customerId,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', userId)
-
-    if (profileError) {
-      console.error('❌ Error updating user profile:', profileError)
-    } else {
-      console.log('✅ Updated existing user profile')
-    }
-  }
-
-  // Send confirmation email
-  try {
-    const customerEmail = typeof customer !== 'string' && customer.email ? customer.email : null
-    
-    if (customerEmail) {
-      // Get plan price from subscription
-      const planPrice = subscription.items.data[0]?.price.unit_amount 
-        ? (subscription.items.data[0].price.unit_amount / 100).toString()
-        : '0'
-      
-      console.log('📧 Sending subscription confirmation email to:', customerEmail)
-      
-      const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/send-subscription-confirmation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: customerEmail,
-          planName: planName,
-          planPrice: planPrice,
-          billingPeriod: billingPeriod,
-          trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null
-        })
-      })
-      
-      if (emailResponse.ok) {
-        console.log('✅ Subscription confirmation email sent successfully')
-      } else {
-        console.error('❌ Failed to send subscription confirmation email')
-      }
-    } else {
-      console.log('⚠️ No customer email found, skipping confirmation email')
-    }
-  } catch (emailError) {
-    console.error('❌ Error sending subscription confirmation email:', emailError)
-    // Don't fail the webhook if email fails
-  }
-
-  console.log('✅ Subscription created and saved successfully')
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
