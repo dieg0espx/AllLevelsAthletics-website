@@ -208,7 +208,10 @@ export async function POST(request: NextRequest) {
         items: JSON.stringify(items.map((item: any) => ({ id: item.id, name: item.name }))),
         shippingInfo: JSON.stringify(shippingInfo),
       },
-      // Removed shipping_address_collection - using registered user's address
+      // Shipping restricted to US addresses only
+      shipping_address_collection: {
+        allowed_countries: ['US']
+      },
       shipping_options: [
         {
           shipping_rate_data: {
@@ -217,7 +220,7 @@ export async function POST(request: NextRequest) {
               amount: 0,
               currency: 'usd',
             },
-            display_name: 'Free shipping',
+            display_name: 'Free shipping (US only)',
             delivery_estimate: {
               minimum: {
                 unit: 'business_day',
