@@ -60,13 +60,13 @@ export const metadata: Metadata = {
     description: 'Transform your fitness with premium online personal training, body tension reset courses, and professional recovery tools. Get personalized coaching from Daniel, serving athletes worldwide.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/openGraphAllLevels.png',
         width: 1200,
         height: 630,
         alt: 'All Levels Athletics - Elite Online Personal Training',
       },
       {
-        url: '/og-image-square.png',
+        url: '/openGraphAllLevels.png',
         width: 600,
         height: 600,
         alt: 'All Levels Athletics Logo',
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     title: 'All Levels Athletics - Elite Online Personal Training',
     description: 'Transform your fitness with premium online personal training, body tension reset courses, and professional recovery tools.',
     creator: '@AllLevelsAthletics',
-    images: ['/og-image.png'],
+    images: ['/openGraphAllLevels.png'],
   },
   robots: {
     index: true,
@@ -207,7 +207,7 @@ export default function RootLayout({
               "description": "Elite Online Personal Training and Fitness Coaching",
               "url": "https://alllevelsathletics.com",
               "logo": "https://alllevelsathletics.com/logoAllLevels.png",
-              "image": "https://alllevelsathletics.com/og-image.png",
+              "image": "https://alllevelsathletics.com/openGraphAllLevels.png",
               "telephone": "+1-760-585-8832",
               "email": "AllLevelsAthletics@gmail.com",
               "address": {
