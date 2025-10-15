@@ -802,26 +802,6 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-
-
-            {/* Quick Actions */}
-            <Card className="bg-white/5 border-orange-500/30">
-              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
-                <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
-                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
-                  Account Security
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 px-4 sm:px-6">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-orange-500/30 text-orange-400 hover:bg-orange-500/10 text-sm sm:text-base h-10 sm:h-11"
-                >
-                  <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Change Password
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>
