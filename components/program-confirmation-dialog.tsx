@@ -34,7 +34,7 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
           userId: user?.id,
           programId: 'tension-release-program',
           programName: 'Comprehensive Tension Release & Performance Enhancement',
-          programType: 'premium'
+          programType: 'free' // Changed from 'premium' to 'free'
         })
       })
 
@@ -49,7 +49,7 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
           id: data.program?.id || `local-${Date.now()}`,
           name: 'Comprehensive Tension Release & Performance Enhancement',
           programId: 'tension-release-program',
-          programType: 'premium',
+          programType: 'free', // Changed from 'premium' to 'free'
           status: 'active',
           progress: 0,
           duration: '18 modules',
@@ -102,7 +102,7 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
         id: `local-${Date.now()}`,
         name: 'Comprehensive Tension Release & Performance Enhancement',
         programId: 'tension-release-program',
-        programType: 'premium',
+        programType: 'free', // Changed from 'premium' to 'free'
         status: 'active',
         progress: 0,
         duration: '18 modules',
@@ -138,18 +138,18 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
                 Start Your Transformation
               </DialogTitle>
               <div className="flex flex-wrap gap-2 mt-1">
-                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs sm:text-sm">
-                  Premium Program
-                </Badge>
                 <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs sm:text-sm">
-                  ✓ Access Granted
+                  🆓 FREE Program
+                </Badge>
+                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs sm:text-sm">
+                  ✓ No Subscription Required
                 </Badge>
               </div>
             </div>
           </div>
           <DialogDescription className="text-sm sm:text-base lg:text-lg text-white/80">
-            You're about to start the Comprehensive Tension Release & Performance Enhancement program. 
-            This will add the program to your dashboard and give you access to all 18 video modules.
+            You're about to start the <strong>FREE</strong> Comprehensive Tension Release & Performance Enhancement program. 
+            No subscription or payment required - just register and get instant access to all 18 video modules!
           </DialogDescription>
         </DialogHeader>
 

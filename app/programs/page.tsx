@@ -37,7 +37,7 @@ export default function ProgramsPage() {
       // User is not logged in, show auth modal
       setIsAuthModalOpen(true)
     } else {
-      // User is logged in, show program dialog
+      // User is logged in, show program dialog (free registration, no subscription required)
       setIsProgramDialogOpen(true)
     }
   }
@@ -175,9 +175,9 @@ export default function ProgramsPage() {
                 {/* Left Side - Content */}
                 <div className="space-y-8">
                   <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-300 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm">
+                    <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-300 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm">
                       <Target className="w-4 h-4" />
-                      PREMIUM PROGRAM
+                      🆓 FREE PROGRAM
                     </div>
                     <h3 className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white">
                       Comprehensive Tension Release & Performance Enhancement
@@ -207,7 +207,7 @@ export default function ProgramsPage() {
                       Start Your Transformation
                     </Button>
                     <p className="text-center text-green-400 font-semibold text-sm">
-                      ✓ Premium program access
+                      ✓ Free program - No subscription required
                     </p>
                   </div>
                 </div>
