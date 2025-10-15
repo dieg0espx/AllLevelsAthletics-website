@@ -185,48 +185,66 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 }
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  console.log('📝 Subscription created:', subscription.id)
-  
-  const userId = subscription.metadata?.userId
-  if (!userId) {
-    console.error('❌ No userId in subscription metadata')
-    return
-  }
+  try {
+    console.log('📝 Subscription created:', subscription.id)
+    console.log('📝 Subscription metadata:', JSON.stringify(subscription.metadata))
+    
+    const userId = subscription.metadata?.userId
+    if (!userId) {
+      console.error('❌ No userId in subscription metadata')
+      console.error('❌ Full subscription object:', JSON.stringify(subscription, null, 2))
+      throw new Error('No userId in subscription metadata')
+    }
 
-  const planId = subscription.metadata?.planId
-  const planName = subscription.metadata?.planName || 'Unknown Plan'
-  const billingPeriod = subscription.metadata?.billingPeriod || 'monthly'
+    const planId = subscription.metadata?.planId
+    const planName = subscription.metadata?.planName || 'Unknown Plan'
+    const billingPeriod = subscription.metadata?.billingPeriod || 'monthly'
 
-  // Get customer details
-  const customer = await stripe.customers.retrieve(subscription.customer as string)
-  const customerId = typeof customer === 'string' ? customer : customer.id
+    console.log('📝 Processing subscription for user:', userId)
+    console.log('📝 Plan:', planName, '/', planId)
 
-  // Create or update subscription record
-  const subscriptionData = {
-    user_id: userId,
-    stripe_customer_id: customerId,
-    stripe_subscription_id: subscription.id,
-    plan_id: planId,
-    plan_name: planName,
-    status: subscription.status,
-    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-    cancel_at_period_end: subscription.cancel_at_period_end,
-    canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-    trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-    trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-  }
+    // Get customer details
+    const customer = await stripe.customers.retrieve(subscription.customer as string)
+    const customerId = typeof customer === 'string' ? customer : customer.id
+    console.log('📝 Customer ID:', customerId)
 
-  const { error } = await supabaseAdmin
-    .from('user_subscriptions')
-    .upsert(subscriptionData, { 
-      onConflict: 'stripe_subscription_id',
-      ignoreDuplicates: false 
-    })
+    // Create or update subscription record
+    const subscriptionData = {
+      user_id: userId,
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscription.id,
+      plan_id: planId,
+      plan_name: planName,
+      status: subscription.status,
+      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+    }
 
-  if (error) {
-    console.error('❌ Error saving subscription:', error)
-    return
+    console.log('📝 Saving subscription data:', JSON.stringify(subscriptionData, null, 2))
+
+    const { error } = await supabaseAdmin
+      .from('user_subscriptions')
+      .upsert(subscriptionData, { 
+        onConflict: 'stripe_subscription_id',
+        ignoreDuplicates: false 
+      })
+
+    if (error) {
+      console.error('❌ Error saving subscription:', error)
+      console.error('❌ Error code:', error.code)
+      console.error('❌ Error message:', error.message)
+      console.error('❌ Error details:', JSON.stringify(error, null, 2))
+      throw error
+    }
+
+    console.log('✅ Subscription saved successfully')
+  } catch (error) {
+    console.error('❌ ERROR in handleSubscriptionCreated:', error)
+    throw error
   }
 
   // Check if user profile exists, if not create it
