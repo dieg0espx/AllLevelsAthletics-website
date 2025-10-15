@@ -341,8 +341,14 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     // Map price ID to plan information
     const PRICE_TO_PLAN = {
       [process.env.STRIPE_FOUNDATION_MONTHLY_PRICE_ID!]: { plan_id: 'foundation', plan_name: 'Foundation' },
+      [process.env.STRIPE_FOUNDATION_ANNUAL_PRICE_ID!]: { plan_id: 'foundation', plan_name: 'Foundation' },
+      [process.env.STRIPE_FOUNDATION_SIXMONTH_PRICE_ID!]: { plan_id: 'foundation', plan_name: 'Foundation' },
       [process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID!]: { plan_id: 'growth', plan_name: 'Growth' },
+      [process.env.STRIPE_GROWTH_ANNUAL_PRICE_ID!]: { plan_id: 'growth', plan_name: 'Growth' },
+      [process.env.STRIPE_GROWTH_SIXMONTH_PRICE_ID!]: { plan_id: 'growth', plan_name: 'Growth' },
       [process.env.STRIPE_ELITE_MONTHLY_PRICE_ID!]: { plan_id: 'elite', plan_name: 'Elite' },
+      [process.env.STRIPE_ELITE_ANNUAL_PRICE_ID!]: { plan_id: 'elite', plan_name: 'Elite' },
+      [process.env.STRIPE_ELITE_SIXMONTH_PRICE_ID!]: { plan_id: 'elite', plan_name: 'Elite' },
     }
     
     const planInfo = PRICE_TO_PLAN[currentPriceId]
