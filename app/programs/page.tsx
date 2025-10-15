@@ -177,7 +177,7 @@ export default function ProgramsPage() {
                   <div className="space-y-4">
                     <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-300 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm">
                       <Target className="w-4 h-4" />
-                      🆓 FREE PROGRAM
+                      FREE PROGRAM
                     </div>
                     <h3 className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white">
                       Comprehensive Tension Release & Performance Enhancement
