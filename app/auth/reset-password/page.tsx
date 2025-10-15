@@ -24,11 +24,28 @@ export default function ResetPasswordPage() {
 
   // Check if we have the necessary tokens from the URL and set up Supabase session
   useEffect(() => {
-    const accessToken = searchParams.get('access_token')
-    const refreshToken = searchParams.get('refresh_token')
-    const type = searchParams.get('type')
+    // Supabase sends tokens in the hash fragment (#), not query params (?)
+    // First try to get from hash fragment
+    const hash = window.location.hash
+    let accessToken = null
+    let refreshToken = null
+    let type = null
     
-    console.log('URL Parameters:', { accessToken, refreshToken, type })
+    if (hash) {
+      const hashParams = new URLSearchParams(hash.substring(1)) // Remove the '#'
+      accessToken = hashParams.get('access_token')
+      refreshToken = hashParams.get('refresh_token')
+      type = hashParams.get('type')
+      console.log('Hash Parameters:', { accessToken, refreshToken, type })
+    }
+    
+    // Fallback to query params if not in hash
+    if (!accessToken) {
+      accessToken = searchParams.get('access_token')
+      refreshToken = searchParams.get('refresh_token')
+      type = searchParams.get('type')
+      console.log('Query Parameters:', { accessToken, refreshToken, type })
+    }
     
     // Supabase password reset includes these parameters
     if (accessToken && refreshToken && type === 'recovery') {
@@ -37,14 +54,17 @@ export default function ResetPasswordPage() {
         try {
           const { error } = await authService.setSessionFromTokens(accessToken, refreshToken)
           if (error) {
+            console.error('Session setup error:', error)
             setMessage({ 
               type: 'error', 
               text: 'Failed to validate reset link. Please request a new password reset.' 
             })
           } else {
+            console.log('✅ Session setup successful')
             setIsValidToken(true)
           }
         } catch (error) {
+          console.error('Session setup exception:', error)
           setMessage({ 
             type: 'error', 
             text: 'Invalid or expired reset link. Please request a new password reset.' 
@@ -55,13 +75,16 @@ export default function ResetPasswordPage() {
       setupSession()
     } else if (accessToken && refreshToken) {
       // Fallback for other auth flows
+      console.log('Using fallback validation')
       setIsValidToken(true)
     } else {
       // For testing purposes, let's check if we're in development mode
       if (process.env.NODE_ENV === 'development') {
         console.log('Development mode: Allowing access for testing')
         setIsValidToken(true)
+        setIsTestMode(true)
       } else {
+        console.log('No valid tokens found')
         setMessage({ 
           type: 'error', 
           text: 'Invalid or expired reset link. Please request a new password reset.' 
