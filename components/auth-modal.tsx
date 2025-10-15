@@ -134,7 +134,6 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           
           // Success - close modal and redirect
           console.log('🚪 Closing modal...')
-          setIsLoading(false) // Reset loading state on success
           
           // Clear form data
           setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
@@ -157,6 +156,11 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
             redirectPath = '/dashboard'
             console.log('➡️ Redirecting client to: /dashboard')
           }
+          
+          // Reset loading state after redirect to prevent stuck state
+          setTimeout(() => {
+            setIsLoading(false)
+          }, 100)
           
           // Immediate redirect without delay to prevent stuck state
           console.log('🚀 Executing redirect to:', redirectPath)
@@ -238,7 +242,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className={`sm:max-w-md ${siteConfig.styles.modal.background} ${siteConfig.styles.modal.border} ${siteConfig.styles.modal.shadow}`}>
+      <DialogContent className={`sm:max-w-md max-h-[90vh] overflow-y-auto ${siteConfig.styles.modal.background} ${siteConfig.styles.modal.border} ${siteConfig.styles.modal.shadow}`}>
         <DialogHeader className="text-center">
           <DialogTitle className={`text-2xl font-bold bg-gradient-to-r ${siteConfig.styles.button.primary} bg-clip-text text-transparent`}>
             {isLogin ? siteConfig.labels.login.title : siteConfig.labels.register.title}
