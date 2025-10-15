@@ -32,16 +32,31 @@ export async function GET(request: NextRequest) {
       // Continue without user data if profiles can't be fetched
     }
 
+    // Get auth users to get real email addresses
+    const authUsers = {}
+    for (const userId of userIds) {
+      try {
+        const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId)
+        if (!authError && authUser.user) {
+          authUsers[userId] = authUser.user
+        }
+      } catch (error) {
+        console.error(`Error fetching auth user ${userId}:`, error)
+      }
+    }
+
     // Combine check-ins with user data
     const checkInsWithUsers = checkIns.map(checkIn => {
       const userProfile = userProfiles?.find(profile => profile.user_id === checkIn.user_id)
+      const authUser = authUsers[checkIn.user_id]
+      
       return {
         ...checkIn,
         user: {
           id: checkIn.user_id,
-          email: checkIn.user_id, // Use user_id as fallback
+          email: authUser?.email || checkIn.user_id, // Use real email from auth, fallback to user_id
           raw_user_meta_data: {
-            full_name: userProfile?.full_name || 'Unknown User'
+            full_name: authUser?.user_metadata?.full_name || userProfile?.full_name || 'Unknown User'
           }
         }
       }
