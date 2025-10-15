@@ -65,6 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
     let isInitialLoad = true
+    let lastEventTime = 0
+    let lastUserId: string | null = null
 
     // Get initial session
     const getInitialSession = async () => {
@@ -75,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setUser(session?.user ?? null)
         if (session?.user) {
+          lastUserId = session.user.id
           await fetchUserRole(session.user.id)
         }
       } catch (error) {
@@ -99,11 +102,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return
         }
         
+        // Prevent rapid duplicate events (within 100ms)
+        const now = Date.now()
+        if (now - lastEventTime < 100 && session?.user?.id === lastUserId) {
+          console.log('🔐 Skipping duplicate auth event:', event)
+          return
+        }
+        lastEventTime = now
+        
         // Log auth events for debugging
-        console.log('🔐 Auth state changed:', event)
+        console.log('🔐 Auth state changed:', event, session?.user?.id ? `(User: ${session.user.id.substring(0, 8)}...)` : '(No user)')
         
         setUser(session?.user ?? null)
         if (session?.user) {
+          lastUserId = session.user.id
           // Only fetch role if we don't have it cached
           if (!roleCache.has(session.user.id)) {
             await fetchUserRole(session.user.id)
@@ -111,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUserRole(roleCache.get(session.user.id)!)
           }
         } else {
+          lastUserId = null
           setUserRole(null)
         }
         
