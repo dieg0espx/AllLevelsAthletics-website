@@ -210,10 +210,12 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     }
   }
 
-  const handleClose = () => {
-    onClose();
-    setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
-    setMessage(null);
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      onClose();
+      setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
+      setMessage(null);
+    }
   };
 
 
