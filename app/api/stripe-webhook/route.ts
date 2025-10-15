@@ -8,6 +8,25 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
+// Helper function to safely convert Unix timestamp to ISO string
+function toISOStringFromTimestamp(timestamp: number | null | undefined): string | null {
+  if (!timestamp || timestamp === 0 || isNaN(timestamp)) {
+    return null
+  }
+  try {
+    const date = new Date(timestamp * 1000)
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid timestamp value:', timestamp)
+      return null
+    }
+    return date.toISOString()
+  } catch (error) {
+    console.warn('Error converting timestamp to ISO string:', timestamp, error)
+    return null
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
@@ -157,8 +176,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         .update({
           plan_name: planName,
           plan_id: planId,
-          current_period_start: new Date(updatedSubscription.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(updatedSubscription.current_period_end * 1000).toISOString(),
+          current_period_start: toISOStringFromTimestamp(updatedSubscription.current_period_start),
+          current_period_end: toISOStringFromTimestamp(updatedSubscription.current_period_end),
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', userId)
@@ -216,20 +235,38 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       plan_id: planId,
       plan_name: planName,
       status: subscription.status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
     }
 
+    // Add date fields using helper function for safe conversion
+    const periodStart = toISOStringFromTimestamp(subscription.current_period_start)
+    const periodEnd = toISOStringFromTimestamp(subscription.current_period_end)
+    
+    if (!periodStart || !periodEnd) {
+      console.error('❌ Invalid period dates in subscription:', {
+        current_period_start: subscription.current_period_start,
+        current_period_end: subscription.current_period_end
+      })
+      throw new Error('Invalid subscription period dates')
+    }
+    
+    subscriptionData.current_period_start = periodStart
+    subscriptionData.current_period_end = periodEnd
+
     // Add optional date fields only if they exist and are valid
-    if (subscription.canceled_at) {
-      subscriptionData.canceled_at = new Date(subscription.canceled_at * 1000).toISOString()
+    const canceledAt = toISOStringFromTimestamp(subscription.canceled_at)
+    if (canceledAt) {
+      subscriptionData.canceled_at = canceledAt
     }
-    if (subscription.trial_start) {
-      subscriptionData.trial_start = new Date(subscription.trial_start * 1000).toISOString()
+    
+    const trialStart = toISOStringFromTimestamp(subscription.trial_start)
+    if (trialStart) {
+      subscriptionData.trial_start = trialStart
     }
-    if (subscription.trial_end) {
-      subscriptionData.trial_end = new Date(subscription.trial_end * 1000).toISOString()
+    
+    const trialEnd = toISOStringFromTimestamp(subscription.trial_end)
+    if (trialEnd) {
+      subscriptionData.trial_end = trialEnd
     }
 
     console.log('📝 Saving subscription data:', JSON.stringify(subscriptionData, null, 2))
@@ -318,7 +355,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
             planName: planName,
             planPrice: planPrice,
             billingPeriod: billingPeriod,
-            trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null
+            trialEnd: toISOStringFromTimestamp(subscription.trial_end)
           })
         })
         
@@ -383,21 +420,26 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     // Update the subscription in our database
     const updateData: any = {
       status: subscription.status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: toISOStringFromTimestamp(subscription.current_period_start),
+      current_period_end: toISOStringFromTimestamp(subscription.current_period_end),
       cancel_at_period_end: subscription.cancel_at_period_end,
       updated_at: new Date().toISOString(),
     }
 
     // Add optional date fields only if they exist and are valid
-    if (subscription.canceled_at) {
-      updateData.canceled_at = new Date(subscription.canceled_at * 1000).toISOString()
+    const canceledAt = toISOStringFromTimestamp(subscription.canceled_at)
+    if (canceledAt) {
+      updateData.canceled_at = canceledAt
     }
-    if (subscription.trial_start) {
-      updateData.trial_start = new Date(subscription.trial_start * 1000).toISOString()
+    
+    const trialStart = toISOStringFromTimestamp(subscription.trial_start)
+    if (trialStart) {
+      updateData.trial_start = trialStart
     }
-    if (subscription.trial_end) {
-      updateData.trial_end = new Date(subscription.trial_end * 1000).toISOString()
+    
+    const trialEnd = toISOStringFromTimestamp(subscription.trial_end)
+    if (trialEnd) {
+      updateData.trial_end = trialEnd
     }
     
     // Add plan information if we can determine it from the price ID
