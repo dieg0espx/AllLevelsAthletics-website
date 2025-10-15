@@ -554,31 +554,17 @@ export default function ClientDashboard() {
                     View Details
                   </Button>
                 ) : (
-                  <div className="flex gap-2 justify-center">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push('/services')
-                      }}
-                    >
-                      Get Started
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="text-orange-400 hover:bg-orange-500/10 text-xs"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleRefreshSubscription()
-                      }}
-                      disabled={refreshingSubscription}
-                    >
-                      {refreshingSubscription ? '⟳' : 'Refresh'}
-                    </Button>
-                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push('/services')
+                    }}
+                  >
+                    Get Started
+                  </Button>
                 )}
               </div>
             </CardContent>
