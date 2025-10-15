@@ -39,6 +39,17 @@ export async function POST(request: NextRequest) {
     console.log('Plan ID:', planId)
     console.log('Billing Period:', billingPeriod)
     console.log('User ID:', userId)
+    
+    // Debug: Log environment variables for troubleshooting
+    console.log('=== ENVIRONMENT VARIABLES DEBUG ===')
+    console.log('STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY)
+    console.log('STRIPE_FOUNDATION_MONTHLY_PRICE_ID:', process.env.STRIPE_FOUNDATION_MONTHLY_PRICE_ID)
+    console.log('STRIPE_FOUNDATION_ANNUAL_PRICE_ID:', process.env.STRIPE_FOUNDATION_ANNUAL_PRICE_ID)
+    console.log('STRIPE_GROWTH_MONTHLY_PRICE_ID:', process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID)
+    console.log('STRIPE_GROWTH_ANNUAL_PRICE_ID:', process.env.STRIPE_GROWTH_ANNUAL_PRICE_ID)
+    console.log('STRIPE_ELITE_MONTHLY_PRICE_ID:', process.env.STRIPE_ELITE_MONTHLY_PRICE_ID)
+    console.log('STRIPE_ELITE_ANNUAL_PRICE_ID:', process.env.STRIPE_ELITE_ANNUAL_PRICE_ID)
+    console.log('=====================================')
 
     // Fetch active coaching discount
     const { data: discounts, error: discountError } = await supabaseAdmin
@@ -76,9 +87,16 @@ export async function POST(request: NextRequest) {
 
     // Get the appropriate price ID based on billing period
     const priceId = billingPeriod === 'annual' ? plan.annualPriceId : plan.monthlyPriceId
+    console.log(`Looking for ${billingPeriod} price ID for ${plan.name}:`, priceId)
+    
     if (!priceId) {
+      console.error(`❌ Price ID not configured for ${plan.name} ${billingPeriod} plan`)
+      console.error('Available price IDs:', {
+        monthly: plan.monthlyPriceId,
+        annual: plan.annualPriceId
+      })
       return NextResponse.json(
-        { error: `Price ID not configured for ${plan.name} ${billingPeriod} plan` },
+        { error: `Price ID not configured for ${plan.name} ${billingPeriod} plan. Please check environment variables.` },
         { status: 500 }
       )
     }
@@ -286,8 +304,29 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Error creating subscription checkout session:', error)
+    
+    // Log more details for debugging
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create subscription checkout session' },
+      { 
+        error: 'Failed to create subscription checkout session',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        debug: {
+          hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+          hasPriceIds: {
+            foundation_monthly: !!process.env.STRIPE_FOUNDATION_MONTHLY_PRICE_ID,
+            foundation_annual: !!process.env.STRIPE_FOUNDATION_ANNUAL_PRICE_ID,
+            growth_monthly: !!process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID,
+            growth_annual: !!process.env.STRIPE_GROWTH_ANNUAL_PRICE_ID,
+            elite_monthly: !!process.env.STRIPE_ELITE_MONTHLY_PRICE_ID,
+            elite_annual: !!process.env.STRIPE_ELITE_ANNUAL_PRICE_ID,
+          }
+        }
+      },
       { status: 500 }
     )
   }
