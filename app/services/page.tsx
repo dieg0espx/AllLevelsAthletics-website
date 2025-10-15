@@ -21,7 +21,7 @@ export default function ServicesPage() {
   const [showMessage, setShowMessage] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | '6month' | 'annual'>('monthly')
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'sixmonth' | 'annual'>('monthly')
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const { user } = useAuth()
@@ -288,9 +288,9 @@ export default function ServicesPage() {
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <button
-                      onClick={() => setBillingPeriod('6month')}
+                      onClick={() => setBillingPeriod('sixmonth')}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        billingPeriod === '6month' 
+                        billingPeriod === 'sixmonth' 
                           ? 'bg-orange-500 text-black' 
                           : 'bg-surface border border-stroke text-muted-foreground hover:text-white'
                       }`}
@@ -340,22 +340,22 @@ export default function ServicesPage() {
                                 <div className="space-y-1">
                                   <div className="relative inline-block">
                                     <div className="text-lg text-muted-foreground opacity-60">
-                                      ${billingPeriod === 'annual' ? '167' : billingPeriod === '6month' ? '187' : '197'}
+                                      ${billingPeriod === 'annual' ? '167' : billingPeriod === 'sixmonth' ? '187' : '197'}
                                     </div>
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
                                     </div>
                                   </div>
                                   <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                                    ${calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === '6month' ? 187 : 197, coachingDiscount)}
+                                    ${calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === 'sixmonth' ? 187 : 197, coachingDiscount)}
                                   </div>
                                   <div className="text-xs text-green-400 font-semibold">
-                                    Save ${(billingPeriod === 'annual' ? 167 : billingPeriod === '6month' ? 187 : 197) - calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === '6month' ? 187 : 197, coachingDiscount)}/mo
+                                    Save ${(billingPeriod === 'annual' ? 167 : billingPeriod === 'sixmonth' ? 187 : 197) - calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === 'sixmonth' ? 187 : 197, coachingDiscount)}/mo
                                   </div>
                                 </div>
                               ) : (
                                 <div className="text-3xl font-bold gradient-text">
-                                  ${billingPeriod === 'annual' ? '167' : billingPeriod === '6month' ? '187' : '197'}
+                                  ${billingPeriod === 'annual' ? '167' : billingPeriod === 'sixmonth' ? '187' : '197'}
                                 </div>
                               )}
                             </div>
@@ -382,22 +382,22 @@ export default function ServicesPage() {
                                 <div className="space-y-1">
                                   <div className="relative inline-block">
                                     <div className="text-lg text-muted-foreground opacity-60">
-                                      ${billingPeriod === 'annual' ? '252' : billingPeriod === '6month' ? '282' : '297'}
+                                      ${billingPeriod === 'annual' ? '252' : billingPeriod === 'sixmonth' ? '282' : '297'}
                                     </div>
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
                                     </div>
                                   </div>
                                   <div className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                                    ${calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === '6month' ? 282 : 297, coachingDiscount)}
+                                    ${calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === 'sixmonth' ? 282 : 297, coachingDiscount)}
                                   </div>
                                   <div className="text-xs text-green-400 font-semibold">
-                                    Save ${(billingPeriod === 'annual' ? 252 : billingPeriod === '6month' ? 282 : 297) - calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === '6month' ? 282 : 297, coachingDiscount)}/mo
+                                    Save ${(billingPeriod === 'annual' ? 252 : billingPeriod === 'sixmonth' ? 282 : 297) - calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === 'sixmonth' ? 282 : 297, coachingDiscount)}/mo
                                   </div>
                                 </div>
                               ) : (
                                 <div className="text-3xl font-bold gradient-text">
-                                  ${billingPeriod === 'annual' ? '252' : billingPeriod === '6month' ? '282' : '297'}
+                                  ${billingPeriod === 'annual' ? '252' : billingPeriod === 'sixmonth' ? '282' : '297'}
                                 </div>
                               )}
                             </div>
@@ -424,22 +424,22 @@ export default function ServicesPage() {
                                 <div className="space-y-1">
                                   <div className="relative inline-block">
                                     <div className="text-lg text-muted-foreground opacity-60">
-                                      ${billingPeriod === 'annual' ? '422' : billingPeriod === '6month' ? '472' : '497'}
+                                      ${billingPeriod === 'annual' ? '422' : billingPeriod === 'sixmonth' ? '472' : '497'}
                                     </div>
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
                                     </div>
                                   </div>
                                   <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                                    ${calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === '6month' ? 472 : 497, coachingDiscount)}
+                                    ${calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === 'sixmonth' ? 472 : 497, coachingDiscount)}
                                   </div>
                                   <div className="text-xs text-green-400 font-semibold">
-                                    Save ${(billingPeriod === 'annual' ? 422 : billingPeriod === '6month' ? 472 : 497) - calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === '6month' ? 472 : 497, coachingDiscount)}/mo
+                                    Save ${(billingPeriod === 'annual' ? 422 : billingPeriod === 'sixmonth' ? 472 : 497) - calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === 'sixmonth' ? 472 : 497, coachingDiscount)}/mo
                                   </div>
                                 </div>
                               ) : (
                                 <div className="text-3xl font-bold gradient-text">
-                                  ${billingPeriod === 'annual' ? '422' : billingPeriod === '6month' ? '472' : '497'}
+                                  ${billingPeriod === 'annual' ? '422' : billingPeriod === 'sixmonth' ? '472' : '497'}
                                 </div>
                               )}
                             </div>
@@ -791,22 +791,22 @@ export default function ServicesPage() {
                           <div className="space-y-1">
                             <div className="relative inline-block">
                               <div className="text-lg text-muted-foreground opacity-60">
-                                ${billingPeriod === 'annual' ? '167' : billingPeriod === '6month' ? '187' : '197'}
+                                ${billingPeriod === 'annual' ? '167' : billingPeriod === 'sixmonth' ? '187' : '197'}
                               </div>
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
                               </div>
                             </div>
                             <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                              ${calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === '6month' ? 187 : 197, coachingDiscount)}
+                              ${calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === 'sixmonth' ? 187 : 197, coachingDiscount)}
                             </div>
                             <div className="text-xs text-green-400 font-semibold">
-                              Save ${(billingPeriod === 'annual' ? 167 : billingPeriod === '6month' ? 187 : 197) - calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === '6month' ? 187 : 197, coachingDiscount)}/mo
+                              Save ${(billingPeriod === 'annual' ? 167 : billingPeriod === 'sixmonth' ? 187 : 197) - calculateDiscountedPrice(billingPeriod === 'annual' ? 167 : billingPeriod === 'sixmonth' ? 187 : 197, coachingDiscount)}/mo
                             </div>
                           </div>
                         ) : (
                           <div className="text-3xl font-bold gradient-text">
-                            ${billingPeriod === 'annual' ? '167' : billingPeriod === '6month' ? '187' : '197'}
+                            ${billingPeriod === 'annual' ? '167' : billingPeriod === 'sixmonth' ? '187' : '197'}
                           </div>
                         )}
                         <div className="text-sm text-muted-foreground">/month</div>
@@ -936,22 +936,22 @@ export default function ServicesPage() {
                           <div className="space-y-1">
                             <div className="relative inline-block">
                               <div className="text-lg text-muted-foreground opacity-60">
-                                ${billingPeriod === 'annual' ? '252' : billingPeriod === '6month' ? '282' : '297'}
+                                ${billingPeriod === 'annual' ? '252' : billingPeriod === 'sixmonth' ? '282' : '297'}
                               </div>
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
                               </div>
                             </div>
                             <div className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                              ${calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === '6month' ? 282 : 297, coachingDiscount)}
+                              ${calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === 'sixmonth' ? 282 : 297, coachingDiscount)}
                             </div>
                             <div className="text-xs text-green-400 font-semibold">
-                              Save ${(billingPeriod === 'annual' ? 252 : billingPeriod === '6month' ? 282 : 297) - calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === '6month' ? 282 : 297, coachingDiscount)}/mo
+                              Save ${(billingPeriod === 'annual' ? 252 : billingPeriod === 'sixmonth' ? 282 : 297) - calculateDiscountedPrice(billingPeriod === 'annual' ? 252 : billingPeriod === 'sixmonth' ? 282 : 297, coachingDiscount)}/mo
                             </div>
                           </div>
                         ) : (
                           <div className="text-3xl font-bold gradient-text">
-                            ${billingPeriod === 'annual' ? '252' : billingPeriod === '6month' ? '282' : '297'}
+                            ${billingPeriod === 'annual' ? '252' : billingPeriod === 'sixmonth' ? '282' : '297'}
                           </div>
                         )}
                         <div className="text-sm text-muted-foreground">/month</div>
@@ -1081,22 +1081,22 @@ export default function ServicesPage() {
                           <div className="space-y-1">
                             <div className="relative inline-block">
                               <div className="text-lg text-muted-foreground opacity-60">
-                                ${billingPeriod === 'annual' ? '422' : billingPeriod === '6month' ? '472' : '497'}
+                                ${billingPeriod === 'annual' ? '422' : billingPeriod === 'sixmonth' ? '472' : '497'}
                               </div>
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="h-0.5 w-full bg-red-500 rotate-[-8deg]"></div>
                               </div>
                             </div>
                             <div className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                              ${calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === '6month' ? 472 : 497, coachingDiscount)}
+                              ${calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === 'sixmonth' ? 472 : 497, coachingDiscount)}
                             </div>
                             <div className="text-xs text-green-400 font-semibold">
-                              Save ${(billingPeriod === 'annual' ? 422 : billingPeriod === '6month' ? 472 : 497) - calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === '6month' ? 472 : 497, coachingDiscount)}/mo
+                              Save ${(billingPeriod === 'annual' ? 422 : billingPeriod === 'sixmonth' ? 472 : 497) - calculateDiscountedPrice(billingPeriod === 'annual' ? 422 : billingPeriod === 'sixmonth' ? 472 : 497, coachingDiscount)}/mo
                             </div>
                           </div>
                         ) : (
                           <div className="text-3xl font-bold gradient-text">
-                            ${billingPeriod === 'annual' ? '422' : billingPeriod === '6month' ? '472' : '497'}
+                            ${billingPeriod === 'annual' ? '422' : billingPeriod === 'sixmonth' ? '472' : '497'}
                           </div>
                         )}
                         <div className="text-sm text-muted-foreground">/month</div>
