@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
           console.log('✅ Created user profile with role: client')
         }
       }
-    }
+    
 
     // Check if user already has an active subscription
     const { data: existingSubscription, error: subscriptionError } = await supabaseAdmin
