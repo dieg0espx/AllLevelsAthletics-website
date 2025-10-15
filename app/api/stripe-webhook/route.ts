@@ -227,6 +227,12 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     const customerId = typeof customer === 'string' ? customer : customer.id
     console.log('📝 Customer ID:', customerId)
 
+    // DEBUG: Log the actual subscription object to see what we're receiving
+    console.log('📝 DEBUG - Subscription object keys:', Object.keys(subscription))
+    console.log('📝 DEBUG - current_period_start:', subscription.current_period_start, 'type:', typeof subscription.current_period_start)
+    console.log('📝 DEBUG - current_period_end:', subscription.current_period_end, 'type:', typeof subscription.current_period_end)
+    console.log('📝 DEBUG - Full subscription:', JSON.stringify(subscription, null, 2))
+
     // Create or update subscription record
     const subscriptionData: any = {
       user_id: userId,
