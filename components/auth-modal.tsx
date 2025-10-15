@@ -134,6 +134,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
           
           // Success - close modal and redirect
           console.log('🚪 Closing modal...')
+          setIsLoading(false) // Reset loading state on success
           onClose();
           setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
           

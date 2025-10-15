@@ -64,13 +64,21 @@ export default function ResetPasswordPage() {
     }
     
     // Supabase password reset includes these parameters
+    console.log('🔍 Checking condition:', { accessToken: !!accessToken, refreshToken: !!refreshToken, type, match: type === 'recovery' })
+    
     if (accessToken && refreshToken && type === 'recovery') {
+      console.log('✅ Condition met, setting up session...')
+      
       // Set up the Supabase session with the tokens from the URL
       const setupSession = async () => {
+        console.log('🚀 setupSession function called')
         try {
+          console.log('📡 Calling authService.setSessionFromTokens...')
           const { error } = await authService.setSessionFromTokens(accessToken, refreshToken)
+          console.log('📡 setSessionFromTokens returned:', { error })
+          
           if (error) {
-            console.error('Session setup error:', error)
+            console.error('❌ Session setup error:', error)
             setMessage({ 
               type: 'error', 
               text: 'Failed to validate reset link. Please request a new password reset.' 
@@ -80,7 +88,7 @@ export default function ResetPasswordPage() {
             setIsValidToken(true)
           }
         } catch (error) {
-          console.error('Session setup exception:', error)
+          console.error('❌ Session setup exception:', error)
           setMessage({ 
             type: 'error', 
             text: 'Invalid or expired reset link. Please request a new password reset.' 
@@ -88,7 +96,9 @@ export default function ResetPasswordPage() {
         }
       }
       
+      console.log('🎯 About to call setupSession()')
       setupSession()
+      console.log('🎯 setupSession() called')
     } else if (accessToken && refreshToken) {
       // Fallback for other auth flows
       console.log('Using fallback validation')
