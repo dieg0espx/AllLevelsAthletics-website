@@ -209,7 +209,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     console.log('📝 Customer ID:', customerId)
 
     // Create or update subscription record
-    const subscriptionData = {
+    const subscriptionData: any = {
       user_id: userId,
       stripe_customer_id: customerId,
       stripe_subscription_id: subscription.id,
@@ -219,9 +219,17 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+    }
+
+    // Add optional date fields only if they exist and are valid
+    if (subscription.canceled_at) {
+      subscriptionData.canceled_at = new Date(subscription.canceled_at * 1000).toISOString()
+    }
+    if (subscription.trial_start) {
+      subscriptionData.trial_start = new Date(subscription.trial_start * 1000).toISOString()
+    }
+    if (subscription.trial_end) {
+      subscriptionData.trial_end = new Date(subscription.trial_end * 1000).toISOString()
     }
 
     console.log('📝 Saving subscription data:', JSON.stringify(subscriptionData, null, 2))
@@ -378,10 +386,18 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
       updated_at: new Date().toISOString(),
+    }
+
+    // Add optional date fields only if they exist and are valid
+    if (subscription.canceled_at) {
+      updateData.canceled_at = new Date(subscription.canceled_at * 1000).toISOString()
+    }
+    if (subscription.trial_start) {
+      updateData.trial_start = new Date(subscription.trial_start * 1000).toISOString()
+    }
+    if (subscription.trial_end) {
+      updateData.trial_end = new Date(subscription.trial_end * 1000).toISOString()
     }
     
     // Add plan information if we can determine it from the price ID
