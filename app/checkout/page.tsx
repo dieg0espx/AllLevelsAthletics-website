@@ -61,6 +61,21 @@ export default function CheckoutPage() {
 
      const handleShippingSubmit = (e: React.FormEvent) => {
      e.preventDefault()
+     
+     // Ensure country is always set to United States
+     const updatedShippingInfo = {
+       ...shippingInfo,
+       country: "United States"
+     }
+     setShippingInfo(updatedShippingInfo)
+     
+     // Validate ZIP code format (US ZIP codes)
+     const zipCodePattern = /^[0-9]{5}(-[0-9]{4})?$/
+     if (!zipCodePattern.test(shippingInfo.zipCode)) {
+       alert('Please enter a valid US ZIP code (5 digits or 5 digits with 4-digit extension)')
+       return
+     }
+     
      setStep('payment')
      // Scroll to top of the page when transitioning to payment
      window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -154,6 +169,17 @@ export default function CheckoutPage() {
             !shippingInfo.phone || !shippingInfo.address || !shippingInfo.city || 
             !shippingInfo.state || !shippingInfo.zipCode) {
           throw new Error('Please fill in all required shipping information')
+        }
+
+        // Ensure country is United States
+        if (shippingInfo.country !== 'United States') {
+          throw new Error('We currently only ship to addresses within the United States')
+        }
+
+        // Validate ZIP code format (US ZIP codes)
+        const zipCodePattern = /^[0-9]{5}(-[0-9]{4})?$/
+        if (!zipCodePattern.test(shippingInfo.zipCode)) {
+          throw new Error('Please enter a valid US ZIP code (5 digits or 5 digits with 4-digit extension)')
         }
 
 
@@ -592,25 +618,67 @@ export default function CheckoutPage() {
                           value={shippingInfo.zipCode}
                           onChange={(e) => setShippingInfo({...shippingInfo, zipCode: e.target.value})}
                           required
+                          pattern="[0-9]{5}(-[0-9]{4})?"
                           className="bg-gray-800 border-gray-600 text-white h-12 px-4 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
-                          placeholder="Enter ZIP code"
+                          placeholder="Enter ZIP code (US only)"
                         />
                       </div>
                     </div>
 
+                    {/* Country Field - Fixed to United States */}
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className="text-white font-medium">Country</Label>
+                      <div className="relative">
+                        <Input
+                          id="country"
+                          value="United States"
+                          readOnly
+                          disabled
+                          className="bg-gray-700 border-gray-600 text-gray-300 h-12 px-4 rounded-lg cursor-not-allowed"
+                          placeholder="United States"
+                        />
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="text-xs bg-orange-500 text-black px-2 py-1 rounded">
+                            US Only
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-400 text-sm">
+                        We currently only ship to addresses within the United States
+                      </p>
                     </div>
 
-                    {/* Profile Information Note */}
-                    {!profileData || (!profileData.address && !profileData.city && !profileData.state) && (
-                      <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-lg">
-                        <p className="text-blue-300 text-sm">
-                          <strong>Tip:</strong> You can save time by adding your address information to your profile. 
-                          <Link href="/dashboard/profile" className="text-blue-400 hover:text-blue-300 underline ml-1">
-                            Update your profile
-                          </Link> to use it for future purchases.
-                        </p>
+                    </div>
+
+                    {/* Shipping Information Notes */}
+                    <div className="space-y-4">
+                      {/* US Only Notice */}
+                      <div className="bg-orange-500/10 border border-orange-500/20 p-4 rounded-lg">
+                        <div className="flex items-start gap-3">
+                          <div className="text-orange-500 mt-0.5">🇺🇸</div>
+                          <div>
+                            <p className="text-orange-300 text-sm font-semibold">
+                              US Shipping Only
+                            </p>
+                            <p className="text-gray-300 text-sm mt-1">
+                              We currently only ship to addresses within the United States. International shipping is not available at this time.
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Profile Information Tip */}
+                      {!profileData || (!profileData.address && !profileData.city && !profileData.state) && (
+                        <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-lg">
+                          <p className="text-blue-300 text-sm">
+                            <strong>Tip:</strong> You can save time by adding your address information to your profile. 
+                            <Link href="/dashboard/profile" className="text-blue-400 hover:text-blue-300 underline ml-1">
+                              Update your profile
+                            </Link> to use it for future purchases.
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex gap-4 pt-4">
                       <Button
