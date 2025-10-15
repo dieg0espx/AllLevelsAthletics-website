@@ -123,29 +123,37 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
         })
 
         if (error) {
+          console.error('❌ Login error:', error)
           setMessage({ type: 'error', text: error.message })
         } else {
-          setMessage({ type: 'success', text: 'Successfully logged in!' })
+          console.log('✅ Login successful!', { 
+            user: user?.id, 
+            role: user?.user_metadata?.role,
+            redirectTo 
+          })
           
-          // Wait a moment for auth state to propagate
-          await new Promise(resolve => setTimeout(resolve, 500))
-          
-          // Close modal and redirect
+          // Success - close modal and redirect
+          console.log('🚪 Closing modal...')
           onClose();
           setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
-          setMessage(null);
           
-          // Redirect based on user role
-          if (redirectTo) {
-            router.push(redirectTo);
-          } else {
+          // Small delay to ensure modal closes before redirect
+          setTimeout(() => {
+            // Redirect based on user role
             const userRole = user?.user_metadata?.role || 'client'
-            if (userRole === 'admin') {
+            console.log('🔄 Redirecting...', { redirectTo, userRole })
+            
+            if (redirectTo) {
+              console.log('➡️ Redirecting to:', redirectTo)
+              router.push(redirectTo);
+            } else if (userRole === 'admin') {
+              console.log('➡️ Redirecting to: /admin')
               router.push('/admin');
             } else {
+              console.log('➡️ Redirecting to: /dashboard')
               router.push('/dashboard');
             }
-          }
+          }, 300)
         }
       } else {
         const { user, error } = await authService.register({
@@ -212,10 +220,12 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     }
   }
 
-  const handleClose = () => {
-    onClose();
-    setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
-    setMessage(null);
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      onClose();
+      setFormData({ email: '', password: '', confirmPassword: '', full_name: '' });
+      setMessage(null);
+    }
   };
 
 
