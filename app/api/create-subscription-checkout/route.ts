@@ -39,12 +39,24 @@ const SUBSCRIPTION_PLANS = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Force immediate logging
+    console.log('🚀 ===== SUBSCRIPTION CHECKOUT API STARTED =====')
+    
     const { planId, billingPeriod, userId } = await request.json()
     
     console.log('=== SUBSCRIPTION CHECKOUT CREATION ===')
     console.log('Plan ID:', planId)
     console.log('Billing Period:', billingPeriod)
     console.log('User ID:', userId)
+    
+    // Validate required fields immediately
+    if (!planId || !billingPeriod || !userId) {
+      console.error('❌ Missing required fields:', { planId, billingPeriod, userId })
+      return NextResponse.json(
+        { error: 'Plan ID, billing period, and user ID are required' },
+        { status: 400 }
+      )
+    }
     
     // Debug: Log environment variables for troubleshooting
     console.log('=== ENVIRONMENT VARIABLES DEBUG ===')
@@ -77,13 +89,7 @@ export async function POST(request: NextRequest) {
     }
     console.log('Coaching Discount:', coachingDiscount + '%')
 
-    // Validate required fields
-    if (!planId || !billingPeriod || !userId) {
-      return NextResponse.json(
-        { error: 'Plan ID, billing period, and user ID are required' },
-        { status: 400 }
-      )
-    }
+    // This validation is now done above
 
     // Validate plan exists
     const plan = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS]
