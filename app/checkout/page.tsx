@@ -441,16 +441,17 @@ export default function CheckoutPage() {
                            <p className="text-gray-300 mb-4 line-clamp-2 leading-relaxed">{item.description}</p>
                            <div className="flex items-center justify-between">
                              <div className="flex items-center gap-2">
-                               <span className="text-sm text-gray-400">Price:</span>
-                               <p className="text-xl font-bold text-orange-500">
-                                 {formatPrice(item.price)} × {item.quantity}
+                               <span className="text-sm text-gray-400">Unit Price:</span>
+                               <p className="text-lg font-semibold text-orange-500">
+                                 {formatPrice(item.price)}
                                </p>
+                               <span className="text-sm text-gray-400">× {item.quantity}</span>
                              </div>
                              <div className="text-right">
                                <p className="text-2xl font-bold text-orange-500">
                                  {formatPrice(item.price * item.quantity)}
                                </p>
-                               <p className="text-sm text-gray-400">Total</p>
+                               <p className="text-sm text-gray-400">Item Total</p>
                              </div>
                            </div>
                          </div>
