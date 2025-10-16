@@ -439,19 +439,18 @@ export default function CheckoutPage() {
                          <div className="flex-1 min-w-0">
                            <h3 className="font-bold text-white text-xl mb-3">{item.name}</h3>
                            <p className="text-gray-300 mb-4 line-clamp-2 leading-relaxed">{item.description}</p>
-                           <div className="flex items-center justify-between">
-                             <div className="flex items-center gap-2">
-                               <span className="text-sm text-gray-400">Unit Price:</span>
-                               <p className="text-lg font-semibold text-orange-500">
-                                 {formatPrice(item.price)}
-                               </p>
-                               <span className="text-sm text-gray-400">× {item.quantity}</span>
+                           <div className="space-y-2">
+                             <div className="flex items-center justify-between">
+                               <span className="text-sm text-gray-400">Price per item:</span>
+                               <span className="text-sm font-medium text-white">{formatPrice(item.price)}</span>
                              </div>
-                             <div className="text-right">
-                               <p className="text-2xl font-bold text-orange-500">
-                                 {formatPrice(item.price * item.quantity)}
-                               </p>
-                               <p className="text-sm text-gray-400">Item Total</p>
+                             <div className="flex items-center justify-between">
+                               <span className="text-sm text-gray-400">Quantity:</span>
+                               <span className="text-sm font-medium text-white">{item.quantity}</span>
+                             </div>
+                             <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                               <span className="text-base font-semibold text-white">Item Total:</span>
+                               <span className="text-xl font-bold text-orange-500">{formatPrice(item.price * item.quantity)}</span>
                              </div>
                            </div>
                          </div>
