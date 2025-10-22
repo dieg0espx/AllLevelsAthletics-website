@@ -89,11 +89,15 @@ export default function CheckoutPage() {
 
   // Scroll to top when step changes
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [step])
 
   // Scroll to top when page loads
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
