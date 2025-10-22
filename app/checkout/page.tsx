@@ -183,9 +183,11 @@ export default function CheckoutPage() {
         }
 
 
-       // Store cart items and shipping info in localStorage for order saving
-       localStorage.setItem('cartItems', JSON.stringify(state.items))
-       localStorage.setItem('shippingInfo', JSON.stringify(shippingInfo))
+       // Store cart items and shipping info in localStorage for order saving (only on client side)
+       if (typeof window !== 'undefined') {
+         localStorage.setItem('cartItems', JSON.stringify(state.items))
+         localStorage.setItem('shippingInfo', JSON.stringify(shippingInfo))
+       }
 
        // Create checkout session with all cart items
        const response = await fetch('/api/create-checkout-session', {
@@ -211,11 +213,13 @@ export default function CheckoutPage() {
        // Check if this is a bypass response for Elite customers
        if (responseData.bypassStripe) {
          console.log('🎁 Elite customer free MF roller - bypassing Stripe!')
-         // Store the special session data
-         localStorage.setItem('cartItems', JSON.stringify(responseData.metadata.items))
-         localStorage.setItem('shippingInfo', JSON.stringify(responseData.metadata.shippingInfo))
-         // Redirect to success page
-         window.location.href = responseData.redirectUrl
+         // Store the special session data (only on client side)
+         if (typeof window !== 'undefined') {
+           localStorage.setItem('cartItems', JSON.stringify(responseData.metadata.items))
+           localStorage.setItem('shippingInfo', JSON.stringify(responseData.metadata.shippingInfo))
+           // Redirect to success page
+           window.location.href = responseData.redirectUrl
+         }
          return
        }
 

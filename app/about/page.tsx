@@ -71,6 +71,9 @@ export default function AboutPage() {
 
   // Preload Calendly script on page load
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     // Check if script already exists
     if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
       const script = document.createElement('script')

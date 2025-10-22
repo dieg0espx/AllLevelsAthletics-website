@@ -13,6 +13,9 @@ export default function ContactPage() {
 
   // Preload Calendly script and CSS on page load for inline widget
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     // Load Calendly CSS
     const existingCSS = document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')
     if (!existingCSS) {

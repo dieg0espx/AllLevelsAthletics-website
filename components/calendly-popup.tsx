@@ -24,6 +24,9 @@ export default function CalendlyPopup({ isOpen, onClose, url = "https://calendly
 
   // Load Calendly script when popup opens
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     if (isOpen) {
       setIsLoading(true)
       setHasError(false)
@@ -103,6 +106,9 @@ export default function CalendlyPopup({ isOpen, onClose, url = "https://calendly
 
   // Handle escape key
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
