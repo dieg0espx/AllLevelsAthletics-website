@@ -209,6 +209,9 @@ export default function ProgramsPage() {
                     <p className="text-center text-green-400 font-semibold text-sm">
                       ✓ Free program - No subscription required
                     </p>
+                    <p className="text-center text-muted-foreground text-sm mt-2">
+                      Sign up for a free account to gain access to this Program!
+                    </p>
                   </div>
                 </div>
                 

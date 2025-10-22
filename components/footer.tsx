@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 
@@ -103,10 +105,18 @@ export function Footer() {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-                <Badge variant="outline" className="border-orange-500/30 text-orange-400 text-xs sm:text-sm">
+                <Badge 
+                  variant="outline" 
+                  className="border-orange-500/30 text-orange-400 text-xs sm:text-sm cursor-pointer hover:bg-orange-500/10 transition-colors"
+                  onClick={() => window.open('https://www.tiktok.com/@AllLevelsAthletics', '_blank')}
+                >
                   TikTok: @AllLevelsAthletics
                 </Badge>
-                <Badge variant="outline" className="border-yellow-500/30 text-yellow-400 text-xs sm:text-sm">
+                <Badge 
+                  variant="outline" 
+                  className="border-yellow-500/30 text-yellow-400 text-xs sm:text-sm cursor-pointer hover:bg-yellow-500/10 transition-colors"
+                  onClick={() => window.open('https://www.instagram.com/alllevelsathletics?igsh=bWczNm0xNjl6ZjBy', '_blank')}
+                >
                   Instagram: @AllLevelsAthletics
                 </Badge>
               </div>

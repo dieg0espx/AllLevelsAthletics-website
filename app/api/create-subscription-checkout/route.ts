@@ -345,6 +345,17 @@ export async function POST(request: NextRequest) {
       },
     }
 
+    // Check if this is ONLY the Elite plan (Premium program) - if so, mark for free MF roller
+    if (planId === 'elite') {
+      console.log('🎁 Elite plan detected - customer will get free MF roller!')
+      
+      // Update metadata to indicate free roller will be available
+      sessionConfig.metadata.freeMFRoller = 'true'
+      sessionConfig.subscription_data.metadata.freeMFRoller = 'true'
+      
+      console.log('✅ Elite plan marked for free MF roller bonus')
+    }
+
     // Auto-apply discount if available, otherwise allow promo codes
     if (stripeCouponId) {
       sessionConfig.discounts = [{

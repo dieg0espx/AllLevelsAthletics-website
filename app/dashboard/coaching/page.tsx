@@ -54,9 +54,8 @@ export default function CoachingPage() {
     elite: [
       "Weekly personalized check-ins",
       "Complete tension reset coaching",
-      "Video analysis & technique review",
-      "Mobility prioritization program",
-      "24/7 text support access",
+      "Advanced Mobility - Custom Range of Motion Plan",
+      "All Day text support access",
       "Supplement recommendations"
     ]
   }
@@ -101,9 +100,8 @@ export default function CoachingPage() {
       features: [
         "Weekly personalized check-ins",
         "Complete tension reset coaching",
-        "Video analysis & technique review",
-        "Mobility prioritization program",
-        "24/7 text support access",
+        "Advanced Mobility - Custom Range of Motion Plan",
+        "All Day text support access",
         "Supplement recommendations"
       ],
       popular: false

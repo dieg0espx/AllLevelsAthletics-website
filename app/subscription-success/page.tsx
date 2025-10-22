@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { useSubscription } from '@/contexts/subscription-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle, ArrowRight, Crown, Calendar } from 'lucide-react'
+import { CheckCircle, ArrowRight, Crown, Calendar, Clock } from 'lucide-react'
 import Link from 'next/link'
 
 function SubscriptionSuccessContent() {
@@ -17,6 +17,7 @@ function SubscriptionSuccessContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [sessionData, setSessionData] = useState<any>(null)
   const [hasRefreshed, setHasRefreshed] = useState(false)
+  const [autoRedirectCountdown, setAutoRedirectCountdown] = useState<number | null>(null)
 
   const sessionId = searchParams.get('session_id')
 
@@ -72,6 +73,39 @@ function SubscriptionSuccessContent() {
   }
 
   const dashboardHref = (userRole === 'admin' || user?.user_metadata?.role === 'admin') ? '/admin' : '/dashboard'
+
+  // Auto-redirect for Elite customers to claim their free MF roller
+  useEffect(() => {
+    const isEliteCustomer = subscription?.plan_name === 'Elite' || sessionData?.metadata?.planName === 'Elite' || sessionData?.metadata?.freeMFRoller === 'true'
+    
+    if (isEliteCustomer && !isLoading && !loading) {
+      // Start 5-second countdown
+      setAutoRedirectCountdown(5)
+      
+      const countdownInterval = setInterval(() => {
+        setAutoRedirectCountdown(prev => {
+          if (prev === null || prev <= 1) {
+            clearInterval(countdownInterval)
+            // Auto-redirect to checkout with free MF roller
+            const mfRollerItem = {
+              id: 'knot-roller',
+              name: 'MFRoller',
+              price: 0,
+              quantity: 1,
+              image: '/roller/roller7.jpg',
+              description: 'Professional myofascial release tool - FREE bonus with your Elite subscription!'
+            }
+            localStorage.setItem('cartItems', JSON.stringify([mfRollerItem]))
+            window.location.href = '/checkout'
+            return null
+          }
+          return prev - 1
+        })
+      }, 1000)
+      
+      return () => clearInterval(countdownInterval)
+    }
+  }, [subscription, sessionData, isLoading, loading])
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -150,6 +184,69 @@ function SubscriptionSuccessContent() {
                     </p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Free MF Roller Bonus for Elite Plan */}
+          {(subscription?.plan_name === 'Elite' || sessionData?.metadata?.planName === 'Elite' || sessionData?.metadata?.freeMFRoller === 'true') && (
+            <Card className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border-orange-500/30 mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-400">
+                  <Crown className="h-5 w-5 text-orange-400" />
+                  🎁 FREE BONUS: MFRoller Included!
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <img 
+                    src="/roller/roller7.jpg" 
+                    alt="MFRoller" 
+                    className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white mb-2">Professional MFRoller - FREE!</h3>
+                    <p className="text-orange-200 text-sm mb-3">
+                      As a thank you for choosing our Elite plan, you're getting a professional 
+                      myofascial release tool absolutely free! This $99 value is yours at no extra cost.
+                    </p>
+                    <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 mb-4">
+                      <p className="text-orange-300 text-sm font-medium">
+                        🎁 Your free MFRoller has been automatically added to your cart! 
+                        {autoRedirectCountdown ? (
+                          <span className="block mt-2 text-orange-400 font-bold">
+                            Redirecting to checkout in {autoRedirectCountdown} seconds...
+                          </span>
+                        ) : (
+                          <span className="block mt-2">You'll be redirected to checkout where the roller will be completely free.</span>
+                        )}
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => {
+                        // Add MF roller to cart automatically
+                        const mfRollerItem = {
+                          id: 'knot-roller',
+                          name: 'MFRoller',
+                          price: 0, // Free for Elite customers
+                          quantity: 1,
+                          image: '/roller/roller7.jpg',
+                          description: 'Professional myofascial release tool - FREE bonus with your Elite subscription!'
+                        }
+                        
+                        // Store in localStorage for checkout
+                        localStorage.setItem('cartItems', JSON.stringify([mfRollerItem]))
+                        
+                        // Redirect to checkout
+                        window.location.href = '/checkout'
+                      }}
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                    >
+                      {autoRedirectCountdown ? `Go to Checkout Now (${autoRedirectCountdown}s)` : 'Go to Checkout (Free MFRoller Added)'}
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}

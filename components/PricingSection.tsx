@@ -81,9 +81,8 @@ const pricingData = {
       features: [
         'Weekly personalized check-ins',
         'Complete tension reset coaching',
-        'Video analysis & technique review',
-        'Mobility prioritization program',
-        '24/7 text support access',
+        'Advanced Mobility - Custom Range of Motion Plan',
+        'All Day text support access',
         'Supplement recommendations'
       ],
       popular: false
@@ -93,8 +92,8 @@ const pricingData = {
     { name: 'Check-in Frequency', foundation: 'Monthly', growth: 'Bi-weekly', elite: 'Weekly' },
     { name: 'Custom Training Program', foundation: true, growth: true, elite: true },
     { name: 'Form Review & Feedback', foundation: false, growth: true, elite: true },
-    { name: 'Tension Reset Coaching', foundation: false, growth: false, elite: true },
-    { name: '24/7 Text Support', foundation: false, growth: false, elite: true }
+    { name: 'Tension Reset Coaching', foundation: true, growth: true, elite: true },
+    { name: 'All Day Text Support', foundation: false, growth: false, elite: true }
   ],
   faq: [
     {

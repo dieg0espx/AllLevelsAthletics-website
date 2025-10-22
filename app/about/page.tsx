@@ -230,7 +230,7 @@ export default function AboutPage() {
                       <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-3xl sm:text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors">24/7</div>
+                      <div className="text-3xl sm:text-4xl font-black text-orange-500 mb-1 group-hover:text-orange-400 transition-colors">All Day</div>
                       <div className="text-white/80 font-semibold text-xs sm:text-sm">Support Available</div>
                     </div>
                   </div>

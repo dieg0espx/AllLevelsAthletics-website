@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap, ChevronLeft, ChevronRight } from "lucide-react"
+import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap, ChevronLeft, ChevronRight, Instagram, Music } from "lucide-react"
 import { useEffect, useState } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
 
@@ -67,9 +67,13 @@ export default function ContactPage() {
     }
   }
 
-  // Function to handle social media links
-  const handleSocialMedia = () => {
-    // You can update these URLs to the actual social media profiles
+  // Function to handle Instagram
+  const handleInstagram = () => {
+    window.open('https://www.instagram.com/alllevelsathletics?igsh=bWczNm0xNjl6ZjBy', '_blank')
+  }
+
+  // Function to handle TikTok
+  const handleTikTok = () => {
     window.open('https://www.tiktok.com/@AllLevelsAthletics', '_blank')
   }
 
@@ -160,7 +164,7 @@ export default function ContactPage() {
               </div>
               <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-orange-500/20">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
-                    Available evenings & weekends for consultations
+                    PST time zone, Available early mornings, evenings, or weekends for consultations
                   </p>
                 <Button 
                   onClick={handlePhoneCall}
@@ -190,7 +194,7 @@ export default function ContactPage() {
               </div>
               <div className="mt-auto pt-2 sm:pt-3 lg:pt-4 border-t border-yellow-500/20">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
-                    Response within 24 hours guaranteed
+                    Response within 24-48 hours
                   </p>
                 <Button 
                   onClick={handleEmail}
@@ -252,15 +256,26 @@ export default function ContactPage() {
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 lg:mb-4 xl:mb-5 text-xs sm:text-sm lg:text-base">
                     TikTok & Instagram updates
                   </p>
-                <Button 
-                  onClick={handleSocialMedia}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
-                >
-                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
-                    <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
-                    Follow Us
-                  </span>
-                </Button>
+                <div className="flex flex-col gap-2 sm:gap-3">
+                  <Button 
+                    onClick={handleInstagram}
+                    className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105 border-2 border-yellow-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
+                  >
+                    <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                      <Instagram className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
+                      Instagram
+                    </span>
+                  </Button>
+                  <Button 
+                    onClick={handleTikTok}
+                    className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-2 sm:py-2.5 lg:py-3 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105 border-2 border-orange-400/20 text-xs sm:text-sm lg:text-base touch-manipulation"
+                  >
+                    <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                      <Music className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4" />
+                      TikTok
+                    </span>
+                  </Button>
+                </div>
               </div>
             </Card>
           </div>
@@ -308,7 +323,7 @@ export default function ContactPage() {
                      </div>
                      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
                    </div>
-                <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">24/7</h3>
+                <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">All Day</h3>
                 <p className="text-yellow-300 text-base sm:text-lg">Always Available</p>
                  </div>
                  
@@ -511,7 +526,7 @@ export default function ContactPage() {
                        </div>
                        <p className="text-muted-foreground text-sm leading-relaxed">
                          Online coaching platform serving athletes across all time zones. 
-                         Flexible communication and 24/7 support ensure you're never alone in your journey.
+                         Flexible communication and All Day support ensure you're never alone in your journey.
                        </p>
                      </div>
                    </div>

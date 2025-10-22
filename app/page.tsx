@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Heart,
 } from "lucide-react"
 
 import Stars from "@/components/Stars"
@@ -189,6 +190,10 @@ export default function HomePage() {
                     <div className="flex items-center gap-3 group cursor-default">
                       <Users className="w-5 h-5 text-orange-500 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-105 group-hover:text-yellow-400 will-change-transform" />
                     <span>500+ Success Stories & 98% Success Rate</span>
+                  </div>
+                    <div className="flex items-center gap-3 group cursor-default">
+                      <Zap className="w-5 h-5 text-yellow-500 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-105 group-hover:text-orange-400 will-change-transform" />
+                    <span>Functional Strength and Conditioning</span>
                   </div>
                 </div>
               </div>
@@ -644,15 +649,11 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-center gap-2 sm:gap-3">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Video analysis & technique review</span>
+                    <span className="text-sm sm:text-base">Advanced Mobility - Custom Range of Motion Plan</span>
                   </li>
                   <li className="flex items-center gap-2 sm:gap-3">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Mobility prioritization program</span>
-                  </li>
-                  <li className="flex items-center gap-2 sm:gap-3">
-                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">24/7 text support access</span>
+                    <span className="text-sm sm:text-base">All Day text support access</span>
                   </li>
                   <li className="flex items-center gap-2 sm:gap-3">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
@@ -749,6 +750,27 @@ export default function HomePage() {
                           Tension Reset Coaching
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                          <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-400" />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                        <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                          <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                          <div>Free MFRoller</div>
+                        </td>
+                        <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
                           <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
                             <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-400" />
                           </div>
@@ -767,7 +789,7 @@ export default function HomePage() {
                       <tr className="hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
                         <td className="py-5 px-6 font-semibold flex items-center gap-3 group-hover:text-orange-400 transition-colors">
                           <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                          24/7 Text Support
+                          All Day Text Support
                         </td>
                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
                           <div className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">

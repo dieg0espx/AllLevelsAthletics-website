@@ -28,6 +28,9 @@ function SuccessContent() {
     const storedShippingInfo = JSON.parse(localStorage.getItem('shippingInfo') || '{}')
     const calculatedTotal = storedCartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
     
+    // Check if this is an Elite customer free roller order
+    const isEliteFreeRoller = sessionId && sessionId.includes('elite-free-roller')
+    
     setCartItems(storedCartItems)
     setShippingInfo(storedShippingInfo)
     setTotalAmount(calculatedTotal)
@@ -222,7 +225,12 @@ function SuccessContent() {
                                </div>
                              </div>
                              <div className="text-right">
-                               <p className="text-xl font-bold text-orange-400">${(item.price * item.quantity).toFixed(2)}</p>
+                               <p className="text-xl font-bold text-orange-400">
+                                 {isEliteFreeRoller ? '$0.00' : `$${(item.price * item.quantity).toFixed(2)}`}
+                               </p>
+                               {isEliteFreeRoller && (
+                                 <p className="text-green-400 text-sm">FREE!</p>
+                               )}
                              </div>
                            </div>
                          ))}
@@ -231,8 +239,17 @@ function SuccessContent() {
                          <div className="border-t border-orange-500/20 pt-4">
                            <div className="flex justify-between items-center">
                              <span className="text-lg font-semibold text-white">Total Amount:</span>
-                             <span className="text-2xl font-bold text-orange-400">${totalAmount.toFixed(2)}</span>
+                             <span className="text-2xl font-bold text-orange-400">
+                               {isEliteFreeRoller ? '$0.00' : `$${totalAmount.toFixed(2)}`}
+                             </span>
                            </div>
+                           {isEliteFreeRoller && (
+                             <div className="text-center mt-2">
+                               <span className="text-green-400 text-sm font-medium">
+                                 🎁 FREE for Elite Plan Members!
+                               </span>
+                             </div>
+                           )}
                          </div>
                        </>
                      ) : (
@@ -289,6 +306,41 @@ function SuccessContent() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Free MF Roller Bonus for Elite Customers */}
+          {(cartItems.some((item: any) => item.name?.includes('FREE with Elite Plan') || (item.price === 0 && item.name?.includes('MFRoller'))) || 
+            (sessionId && sessionId.includes('elite-free-roller'))) && (
+            <Card className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border-orange-500/30 mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-400">
+                  <Star className="h-5 w-5 text-orange-400" />
+                  🎁 FREE BONUS: Elite Plan Benefit!
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <img 
+                    src="/roller/roller7.jpg" 
+                    alt="MFRoller" 
+                    className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white mb-2">Professional MFRoller - FREE!</h3>
+                    <p className="text-orange-200 text-sm mb-3">
+                      As an Elite plan member, you received this professional 
+                      myofascial release tool absolutely free! This $99 value is yours at no extra cost.
+                    </p>
+                    <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
+                      <p className="text-orange-300 text-sm font-medium">
+                        📦 Your free MFRoller will be shipped to the address above within 24 hours. 
+                        You'll receive tracking information via email.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
                      {/* Process Timeline */}
            <Card className="bg-gradient-to-br from-white/5 to-white/10 border-orange-500/30 backdrop-blur-sm mb-12 shadow-2xl">
