@@ -23,9 +23,9 @@ function SuccessContent() {
     // Simulate loading for better UX
     const timer = setTimeout(() => setIsLoading(false), 2000)
     
-    // Load cart items and shipping info into state
-    const storedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]')
-    const storedShippingInfo = JSON.parse(localStorage.getItem('shippingInfo') || '{}')
+    // Load cart items and shipping info into state (only on client side)
+    const storedCartItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('cartItems') || '[]') : []
+    const storedShippingInfo = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('shippingInfo') || '{}') : {}
     const calculatedTotal = storedCartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
     
     // Check if this is an Elite customer free roller order
@@ -58,9 +58,9 @@ function SuccessContent() {
       console.log('User ID:', user?.id)
       console.log('User email:', user?.email)
       
-      // Get cart items from localStorage (you might want to store this in context instead)
-      const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]')
-      const shippingInfo = JSON.parse(localStorage.getItem('shippingInfo') || '{}')
+      // Get cart items from localStorage (only on client side)
+      const cartItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('cartItems') || '[]') : []
+      const shippingInfo = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('shippingInfo') || '{}') : {}
       
       console.log('📦 Cart items from localStorage:', cartItems)
       console.log('🚚 Shipping info from localStorage:', shippingInfo)
@@ -112,10 +112,12 @@ function SuccessContent() {
           console.log('✅ New order saved successfully')
         }
         
-        // Clear cart after successful save
-        localStorage.removeItem('cartItems')
-        localStorage.removeItem('shippingInfo')
-        console.log('🧹 Cart cleared from localStorage')
+        // Clear cart after successful save (only on client side)
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('cartItems')
+          localStorage.removeItem('shippingInfo')
+          console.log('🧹 Cart cleared from localStorage')
+        }
       } else {
         const errorData = await response.json().catch(() => 'Failed to parse error response')
         console.error('❌ Failed to save order:', errorData)

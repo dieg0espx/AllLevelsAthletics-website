@@ -99,8 +99,11 @@ function SubscriptionSuccessContent() {
               image: '/roller/roller7.jpg',
               description: 'Professional myofascial release tool - FREE bonus with your Elite subscription!'
             }
-            localStorage.setItem('cartItems', JSON.stringify([mfRollerItem]))
-            window.location.href = '/checkout'
+            // Only run on client side
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('cartItems', JSON.stringify([mfRollerItem]))
+              window.location.href = '/checkout'
+            }
             return null
           }
           return prev ? prev - 1 : null
@@ -238,11 +241,14 @@ function SubscriptionSuccessContent() {
                           description: 'Professional myofascial release tool - FREE bonus with your Elite subscription!'
                         }
                         
-                        // Store in localStorage for checkout
-                        localStorage.setItem('cartItems', JSON.stringify([mfRollerItem]))
-                        
-                        // Redirect to checkout
-                        window.location.href = '/checkout'
+                        // Only run on client side
+                        if (typeof window !== 'undefined') {
+                          // Store in localStorage for checkout
+                          localStorage.setItem('cartItems', JSON.stringify([mfRollerItem]))
+                          
+                          // Redirect to checkout
+                          window.location.href = '/checkout'
+                        }
                       }}
                       className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                     >
