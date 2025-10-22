@@ -5,6 +5,7 @@ import "./globals.css"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { SafeAuthProvider } from "@/contexts/safe-auth-context"
+import { AuthProvider } from "@/contexts/auth-context"
 import { SafeSubscriptionProvider } from "@/contexts/safe-subscription-context"
 import { CartProvider } from "@/contexts/cart-context"
 import { DiscountProvider } from "@/contexts/discount-context"
@@ -263,23 +264,25 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <SafeAuthProvider>
-          <SafeSubscriptionProvider>
-            <SafeContextWrapper>
-              <CartProvider>
-                <DiscountProvider>
-                  <HydrationWrapper>
-                    {/* Temporarily disable AdminRedirect to fix redirect loop */}
-                    {/* <AdminRedirect> */}
-                      <Navigation />
-                      <DiscountBanner />
-                      <main>{children}</main>
-                      <Footer />
-                    {/* </AdminRedirect> */}
-                  </HydrationWrapper>
-                </DiscountProvider>
-              </CartProvider>
-            </SafeContextWrapper>
-          </SafeSubscriptionProvider>
+          <AuthProvider>
+            <SafeSubscriptionProvider>
+              <SafeContextWrapper>
+                <CartProvider>
+                  <DiscountProvider>
+                    <HydrationWrapper>
+                      {/* Temporarily disable AdminRedirect to fix redirect loop */}
+                      {/* <AdminRedirect> */}
+                        <Navigation />
+                        <DiscountBanner />
+                        <main>{children}</main>
+                        <Footer />
+                      {/* </AdminRedirect> */}
+                    </HydrationWrapper>
+                  </DiscountProvider>
+                </CartProvider>
+              </SafeContextWrapper>
+            </SafeSubscriptionProvider>
+          </AuthProvider>
         </SafeAuthProvider>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </body>
