@@ -18,6 +18,7 @@ function SubscriptionSuccessContent() {
   const [sessionData, setSessionData] = useState<any>(null)
   const [hasRefreshed, setHasRefreshed] = useState(false)
   const [autoRedirectCountdown, setAutoRedirectCountdown] = useState<number | null>(null)
+  const [eliteCoupon, setEliteCoupon] = useState<any>(null)
 
   const sessionId = searchParams.get('session_id')
 
@@ -74,6 +75,29 @@ function SubscriptionSuccessContent() {
 
   const dashboardHref = (userRole === 'admin' || user?.user_metadata?.role === 'admin') ? '/admin' : '/dashboard'
 
+  // Fetch Elite coupon if user has Elite subscription
+  useEffect(() => {
+    const fetchEliteCoupon = async () => {
+      const isEliteCustomer = subscription?.plan_name === 'Elite' || sessionData?.metadata?.planName === 'Elite' || sessionData?.metadata?.freeMFRoller === 'true'
+      
+      if (isEliteCustomer && user?.id && !isLoading && !loading) {
+        try {
+          const response = await fetch(`/api/get-elite-coupon?userId=${user.id}`)
+          if (response.ok) {
+            const data = await response.json()
+            if (data.success) {
+              setEliteCoupon(data.coupon)
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching Elite coupon:', error)
+        }
+      }
+    }
+
+    fetchEliteCoupon()
+  }, [subscription, sessionData, user, isLoading, loading])
+
   // Auto-redirect for Elite customers to claim their free MF roller
   useEffect(() => {
     const isEliteCustomer = subscription?.plan_name === 'Elite' || sessionData?.metadata?.planName === 'Elite' || sessionData?.metadata?.freeMFRoller === 'true'
@@ -121,6 +145,42 @@ function SubscriptionSuccessContent() {
               Your subscription has been successfully activated.
             </p>
           </div>
+
+          {/* Elite Coupon Display */}
+          {(subscription?.plan_name === 'Elite' || sessionData?.metadata?.planName === 'Elite' || sessionData?.metadata?.freeMFRoller === 'true') && (
+            <Card className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border-orange-500/30 mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-400">
+                  <Crown className="h-5 w-5 text-orange-400" />
+                  🎁 FREE MF Roller Coupon!
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <p className="text-orange-200 mb-4">
+                    As an Elite subscriber, you get a FREE MFRoller (100% discount)!
+                  </p>
+                  <div className="bg-black/20 border border-orange-500/30 rounded-lg p-4 mb-4">
+                    <p className="text-orange-300 text-sm mb-2">Your exclusive coupon code:</p>
+                    <div className="bg-black text-orange-400 px-4 py-2 rounded font-mono text-lg font-bold border border-orange-500/50">
+                      {eliteCoupon?.code || 'Loading...'}
+                    </div>
+                    <p className="text-orange-300 text-xs mt-2">
+                      This coupon is tied to your email and can only be used once.
+                    </p>
+                    {eliteCoupon?.expiresAt && (
+                      <p className="text-orange-300 text-xs mt-1">
+                        Expires: {new Date(eliteCoupon.expiresAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  <p className="text-orange-200 text-sm">
+                    Use this code at checkout to get your FREE MFRoller - valid for 30 days!
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Subscription Details */}
           {(subscription || sessionData) && (

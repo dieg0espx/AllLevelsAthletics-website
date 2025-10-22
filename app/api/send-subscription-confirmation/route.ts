@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, planName, planPrice, billingPeriod, trialEnd } = await request.json()
+    const { email, planName, planPrice, billingPeriod, trialEnd, couponCode } = await request.json()
 
     if (!email || !planName) {
       return NextResponse.json(
@@ -66,12 +66,22 @@ export async function POST(request: NextRequest) {
             <p style="margin: 5px 0;"><strong>Billing:</strong> $${planPrice}/${billingPeriod}</p>
         </div>
         
+        ${couponCode && planName === 'Elite' ? `
+        <div style="background-color: #f97316; color: #000000; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: center;">
+            <h3 style="margin: 0 0 15px 0; font-size: 20px;">🎁 FREE MF Roller Coupon!</h3>
+            <p style="margin: 10px 0; font-size: 18px; font-weight: bold;">Coupon Code: <span style="background-color: #000000; color: #f97316; padding: 8px 12px; border-radius: 4px; font-family: monospace;">${couponCode}</span></p>
+            <p style="margin: 10px 0; font-size: 14px;">Use this code to get your FREE MFRoller (100% discount) - valid for 30 days!</p>
+            <p style="margin: 10px 0; font-size: 12px;">This coupon is tied to your email and can only be used once.</p>
+        </div>
+        ` : ''}
+        
         <p><strong>What happens next?</strong></p>
         <ul style="padding-left: 20px;">
             <li>Access your personalized dashboard immediately</li>
             <li>Complete your fitness profile</li>
             <li>Start your customized training program</li>
             <li>Schedule your first check-in with Daniel</li>
+            ${couponCode && planName === 'Elite' ? '<li>Use your FREE MF Roller coupon code above!</li>' : ''}
         </ul>
         
         <div style="text-align: center; margin: 30px 0;">

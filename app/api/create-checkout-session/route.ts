@@ -104,10 +104,11 @@ export async function POST(request: NextRequest) {
     console.log('=== URL DEBUGGING ===')
     console.log('Using baseUrl from env:', baseUrl)
 
-    // Check if customer has Elite subscription and is trying to get free MF roller
+    // Check if customer has Elite subscription and valid coupon
     let isEliteCustomer = false
     let hasFreeMFRoller = false
     let userId = null
+    let validEliteCoupon = null
     
     if (userEmail) {
       try {
@@ -117,17 +118,25 @@ export async function POST(request: NextRequest) {
         
         if (user) {
           userId = user.id
-          // Check if user has Elite subscription
-          const { data: subscription, error: subError } = await supabaseAdmin
-            .from('user_subscriptions')
-            .select('plan_name, status')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .single()
           
-          if (subscription && subscription.plan_name === 'Elite') {
-            isEliteCustomer = true
-            console.log('🎁 Elite customer detected for free MF roller!')
+          // Use the new Elite discount API to check eligibility
+          const discountResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/apply-elite-discount`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userEmail: userEmail,
+              userId: user.id,
+              items: items
+            })
+          })
+          
+          if (discountResponse.ok) {
+            const discountData = await discountResponse.json()
+            if (discountData.success) {
+              isEliteCustomer = true
+              validEliteCoupon = discountData.coupon
+              console.log('✅ Elite customer with valid coupon detected!')
+            }
           }
         }
       } catch (error) {
@@ -137,8 +146,23 @@ export async function POST(request: NextRequest) {
     }
 
     // If Elite customer is trying to get free MF roller, handle it specially
-    if (isEliteCustomer && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
-      console.log('🎁 Elite customer getting free MF roller - bypassing Stripe!')
+    if (isEliteCustomer && validEliteCoupon && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
+      console.log('🎁 Elite customer with valid coupon getting free MF roller - bypassing Stripe!')
+      
+      // Mark the coupon as used
+      try {
+        await supabaseAdmin
+          .from('elite_coupons')
+          .update({
+            is_used: true,
+            used_at: new Date().toISOString()
+          })
+          .eq('id', validEliteCoupon.id)
+        
+        console.log('✅ Elite coupon marked as used')
+      } catch (error) {
+        console.error('❌ Error marking coupon as used:', error)
+      }
       
       // Create a special success response that doesn't go through Stripe
       return NextResponse.json({
@@ -149,28 +173,39 @@ export async function POST(request: NextRequest) {
         metadata: {
           isEliteCustomer: true,
           hasFreeMFRoller: true,
+          couponUsed: validEliteCoupon.coupon_code,
           items: items,
           shippingInfo: shippingInfo,
           userId: userId
         }
       })
     }
+    
+    // If Elite customer but no valid coupon, show error
+    if (isEliteCustomer && !validEliteCoupon && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
+      console.log('❌ Elite customer but no valid coupon found')
+      return NextResponse.json({
+        success: false,
+        error: 'No valid Elite coupon found. Please check your email for your coupon code or contact support.',
+        code: 'NO_ELITE_COUPON'
+      }, { status: 400 })
+    }
 
     // Create line items from cart items
     const lineItems = items.map((item: any) => {
       console.log('Processing item:', item)
       
-      // Check if this is an MF roller and customer is Elite
+      // Check if this is an MF roller and customer has valid Elite coupon
       let finalPrice = item.price
       let itemName = item.name
       let itemDescription = item.description
       
-      if (isEliteCustomer && (item.id === 'knot-roller' || item.name?.includes('MFRoller'))) {
-        finalPrice = 0 // Free for Elite customers
+      if (isEliteCustomer && validEliteCoupon && (item.id === 'knot-roller' || item.name?.includes('MFRoller'))) {
+        finalPrice = 0 // Free for Elite customers with valid coupon
         itemName = `${item.name} (FREE with Elite Plan)`
         itemDescription = `${item.description} - FREE bonus with your Elite subscription!`
         hasFreeMFRoller = true
-        console.log('🎁 Making MF roller FREE for Elite customer!')
+        console.log('🎁 Making MF roller FREE for Elite customer with valid coupon!')
       }
       
       // Ensure price is a valid number
