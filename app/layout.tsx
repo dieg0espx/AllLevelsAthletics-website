@@ -7,7 +7,6 @@ import { Footer } from "@/components/footer"
 import { SafeAuthProvider } from "@/contexts/safe-auth-context"
 import { AuthProvider } from "@/contexts/auth-context"
 import { SafeSubscriptionProvider } from "@/contexts/safe-subscription-context"
-import { SubscriptionProvider } from "@/contexts/subscription-context"
 import { CartProvider } from "@/contexts/cart-context"
 import { DiscountProvider } from "@/contexts/discount-context"
 import { AdminRedirect } from "@/components/admin-redirect"
@@ -267,23 +266,21 @@ export default function RootLayout({
         <SafeAuthProvider>
           <AuthProvider>
             <SafeSubscriptionProvider>
-              <SubscriptionProvider>
-                <SafeContextWrapper>
-                  <CartProvider>
-                    <DiscountProvider>
-                      <HydrationWrapper>
-                        {/* Temporarily disable AdminRedirect to fix redirect loop */}
-                        {/* <AdminRedirect> */}
-                          <Navigation />
-                          <DiscountBanner />
-                          <main>{children}</main>
-                          <Footer />
-                        {/* </AdminRedirect> */}
-                      </HydrationWrapper>
-                    </DiscountProvider>
-                  </CartProvider>
-                </SafeContextWrapper>
-              </SubscriptionProvider>
+              <SafeContextWrapper>
+                <CartProvider>
+                  <DiscountProvider>
+                    <HydrationWrapper>
+                      {/* Temporarily disable AdminRedirect to fix redirect loop */}
+                      {/* <AdminRedirect> */}
+                        <Navigation />
+                        <DiscountBanner />
+                        <main>{children}</main>
+                        <Footer />
+                      {/* </AdminRedirect> */}
+                    </HydrationWrapper>
+                  </DiscountProvider>
+                </CartProvider>
+              </SafeContextWrapper>
             </SafeSubscriptionProvider>
           </AuthProvider>
         </SafeAuthProvider>

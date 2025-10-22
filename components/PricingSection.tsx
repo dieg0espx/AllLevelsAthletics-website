@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { CheckIcon, StarIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline"
 import { useAuth } from "@/contexts/auth-context"
-import { useSubscription } from "@/contexts/subscription-context"
+import { useSafeSubscription } from "@/contexts/safe-subscription-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
 
@@ -156,7 +156,7 @@ const PlanCard = ({
   isPopular?: boolean;
 }) => {
   const { user } = useAuth()
-  const { hasActiveSubscription } = useSubscription()
+  const { hasActiveSubscription } = useSafeSubscription()
   const [isLoading, setIsLoading] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   

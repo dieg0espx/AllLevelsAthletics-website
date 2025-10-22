@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSafeAuth } from '@/contexts/safe-auth-context'
-import { useSubscription } from '@/contexts/subscription-context'
+import { useSafeSubscription } from '@/contexts/safe-subscription-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, ArrowRight, Crown, Calendar, Clock } from 'lucide-react'
@@ -13,7 +13,7 @@ function SubscriptionSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, userRole, isHydrated } = useSafeAuth()
-  const { refreshSubscription, subscription, loading } = useSubscription()
+  const { refreshSubscription, subscription, loading } = useSafeSubscription()
 
   // Don't render until hydrated to prevent SSR issues
   if (!isHydrated) {
