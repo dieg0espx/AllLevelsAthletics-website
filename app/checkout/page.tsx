@@ -206,7 +206,20 @@ export default function CheckoutPage() {
          throw new Error(errorData.error || errorData.message || `HTTP error! status: ${response.status}`)
        }
 
-       const { sessionId } = await response.json()
+       const responseData = await response.json()
+
+       // Check if this is a bypass response for Elite customers
+       if (responseData.bypassStripe) {
+         console.log('🎁 Elite customer free MF roller - bypassing Stripe!')
+         // Store the special session data
+         localStorage.setItem('cartItems', JSON.stringify(responseData.metadata.items))
+         localStorage.setItem('shippingInfo', JSON.stringify(responseData.metadata.shippingInfo))
+         // Redirect to success page
+         window.location.href = responseData.redirectUrl
+         return
+       }
+
+       const { sessionId } = responseData
 
        if (!sessionId) {
          throw new Error('No session ID received from server')

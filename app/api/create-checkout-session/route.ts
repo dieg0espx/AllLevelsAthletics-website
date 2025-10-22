@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   // Declare variables at function scope for error handling
@@ -103,14 +104,79 @@ export async function POST(request: NextRequest) {
     console.log('=== URL DEBUGGING ===')
     console.log('Using baseUrl from env:', baseUrl)
 
+    // Check if customer has Elite subscription and is trying to get free MF roller
+    let isEliteCustomer = false
+    let hasFreeMFRoller = false
+    let userId = null
+    
+    if (userEmail) {
+      try {
+        // Get user ID from email
+        const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.listUsers()
+        const user = authUser?.users?.find(u => u.email === userEmail)
+        
+        if (user) {
+          userId = user.id
+          // Check if user has Elite subscription
+          const { data: subscription, error: subError } = await supabaseAdmin
+            .from('user_subscriptions')
+            .select('plan_name, status')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .single()
+          
+          if (subscription && subscription.plan_name === 'Elite') {
+            isEliteCustomer = true
+            console.log('🎁 Elite customer detected for free MF roller!')
+          }
+        }
+      } catch (error) {
+        console.log('Could not check Elite status:', error)
+        // Continue with normal checkout if we can't verify
+      }
+    }
+
+    // If Elite customer is trying to get free MF roller, handle it specially
+    if (isEliteCustomer && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
+      console.log('🎁 Elite customer getting free MF roller - bypassing Stripe!')
+      
+      // Create a special success response that doesn't go through Stripe
+      return NextResponse.json({
+        success: true,
+        bypassStripe: true,
+        message: 'Free MF roller for Elite customer - no payment required',
+        redirectUrl: `${baseUrl}/success?session_id=elite-free-roller-${Date.now()}`,
+        metadata: {
+          isEliteCustomer: true,
+          hasFreeMFRoller: true,
+          items: items,
+          shippingInfo: shippingInfo,
+          userId: userId
+        }
+      })
+    }
+
     // Create line items from cart items
     const lineItems = items.map((item: any) => {
       console.log('Processing item:', item)
       
+      // Check if this is an MF roller and customer is Elite
+      let finalPrice = item.price
+      let itemName = item.name
+      let itemDescription = item.description
+      
+      if (isEliteCustomer && (item.id === 'knot-roller' || item.name?.includes('MFRoller'))) {
+        finalPrice = 0 // Free for Elite customers
+        itemName = `${item.name} (FREE with Elite Plan)`
+        itemDescription = `${item.description} - FREE bonus with your Elite subscription!`
+        hasFreeMFRoller = true
+        console.log('🎁 Making MF roller FREE for Elite customer!')
+      }
+      
       // Ensure price is a valid number
-      const price = typeof item.price === 'number' ? item.price : parseFloat(item.price)
-      if (isNaN(price) || price <= 0) {
-        throw new Error(`Invalid price for item ${item.name}: ${item.price}`)
+      const price = typeof finalPrice === 'number' ? finalPrice : parseFloat(finalPrice)
+      if (isNaN(price) || price < 0) {
+        throw new Error(`Invalid price for item ${item.name}: ${finalPrice}`)
       }
       
       // Convert relative image URLs to absolute URLs for Stripe
@@ -129,8 +195,8 @@ export async function POST(request: NextRequest) {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: item.name || 'Product',
-            description: item.description || 'Product description',
+            name: itemName || 'Product',
+            description: itemDescription || 'Product description',
             images: imageUrl ? [imageUrl] : [],
           },
           unit_amount: Math.round(price * 100), // Convert to cents
@@ -212,6 +278,8 @@ export async function POST(request: NextRequest) {
       metadata: {
         items: JSON.stringify(items.map((item: any) => ({ id: item.id, name: item.name }))),
         shippingInfo: JSON.stringify(shippingInfo),
+        isEliteCustomer: isEliteCustomer.toString(),
+        hasFreeMFRoller: hasFreeMFRoller.toString(),
       },
       // Shipping restricted to US addresses only
       shipping_address_collection: {
