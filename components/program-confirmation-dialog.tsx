@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,7 +15,7 @@ interface ProgramConfirmationDialogProps {
 }
 
 export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }: ProgramConfirmationDialogProps) {
-  const { user } = useAuth()
+  const { user, isHydrated } = useSafeAuth()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -123,6 +123,11 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return null
   }
 
   return (

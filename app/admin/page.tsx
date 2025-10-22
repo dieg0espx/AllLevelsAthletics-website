@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
@@ -82,7 +82,7 @@ interface CheckIn {
 }
 
 export default function AdminPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, isHydrated } = useSafeAuth()
   const router = useRouter()
 
   // State for different sections
@@ -233,6 +233,15 @@ export default function AdminPage() {
     setCoachingLoading(true)
     // The CoachingManagementSection will handle its own data fetching
     setTimeout(() => setCoachingLoading(false), 1000)
+  }
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
   }
 
   if (loading) {

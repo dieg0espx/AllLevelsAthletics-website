@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { AdminRedirect } from "@/components/admin-redirect"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -20,7 +20,7 @@ import {
 
 export default function ClientDashboard() {
   const router = useRouter()
-  const { user, signOut, loading: authLoading } = useAuth()
+  const { user, signOut, loading: authLoading, isHydrated } = useSafeAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [purchasedProductsCount, setPurchasedProductsCount] = useState(0)
   const [recentActivity, setRecentActivity] = useState<any[]>([])
@@ -380,6 +380,18 @@ export default function ClientDashboard() {
     
     const diffInMonths = Math.floor(diffInDays / 30)
     return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`
+  }
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <h1 className="text-2xl font-bold text-white">Loading Dashboard...</h1>
+        </div>
+      </div>
+    )
   }
 
   if (authLoading || isLoading) {

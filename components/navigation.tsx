@@ -9,7 +9,7 @@ import { Menu, X, Zap, User, LogOut, ShoppingCart as ShoppingCartIcon } from "lu
 import { AuthModal } from "@/components/auth-modal"
 import { ShoppingCart } from "@/components/shopping-cart"
 import CalendlyPopup from "@/components/calendly-popup"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { useCart } from "@/contexts/cart-context"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
 
@@ -20,8 +20,13 @@ export function Navigation() {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { user, signOut, isHydrated } = useSafeAuth()
   const { toggleCart, getTotalItems } = useCart()
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return null
+  }
 
   // Preload Calendly script on component mount
   useEffect(() => {

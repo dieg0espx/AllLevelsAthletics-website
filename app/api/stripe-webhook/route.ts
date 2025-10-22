@@ -355,6 +355,41 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       }
     }
 
+    // Create Elite coupon if this is an Elite plan
+    let eliteCouponCode = null
+    if (planName === 'Elite') {
+      try {
+        const customerEmail = typeof customer !== 'string' && customer.email ? customer.email : null
+        
+        if (customerEmail && userId) {
+          console.log('🎁 Creating Elite MF Roller coupon for Elite subscriber')
+          
+          const couponResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/create-elite-coupon`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: userId,
+              customerEmail: customerEmail,
+              planName: planName
+            })
+          })
+          
+          if (couponResponse.ok) {
+            const couponData = await couponResponse.json()
+            eliteCouponCode = couponData.coupon.code
+            console.log('✅ Elite coupon created successfully:', eliteCouponCode)
+          } else {
+            console.error('❌ Failed to create Elite coupon')
+          }
+        } else {
+          console.log('⚠️ No customer email or user ID found, skipping Elite coupon creation')
+        }
+      } catch (couponError) {
+        console.error('❌ Error creating Elite coupon:', couponError)
+        // Don't fail the webhook if coupon creation fails
+      }
+    }
+
     // Send confirmation email
     try {
       const customerEmail = typeof customer !== 'string' && customer.email ? customer.email : null
@@ -375,7 +410,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
             planName: planName,
             planPrice: planPrice,
             billingPeriod: billingPeriod,
-            trialEnd: toISOStringFromTimestamp(subscription.trial_end)
+            trialEnd: toISOStringFromTimestamp(subscription.trial_end),
+            couponCode: eliteCouponCode
           })
         })
         

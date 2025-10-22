@@ -7,7 +7,7 @@ import { CheckCircle, Clock, Users, Target, Zap, Heart, Award, Calendar, Play, C
 import { useState, useRef, useEffect } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
 import ProgramConfirmationDialog from "@/components/program-confirmation-dialog"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { AuthModal } from "@/components/auth-modal"
 
 export default function ProgramsPage() {
@@ -16,7 +16,7 @@ export default function ProgramsPage() {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const { user } = useAuth()
+  const { user, isHydrated } = useSafeAuth()
   
   const totalSlides = 4
   const slideWidth = 400 + 24 // card width + gap
@@ -90,6 +90,15 @@ export default function ProgramsPage() {
       return () => window.removeEventListener('keydown', handleKeyDown)
     }
   }, [currentSlide])
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

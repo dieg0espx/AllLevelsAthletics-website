@@ -7,8 +7,8 @@ import { CheckCircle, X, Clock, Users, Target, Zap, Heart, Award, Play, Mail, Tr
 import { useState, useEffect } from "react"
 import AddToCart from "@/components/stripe-checkout"
 import { useCart } from "@/contexts/cart-context"
-import { useAuth } from "@/contexts/auth-context"
-import { useSubscription } from "@/contexts/subscription-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
+import { useSafeSubscription } from "@/contexts/safe-subscription-context"
 import { useDiscount } from "@/contexts/discount-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
@@ -24,8 +24,8 @@ export default function ServicesPage() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'sixmonth' | 'annual'>('monthly')
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
-  const { user } = useAuth()
-  const { hasActiveSubscription } = useSubscription()
+  const { user, isHydrated } = useSafeAuth()
+  const { hasActiveSubscription } = useSafeSubscription()
   const { coachingDiscount, productsDiscount } = useDiscount()
   
   // Preload Calendly script on page load
@@ -258,6 +258,15 @@ export default function ServicesPage() {
       }, 1000) // Wait 1 second for page to load
     }
   }, [])
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -10,7 +10,7 @@ import { authService } from "@/lib/auth"
 import type { RegisterData, LoginData } from "@/lib/auth"
 import { siteConfig, replacePlaceholders } from "@/lib/config"
 import { useRouter } from 'next/navigation';
-import { useAuth } from "@/contexts/auth-context";
+import { useSafeAuth } from "@/contexts/safe-auth-context";
 
 interface AuthModalProps {
   isOpen: boolean
@@ -26,8 +26,8 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  // Import useAuth to check if user is already authenticated
-  const { user, loading } = useAuth()
+  // Import useSafeAuth to check if user is already authenticated
+  const { user, loading, isHydrated } = useSafeAuth()
 
   // Form state
   const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
@@ -246,6 +246,11 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
     }
   };
 
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return null
+  }
 
   // Don't render modal if user is already authenticated
   if (!loading && user) {
