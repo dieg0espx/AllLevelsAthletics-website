@@ -8,7 +8,7 @@ import { useState, useEffect } from "react"
 import AddToCart from "@/components/stripe-checkout"
 import { useCart } from "@/contexts/cart-context"
 import { useSafeAuth } from "@/contexts/safe-auth-context"
-import { useSubscription } from "@/contexts/subscription-context"
+import { useSafeSubscription } from "@/contexts/safe-subscription-context"
 import { useDiscount } from "@/contexts/discount-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
@@ -25,7 +25,7 @@ export default function ServicesPage() {
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
   const { user, isHydrated } = useSafeAuth()
-  const { hasActiveSubscription } = useSubscription()
+  const { hasActiveSubscription } = useSafeSubscription()
   const { coachingDiscount, productsDiscount } = useDiscount()
   
   // Preload Calendly script on page load
