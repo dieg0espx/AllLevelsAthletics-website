@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { AdminRedirect } from "@/components/admin-redirect"
 import { supabase } from "@/lib/supabase"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,7 +24,7 @@ import {
 
 export default function ProductsPage() {
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { user, signOut, isHydrated } = useSafeAuth()
   const [isLoading, setIsLoading] = useState(true)
 
   const [purchasedProducts, setPurchasedProducts] = useState([])
@@ -147,6 +147,18 @@ export default function ProductsPage() {
   console.log('- filterStatus:', filterStatus)
   console.log('- filteredProducts:', filteredProducts)
   console.log('- filteredProducts.length:', filteredProducts.length)
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <h1 className="text-2xl font-bold text-white">Loading Products...</h1>
+        </div>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (

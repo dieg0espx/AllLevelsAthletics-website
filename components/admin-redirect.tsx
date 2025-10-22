@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/auth-context'
+import { useSafeAuth } from '@/contexts/safe-auth-context'
 
 interface AdminRedirectProps {
   children: React.ReactNode
 }
 
 export function AdminRedirect({ children }: AdminRedirectProps) {
-  const { user, loading } = useAuth()
+  const { user, loading, isHydrated } = useSafeAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -30,6 +30,11 @@ export function AdminRedirect({ children }: AdminRedirectProps) {
       }
     }
   }, [user, loading, router])
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return null
+  }
 
   return <>{children}</>
 }

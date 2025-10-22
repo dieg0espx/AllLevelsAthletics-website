@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Percent, ShoppingCart, Users, Save, RefreshCw } from "lucide-react"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 
 interface DiscountManagementSectionProps {
   onRefresh?: () => void
 }
 
 export function DiscountManagementSection({ onRefresh }: DiscountManagementSectionProps) {
-  const { user } = useAuth()
+  const { user, isHydrated } = useSafeAuth()
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [coachingDiscount, setCoachingDiscount] = useState<number>(0)
@@ -109,6 +109,17 @@ export function DiscountManagementSection({ onRefresh }: DiscountManagementSecti
   const calculateDiscountedPrice = (originalPrice: number, discountPercentage: number) => {
     const discount = originalPrice * (discountPercentage / 100)
     return originalPrice - discount
+  }
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <Card className="bg-card/80 border-orange-500/30">
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (loading) {
