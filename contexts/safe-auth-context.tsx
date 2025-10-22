@@ -4,22 +4,25 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { supabase } from '@/lib/supabase'
 import type { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
+import { useHydration } from '@/hooks/use-hydration'
 
-interface AuthContextType {
+interface SafeAuthContextType {
   user: User | null
   userRole: string | null
   loading: boolean
+  isHydrated: boolean
   signOut: () => Promise<void>
   refreshUser: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const SafeAuthContext = createContext<SafeAuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function SafeAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userRole, setUserRole] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [roleCache, setRoleCache] = useState<Map<string, string>>(new Map())
+  const isHydrated = useHydration()
 
   // Optimized function to fetch user role with caching
   const fetchUserRole = async (userId: string) => {
@@ -63,8 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    // Only run on client side to prevent hydration mismatches
-    if (typeof window === 'undefined') return
+    // Only run after hydration is complete
+    if (!isHydrated) return
     
     let mounted = true
     let isInitialLoad = true
@@ -140,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, [isHydrated])
 
   const refreshUser = async () => {
     try {
@@ -188,21 +191,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     userRole,
     loading,
+    isHydrated,
     signOut,
     refreshUser,
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <SafeAuthContext.Provider value={value}>
       {children}
-    </AuthContext.Provider>
+    </SafeAuthContext.Provider>
   )
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext)
+export function useSafeAuth() {
+  const context = useContext(SafeAuthContext)
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useSafeAuth must be used within a SafeAuthProvider')
   }
   return context
 }

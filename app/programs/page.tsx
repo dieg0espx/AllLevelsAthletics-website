@@ -84,8 +84,11 @@ export default function ProgramsPage() {
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [currentSlide])
 
   return (

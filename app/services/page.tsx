@@ -242,6 +242,9 @@ export default function ServicesPage() {
 
   // Handle scroll to products section from query parameter
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     const urlParams = new URLSearchParams(window.location.search)
     const scrollTo = urlParams.get('scrollTo')
     
