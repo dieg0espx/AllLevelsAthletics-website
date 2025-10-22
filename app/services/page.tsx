@@ -559,7 +559,7 @@ export default function ServicesPage() {
                              <Users className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                              <div>
                                <div>Form Review & Feedback</div>
-                               <div className="text-sm text-muted-foreground">Video analysis & corrections</div>
+                               <div className="text-sm text-muted-foreground">Movement corrections</div>
                              </div>
                            </div>
                          </td>
@@ -571,32 +571,6 @@ export default function ServicesPage() {
                          <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
                              <CheckCircle className="w-6 h-6 text-green-400" />
-                           </div>
-                         </td>
-                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
-                             <CheckCircle className="w-6 h-6 text-green-400" />
-                           </div>
-                         </td>
-                       </tr>
-                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
-                         <td className="py-5 px-6 font-semibold">
-                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
-                             <Play className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                             <div>
-                               <div>Video Analysis</div>
-                               <div className="text-sm text-muted-foreground">Detailed movement breakdown</div>
-                             </div>
-                           </div>
-                         </td>
-                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                             <X className="w-6 h-6 text-red-400" />
-                           </div>
-                         </td>
-                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
-                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                             <X className="w-6 h-6 text-red-400" />
                            </div>
                          </td>
                          <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
@@ -616,13 +590,13 @@ export default function ServicesPage() {
                            </div>
                          </td>
                          <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
-                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                             <X className="w-6 h-6 text-red-400" />
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
                            </div>
                          </td>
                          <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
-                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
-                             <X className="w-6 h-6 text-red-400" />
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
                            </div>
                          </td>
                          <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
@@ -636,8 +610,8 @@ export default function ServicesPage() {
                            <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
                              <Zap className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
                              <div>
-                               <div>Mobility Prioritization</div>
-                               <div className="text-sm text-muted-foreground">Flexibility & range of motion</div>
+                               <div>Advanced Mobility</div>
+                               <div className="text-sm text-muted-foreground">Custom Range of Motion Plan</div>
                              </div>
                            </div>
                          </td>
@@ -727,6 +701,32 @@ export default function ServicesPage() {
                          <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
                            <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
                              <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-green-500/20 rounded-full group-hover:scale-110 transition-transform" title="Included">
+                             <CheckCircle className="w-6 h-6 text-green-400" />
+                           </div>
+                         </td>
+                       </tr>
+                       <tr className="border-b border-border/30 hover:bg-orange-500/10 transition-all duration-200 group cursor-pointer">
+                         <td className="py-5 px-6 font-semibold">
+                           <div className="flex items-center gap-3 group-hover:text-orange-400 transition-colors">
+                             <Heart className="w-5 h-5 text-orange-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                             <div>
+                               <div>Free MFRoller</div>
+                               <div className="text-sm text-muted-foreground">Professional myofascial release tool</div>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
+                           </div>
+                         </td>
+                         <td className="py-5 px-6 text-center bg-yellow-500/5 border-l border-r border-yellow-500/20 group-hover:bg-yellow-500/10 transition-colors">
+                           <div className="inline-flex items-center justify-center w-8 h-8 bg-red-500/20 rounded-full group-hover:scale-110 transition-transform" title="Not included">
+                             <X className="w-6 h-6 text-red-400" />
                            </div>
                          </td>
                          <td className="py-5 px-6 text-center group-hover:bg-orange-500/5 transition-colors">
@@ -893,22 +893,6 @@ export default function ServicesPage() {
                           <div className="text-xs text-muted-foreground">Personalized workout plans</div>
                         </div>
                       </div>
-                      {/* Feature: Form Review */}
-                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
-                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm text-muted-foreground">Form Review & Feedback</div>
-                          <div className="text-xs text-muted-foreground">Not included</div>
-                        </div>
-                      </div>
-                      {/* Feature: Video Analysis */}
-                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
-                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm text-muted-foreground">Video Analysis</div>
-                          <div className="text-xs text-muted-foreground">Not included</div>
-                        </div>
-                      </div>
                       {/* Feature: Tension Coaching */}
                       <div className="flex items-start gap-3 py-2 border-b border-border/30">
                         <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -917,11 +901,11 @@ export default function ServicesPage() {
                           <div className="text-xs text-muted-foreground">Not included</div>
                         </div>
                       </div>
-                      {/* Feature: Mobility Prioritization */}
+                      {/* Feature: Advanced Mobility */}
                       <div className="flex items-start gap-3 py-2 border-b border-border/30">
                         <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <div className="font-semibold text-sm text-muted-foreground">Mobility Prioritization</div>
+                          <div className="font-semibold text-sm text-muted-foreground">Advanced Mobility</div>
                           <div className="text-xs text-muted-foreground">Not included</div>
                         </div>
                       </div>
@@ -1038,22 +1022,6 @@ export default function ServicesPage() {
                           <div className="text-xs text-muted-foreground">Personalized workout plans</div>
                         </div>
                       </div>
-                      {/* Feature: Form Review */}
-                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm">Form Review & Feedback</div>
-                          <div className="text-xs text-muted-foreground">Video analysis & corrections</div>
-                        </div>
-                      </div>
-                      {/* Feature: Video Analysis */}
-                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
-                        <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm text-muted-foreground">Video Analysis</div>
-                          <div className="text-xs text-muted-foreground">Not included</div>
-                        </div>
-                      </div>
                       {/* Feature: Tension Coaching */}
                       <div className="flex items-start gap-3 py-2 border-b border-border/30">
                         <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -1062,11 +1030,11 @@ export default function ServicesPage() {
                           <div className="text-xs text-muted-foreground">Not included</div>
                         </div>
                       </div>
-                      {/* Feature: Mobility Prioritization */}
+                      {/* Feature: Advanced Mobility */}
                       <div className="flex items-start gap-3 py-2 border-b border-border/30">
                         <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <div className="font-semibold text-sm text-muted-foreground">Mobility Prioritization</div>
+                          <div className="font-semibold text-sm text-muted-foreground">Advanced Mobility</div>
                           <div className="text-xs text-muted-foreground">Not included</div>
                         </div>
                       </div>
@@ -1183,14 +1151,6 @@ export default function ServicesPage() {
                           <div className="text-xs text-muted-foreground">Personalized workout plans</div>
                         </div>
                       </div>
-                      {/* Feature: Form Review */}
-                      <div className="flex items-start gap-3 py-2 border-b border-border/30">
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="font-semibold text-sm">Form Review & Feedback</div>
-                          <div className="text-xs text-muted-foreground">Video analysis & corrections</div>
-                        </div>
-                      </div>
                       {/* Feature: Video Analysis */}
                       <div className="flex items-start gap-3 py-2 border-b border-border/30">
                         <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
@@ -1207,12 +1167,12 @@ export default function ServicesPage() {
                           <div className="text-xs text-muted-foreground">Myofascial release guidance</div>
                         </div>
                       </div>
-                      {/* Feature: Mobility Prioritization */}
+                      {/* Feature: Advanced Mobility */}
                       <div className="flex items-start gap-3 py-2 border-b border-border/30">
                         <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <div className="font-semibold text-sm">Mobility Prioritization</div>
-                          <div className="text-xs text-muted-foreground">Flexibility & range of motion</div>
+                          <div className="font-semibold text-sm">Advanced Mobility</div>
+                          <div className="text-xs text-muted-foreground">Custom Range of Motion Plan</div>
                         </div>
                       </div>
                       {/* Feature: Email Support */}
@@ -1460,7 +1420,7 @@ export default function ServicesPage() {
                          </li>
                          <li className="flex items-start gap-2 sm:gap-3">
                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                           <span><strong>Non-slip Rubber Base:</strong> Provides stability on any surface—hardwood, carpet, tile, or even outdoors</span>
+                           <span><strong>Non-slip Base:</strong> Provides stability on any surface—hardwood, carpet, tile, or even outdoors</span>
                          </li>
                          <li className="flex items-start gap-2 sm:gap-3">
                            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>

@@ -483,41 +483,7 @@ export default function TensionReleaseProgramPage() {
             Downloadable Resources
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-            <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all">
-              <CardHeader className="pb-0">
-                <CardTitle className="text-white text-sm sm:text-base">Weekly Routine Tracker</CardTitle>
-                <CardDescription className="text-white/70 text-xs">PDF download</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-1">
-                <a
-                  href="/files/Tension Score Weekly Homework Routine Sheet.pdf"
-                  download
-                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-orange-500 to-yellow-500 px-3 py-1.5 rounded-md hover:opacity-90"
-                >
-                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                  Download
-                </a>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all">
-              <CardHeader className="pb-0">
-                <CardTitle className="text-white text-sm sm:text-base">Assessment Sheet</CardTitle>
-                <CardDescription className="text-white/70 text-xs">PDF download</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-1">
-                <a
-                  href="/files/Tension Score Sheet w logo.pdf.pdf"
-                  download
-                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-orange-500 to-yellow-500 px-3 py-1.5 rounded-md hover:opacity-90"
-                >
-                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                  Download
-                </a>
-              </CardContent>
-            </Card>
-
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-2 sm:gap-3">
             <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all">
               <CardHeader className="pb-0">
                 <CardTitle className="text-white text-sm sm:text-base">Runner's Tracker</CardTitle>
