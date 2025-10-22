@@ -1,7 +1,7 @@
 "use client"
 
 import { useCart } from "@/contexts/cart-context"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 import { Button } from "@/components/ui/button"
 import { X, Minus, Plus, Trash2, ShoppingCart as ShoppingCartIcon, ArrowRight, User } from "lucide-react"
 import Image from "next/image"
@@ -11,7 +11,7 @@ import { AuthModal } from "@/components/auth-modal"
 
 export function ShoppingCart() {
   const { state, removeItem, updateQuantity, closeCart, getTotalItems, getTotalPrice } = useCart()
-  const { user } = useAuth()
+  const { user, isHydrated } = useSafeAuth()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
 
@@ -37,6 +37,11 @@ export function ShoppingCart() {
     setIsCheckingOut(true)
     closeCart()
     // Navigation will be handled by the Link component
+  }
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return null
   }
 
   if (!state.isOpen) return null
