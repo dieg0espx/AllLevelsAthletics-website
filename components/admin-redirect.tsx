@@ -13,6 +13,9 @@ export function AdminRedirect({ children }: AdminRedirectProps) {
   const router = useRouter()
 
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatches
+    if (typeof window === 'undefined') return
+    
     // Only redirect if user is loaded and authenticated
     if (!loading && user && user.user_metadata?.role === 'admin') {
       // Check if we're already on an admin page

@@ -30,6 +30,9 @@ export default function ServicesPage() {
   
   // Preload Calendly script on page load
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     // Check if script already exists
     if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
       const script = document.createElement('script')
@@ -239,6 +242,9 @@ export default function ServicesPage() {
 
   // Handle scroll to products section from query parameter
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     const urlParams = new URLSearchParams(window.location.search)
     const scrollTo = urlParams.get('scrollTo')
     

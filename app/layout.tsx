@@ -4,12 +4,14 @@ import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
-import { AuthProvider } from "@/contexts/auth-context"
+import { SafeAuthProvider } from "@/contexts/safe-auth-context"
+import { SafeSubscriptionProvider } from "@/contexts/safe-subscription-context"
 import { CartProvider } from "@/contexts/cart-context"
-import { SubscriptionProvider } from "@/contexts/subscription-context"
 import { DiscountProvider } from "@/contexts/discount-context"
 import { AdminRedirect } from "@/components/admin-redirect"
 import { DiscountBanner } from "@/components/discount-banner"
+import { SafeContextWrapper } from "@/components/safe-context-wrapper"
+import { HydrationWrapper } from "@/components/hydration-wrapper"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -260,21 +262,25 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <AuthProvider>
-          <SubscriptionProvider>
-            <CartProvider>
-              <DiscountProvider>
-                {/* Temporarily disable AdminRedirect to fix redirect loop */}
-                {/* <AdminRedirect> */}
-                  <Navigation />
-                  <DiscountBanner />
-                  <main>{children}</main>
-                  <Footer />
-                {/* </AdminRedirect> */}
-              </DiscountProvider>
-            </CartProvider>
-          </SubscriptionProvider>
-        </AuthProvider>
+        <SafeAuthProvider>
+          <SafeSubscriptionProvider>
+            <SafeContextWrapper>
+              <CartProvider>
+                <DiscountProvider>
+                  <HydrationWrapper>
+                    {/* Temporarily disable AdminRedirect to fix redirect loop */}
+                    {/* <AdminRedirect> */}
+                      <Navigation />
+                      <DiscountBanner />
+                      <main>{children}</main>
+                      <Footer />
+                    {/* </AdminRedirect> */}
+                  </HydrationWrapper>
+                </DiscountProvider>
+              </CartProvider>
+            </SafeContextWrapper>
+          </SafeSubscriptionProvider>
+        </SafeAuthProvider>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </body>
     </html>

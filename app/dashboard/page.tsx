@@ -30,6 +30,9 @@ export default function ClientDashboard() {
   const [refreshingSubscription, setRefreshingSubscription] = useState(false)
 
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatches
+    if (typeof window === 'undefined') return
+    
     // Wait for auth to finish loading before checking user
     if (authLoading) {
       return // Still loading auth, don't do anything
@@ -149,8 +152,10 @@ export default function ClientDashboard() {
                 
                 if (syncResponse.ok) {
                   console.log('✅ Auto-sync successful! Refreshing page...')
-                  // Refresh the page to show the synced subscription
-                  window.location.reload()
+                  // Refresh the page to show the synced subscription (only on client side)
+                  if (typeof window !== 'undefined') {
+                    window.location.reload()
+                  }
                 } else {
                   console.log('⚠️ Auto-sync failed:', syncData.error)
                 }

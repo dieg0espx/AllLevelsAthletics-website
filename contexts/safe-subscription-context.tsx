@@ -1,8 +1,8 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useAuth } from './auth-context'
-import { supabase } from '@/lib/supabase'
+import { useSafeAuth } from './safe-auth-context'
+import { useHydration } from '@/hooks/use-hydration'
 
 interface Subscription {
   id: string
@@ -28,21 +28,23 @@ interface UserProfile {
   subscription_status?: string
 }
 
-interface SubscriptionContextType {
+interface SafeSubscriptionContextType {
   subscription: Subscription | null
   userProfile: UserProfile | null
   loading: boolean
   error: string | null
+  isHydrated: boolean
   refreshSubscription: () => Promise<void>
   hasActiveSubscription: boolean
   isTrialing: boolean
   canAccessContent: boolean
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
+const SafeSubscriptionContext = createContext<SafeSubscriptionContextType | undefined>(undefined)
 
-export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
+export function SafeSubscriptionProvider({ children }: { children: ReactNode }) {
+  const { user, isHydrated: authHydrated } = useSafeAuth()
+  const isHydrated = useHydration()
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -51,6 +53,9 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [lastFetchTime, setLastFetchTime] = useState(0)
 
   const fetchSubscription = async (forceRefresh = false) => {
+    // Only run after hydration is complete
+    if (!isHydrated || !authHydrated) return
+    
     if (!user) {
       setSubscription(null)
       setUserProfile(null)
@@ -95,11 +100,11 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    // Only run on client side to prevent hydration mismatches
-    if (typeof window === 'undefined') return
+    // Only run after hydration is complete
+    if (!isHydrated || !authHydrated) return
     
     fetchSubscription()
-  }, [user])
+  }, [user, isHydrated, authHydrated])
 
   // Computed values
   const hasActiveSubscription = subscription?.status === 'active' || subscription?.status === 'trialing'
@@ -111,6 +116,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     userProfile,
     loading,
     error,
+    isHydrated,
     refreshSubscription,
     hasActiveSubscription,
     isTrialing,
@@ -118,19 +124,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <SubscriptionContext.Provider value={value}>
+    <SafeSubscriptionContext.Provider value={value}>
       {children}
-    </SubscriptionContext.Provider>
+    </SafeSubscriptionContext.Provider>
   )
 }
 
-export function useSubscription() {
-  const context = useContext(SubscriptionContext)
+export function useSafeSubscription() {
+  const context = useContext(SafeSubscriptionContext)
   if (context === undefined) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider')
+    throw new Error('useSafeSubscription must be used within a SafeSubscriptionProvider')
   }
   return context
 }
-
-
-

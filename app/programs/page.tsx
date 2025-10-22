@@ -23,6 +23,9 @@ export default function ProgramsPage() {
 
   // Preload Calendly script on page load
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     // Check if script already exists
     if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
       const script = document.createElement('script')
@@ -81,8 +84,11 @@ export default function ProgramsPage() {
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [currentSlide])
 
   return (
