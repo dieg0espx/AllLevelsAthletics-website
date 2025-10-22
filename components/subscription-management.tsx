@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/auth-context'
-import { useSubscription } from '@/contexts/subscription-context'
+import { useSafeSubscription } from '@/contexts/safe-subscription-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -36,7 +36,7 @@ export function SubscriptionManagement({ onUpgrade }: SubscriptionManagementProp
     refreshSubscription,
     hasActiveSubscription,
     isTrialing 
-  } = useSubscription()
+  } = useSafeSubscription()
   
   const [isLoading, setIsLoading] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
