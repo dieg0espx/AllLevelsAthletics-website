@@ -36,6 +36,22 @@ export default function ContactPage() {
         // Initialize inline widget after script loads
         if ((window as any).Calendly) {
           console.log('Calendly script loaded and ready for inline widget')
+          // Initialize the inline widget
+          setTimeout(() => {
+            if ((window as any).Calendly) {
+              try {
+                (window as any).Calendly.initInlineWidget({
+                  url: 'https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09',
+                  parentElement: document.querySelector('.calendly-inline-widget'),
+                  prefill: {},
+                  utm: {}
+                })
+                console.log('Inline Calendly widget initialized')
+              } catch (error) {
+                console.error('Error initializing inline Calendly widget:', error)
+              }
+            }
+          }, 500)
         }
       }
       document.head.appendChild(script)
@@ -43,6 +59,20 @@ export default function ContactPage() {
       // Script already exists, check if Calendly is ready
       if ((window as any).Calendly) {
         console.log('Calendly already available for inline widget')
+        // Initialize the inline widget
+        setTimeout(() => {
+          try {
+            (window as any).Calendly.initInlineWidget({
+              url: 'https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09',
+              parentElement: document.querySelector('.calendly-inline-widget'),
+              prefill: {},
+              utm: {}
+            })
+            console.log('Inline Calendly widget initialized')
+          } catch (error) {
+            console.error('Error initializing inline Calendly widget:', error)
+          }
+        }, 500)
       }
     }
   }, [])
@@ -572,7 +602,22 @@ export default function ContactPage() {
                     className="calendly-inline-widget" 
                     data-url="https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09"
                     style={{ minWidth: '320px', height: '700px' }}
-                  ></div>
+                  >
+                    {/* Fallback content if Calendly doesn't load */}
+                    <div className="flex items-center justify-center h-full bg-gray-50">
+                      <div className="text-center p-8">
+                        <Calendar className="w-16 h-16 text-orange-500 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Calendar...</h3>
+                        <p className="text-gray-600 mb-6">If the calendar doesn't load, you can book directly:</p>
+                        <Button 
+                          onClick={() => window.open('https://calendly.com/alllevelsathletics/fitnessconsultation', '_blank')}
+                          className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-bold py-3 px-6 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300"
+                        >
+                          Open Calendar
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
            </div>
