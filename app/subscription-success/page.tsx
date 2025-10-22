@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/contexts/auth-context'
+import { useAuth } from '@/contexts/safe-auth-context'
 import { useSubscription } from '@/contexts/subscription-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,8 +12,17 @@ import Link from 'next/link'
 function SubscriptionSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, userRole } = useAuth()
+  const { user, userRole, isHydrated } = useAuth()
   const { refreshSubscription, subscription, loading } = useSubscription()
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    )
+  }
   const [isLoading, setIsLoading] = useState(true)
   const [sessionData, setSessionData] = useState<any>(null)
   const [hasRefreshed, setHasRefreshed] = useState(false)
