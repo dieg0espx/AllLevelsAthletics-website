@@ -53,13 +53,13 @@ export default function CalendlyPopup({ isOpen, onClose, url = "https://calendly
           }
         }, 100)
 
-        // Timeout after 5 seconds
+        // Timeout after 10 seconds (increased from 5)
         setTimeout(() => {
           console.log('Timeout reached, stopping loading')
           clearInterval(checkCalendly)
           setIsLoading(false)
           setHasError(true)
-        }, 5000)
+        }, 10000)
 
         return () => clearInterval(checkCalendly)
       }
@@ -71,11 +71,22 @@ export default function CalendlyPopup({ isOpen, onClose, url = "https://calendly
       script.async = true
       script.onload = () => {
         console.log('Script loaded, waiting for Calendly initialization...')
-        // Reduced wait time for faster initialization
+        // Wait for Calendly to be available
+        const checkCalendly = setInterval(() => {
+          if (window.Calendly) {
+            console.log('Calendly loaded successfully')
+            setIsLoading(false)
+            clearInterval(checkCalendly)
+          }
+        }, 100)
+
+        // Timeout after 10 seconds
         setTimeout(() => {
-          console.log('Calendly should be ready now')
+          console.log('Timeout reached, stopping loading')
+          clearInterval(checkCalendly)
           setIsLoading(false)
-        }, 300)
+          setHasError(true)
+        }, 10000)
       }
       script.onerror = () => {
         console.error('Failed to load Calendly script')
