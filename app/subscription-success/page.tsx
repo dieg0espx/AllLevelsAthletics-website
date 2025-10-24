@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, ArrowRight, Crown, Calendar, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 function SubscriptionSuccessContent() {
   const router = useRouter()
@@ -28,35 +29,72 @@ function SubscriptionSuccessContent() {
   const [hasRefreshed, setHasRefreshed] = useState(false)
   const [autoRedirectCountdown, setAutoRedirectCountdown] = useState<number | null>(null)
   const [eliteCoupon, setEliteCoupon] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const sessionId = searchParams.get('session_id')
 
   useEffect(() => {
+    console.log('🔍 Subscription Success Page Debug:')
+    console.log('- sessionId:', sessionId)
+    console.log('- user:', user?.id)
+    console.log('- isHydrated:', isHydrated)
+    console.log('- hasRefreshed:', hasRefreshed)
+    
     // Only run once when component mounts with sessionId and user
     if (sessionId && user && !hasRefreshed) {
       setHasRefreshed(true)
+      console.log('🔄 Starting session data fetch...')
       
       // First, try to get session data from Stripe
       fetch(`/api/get-checkout-session?session_id=${sessionId}`)
-        .then(res => res.json())
+        .then(res => {
+          console.log('📡 Session fetch response:', res.status, res.statusText)
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`)
+          }
+          return res.json()
+        })
         .then(data => {
-          if (data.session) {
+          console.log('📦 Session data received:', data)
+          if (data.error) {
+            // Handle specific error cases
+            if (data.code === 'SESSION_NOT_FOUND') {
+              console.log('⚠️ Session not found - may be expired or invalid')
+              setError('This checkout session has expired or is invalid. Please contact support if you completed a payment.')
+            } else if (data.code === 'STRIPE_CONFIG_ERROR') {
+              console.log('❌ Stripe configuration error')
+              setError('Payment system configuration error. Please contact support.')
+            } else {
+              throw new Error(data.error)
+            }
+          } else if (data.session) {
             setSessionData(data.session)
+            console.log('✅ Session data set successfully')
           }
         })
-        .catch(err => console.error('Error fetching session:', err))
+        .catch(err => {
+          console.error('❌ Error fetching session:', err)
+          setError(`Failed to load session data: ${err.message}`)
+        })
         .finally(() => {
+          console.log('🔄 Refreshing subscription data...')
           // Refresh subscription data from Stripe
-          refreshSubscription().finally(() => {
+          refreshSubscription().catch(err => {
+            console.error('❌ Error refreshing subscription:', err)
+            setError(`Failed to refresh subscription: ${err.message}`)
+          }).finally(() => {
+            console.log('✅ Subscription refresh completed')
             setIsLoading(false)
           })
         })
     } else if (!sessionId || !user) {
+      console.log('⚠️ Missing sessionId or user, skipping data fetch')
       setIsLoading(false)
     }
 
     // Fallback timeout to prevent infinite loading
     const timeout = setTimeout(() => {
+      console.log('⏰ Timeout reached, stopping loading')
       setIsLoading(false)
     }, 10000) // 10 seconds timeout
 
@@ -82,6 +120,38 @@ function SubscriptionSuccessContent() {
     )
   }
 
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-red-400 text-2xl">⚠️</span>
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-4">Something went wrong</h1>
+          <p className="text-gray-300 mb-6">{error}</p>
+          <div className="space-y-4">
+            <Button 
+              onClick={() => window.location.reload()}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3"
+            >
+              Try Again
+            </Button>
+            <Button 
+              asChild
+              variant="outline"
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              <Link href="/dashboard">
+                Go to Dashboard
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const dashboardHref = (userRole === 'admin' || user?.user_metadata?.role === 'admin') ? '/admin' : '/dashboard'
 
   // Fetch Elite coupon if user has Elite subscription
@@ -96,10 +166,15 @@ function SubscriptionSuccessContent() {
             const data = await response.json()
             if (data.success) {
               setEliteCoupon(data.coupon)
+            } else {
+              console.warn('Elite coupon not available:', data.error)
             }
+          } else {
+            console.warn('Failed to fetch Elite coupon:', response.status)
           }
         } catch (error) {
           console.error('Error fetching Elite coupon:', error)
+          // Don't set error state for coupon fetch failure as it's not critical
         }
       }
     }
@@ -151,6 +226,26 @@ function SubscriptionSuccessContent() {
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-2xl mx-auto">
+          
+          {/* Debug Info - Remove in production */}
+          {process.env.NODE_ENV === 'development' && (
+            <Card className="bg-gray-800 border-gray-600 mb-6">
+              <CardHeader>
+                <CardTitle className="text-sm text-gray-300">Debug Info</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-gray-400">
+                <div>Session ID: {sessionId || 'None'}</div>
+                <div>User ID: {user?.id || 'None'}</div>
+                <div>Is Hydrated: {isHydrated ? 'Yes' : 'No'}</div>
+                <div>Has Refreshed: {hasRefreshed ? 'Yes' : 'No'}</div>
+                <div>Is Loading: {isLoading ? 'Yes' : 'No'}</div>
+                <div>Loading State: {loading ? 'Yes' : 'No'}</div>
+                <div>Error: {error || 'None'}</div>
+                <div>Session Data: {sessionData ? 'Loaded' : 'Not loaded'}</div>
+                <div>Subscription: {subscription ? `${subscription.plan_name} (${subscription.status})` : 'None'}</div>
+              </CardContent>
+            </Card>
+          )}
           {/* Success Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -414,15 +509,17 @@ function SubscriptionSuccessContent() {
 
 export default function SubscriptionSuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-600/10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-lg text-muted-foreground">Loading...</p>
+    <ErrorBoundary>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-600/10 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-lg text-muted-foreground">Loading...</p>
+          </div>
         </div>
-      </div>
-    }>
-      <SubscriptionSuccessContent />
-    </Suspense>
+      }>
+        <SubscriptionSuccessContent />
+      </Suspense>
+    </ErrorBoundary>
   )
 }

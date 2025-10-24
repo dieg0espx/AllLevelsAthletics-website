@@ -10,16 +10,41 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const sessionId = searchParams.get('session_id')
     
+    console.log('🔍 GET Checkout Session Request:', { sessionId })
+    
     if (!sessionId) {
+      console.log('❌ No session ID provided')
       return NextResponse.json(
         { error: 'Session ID is required' },
         { status: 400 }
       )
     }
 
+    // Validate session ID format (Stripe session IDs start with 'cs_')
+    if (!sessionId.startsWith('cs_')) {
+      console.log('⚠️ Invalid session ID format:', sessionId)
+      return NextResponse.json(
+        { 
+          error: 'Invalid session ID format',
+          details: 'Session ID must start with "cs_"'
+        },
+        { status: 400 }
+      )
+    }
+
+    console.log('🔍 Retrieving session from Stripe:', sessionId)
+
     // Retrieve the checkout session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ['subscription', 'customer']
+    })
+
+    console.log('✅ Session retrieved successfully:', {
+      id: session.id,
+      status: session.payment_status,
+      mode: session.mode,
+      customer: session.customer,
+      subscription: session.subscription
     })
 
     return NextResponse.json({ 
@@ -28,9 +53,39 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error retrieving checkout session:', error)
+    console.error('❌ Error retrieving checkout session:', error)
+    
+    // Handle specific Stripe errors
+    if (error instanceof Error) {
+      if (error.message.includes('No such checkout.session')) {
+        return NextResponse.json(
+          { 
+            error: 'Checkout session not found',
+            details: 'The session may have expired or been invalidated',
+            code: 'SESSION_NOT_FOUND'
+          },
+          { status: 404 }
+        )
+      }
+      
+      if (error.message.includes('Invalid API key')) {
+        return NextResponse.json(
+          { 
+            error: 'Stripe configuration error',
+            details: 'Invalid API key configuration',
+            code: 'STRIPE_CONFIG_ERROR'
+          },
+          { status: 500 }
+        )
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to retrieve checkout session' },
+      { 
+        error: 'Failed to retrieve checkout session',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        code: 'UNKNOWN_ERROR'
+      },
       { status: 500 }
     )
   }

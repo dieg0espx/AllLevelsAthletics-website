@@ -4,78 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle, Globe, Users, Zap, ChevronLeft, ChevronRight, Instagram, Music } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import CalendlyPopup from "@/components/calendly-popup"
 
 export default function ContactPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
 
-  // Preload Calendly script and CSS on page load for inline widget
-  useEffect(() => {
-    // Only run on client side
-    if (typeof window === 'undefined') return
-    
-    // Load Calendly CSS
-    const existingCSS = document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')
-    if (!existingCSS) {
-      const link = document.createElement('link')
-      link.href = 'https://assets.calendly.com/assets/external/widget.css'
-      link.rel = 'stylesheet'
-      document.head.appendChild(link)
-    }
-
-    // Load Calendly script
-    const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')
-    
-    if (!existingScript) {
-      const script = document.createElement('script')
-      script.src = 'https://assets.calendly.com/assets/external/widget.js'
-      script.async = true
-      script.onload = () => {
-        // Initialize inline widget after script loads
-        if ((window as any).Calendly) {
-          console.log('Calendly script loaded and ready for inline widget')
-          // Initialize the inline widget
-          setTimeout(() => {
-            if ((window as any).Calendly) {
-              try {
-                (window as any).Calendly.initInlineWidget({
-                  url: 'https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09',
-                  parentElement: document.querySelector('.calendly-inline-widget'),
-                  prefill: {},
-                  utm: {}
-                })
-                console.log('Inline Calendly widget initialized')
-              } catch (error) {
-                console.error('Error initializing inline Calendly widget:', error)
-              }
-            }
-          }, 500)
-        }
-      }
-      document.head.appendChild(script)
-    } else {
-      // Script already exists, check if Calendly is ready
-      if ((window as any).Calendly) {
-        console.log('Calendly already available for inline widget')
-        // Initialize the inline widget
-        setTimeout(() => {
-          try {
-            (window as any).Calendly.initInlineWidget({
-              url: 'https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09',
-              parentElement: document.querySelector('.calendly-inline-widget'),
-              prefill: {},
-              utm: {}
-            })
-            console.log('Inline Calendly widget initialized')
-          } catch (error) {
-            console.error('Error initializing inline Calendly widget:', error)
-          }
-        }, 500)
-      }
-    }
-  }, [])
 
   // Function to handle phone calls
   const handlePhoneCall = () => {
@@ -596,27 +531,21 @@ export default function ContactPage() {
                     Choose a time that works for you - consultations are available evenings and weekends
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
-                  {/* Calendly Inline Widget */}
-                  <div 
-                    className="calendly-inline-widget" 
-                    data-url="https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09"
-                    style={{ minWidth: '320px', height: '700px' }}
-                  >
-                    {/* Fallback content if Calendly doesn't load */}
-                    <div className="flex items-center justify-center h-full bg-gray-50">
-                      <div className="text-center p-8">
-                        <Calendar className="w-16 h-16 text-orange-500 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Calendar...</h3>
-                        <p className="text-gray-600 mb-6">If the calendar doesn't load, you can book directly:</p>
-                        <Button 
-                          onClick={() => window.open('https://calendly.com/alllevelsathletics/fitnessconsultation', '_blank')}
-                          className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-bold py-3 px-6 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300"
-                        >
-                          Open Calendar
-                        </Button>
-                      </div>
-                    </div>
+                <CardContent className="p-8">
+                  <div className="text-center">
+                    <Button
+                      onClick={() => setIsCalendlyOpen(true)}
+                      className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-bold py-4 px-8 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105"
+                    >
+                      <span className="flex items-center justify-center gap-3">
+                        <Calendar className="w-5 h-5" />
+                        Book Your Free Consultation
+                      </span>
+                    </Button>
+                    
+                    <p className="text-sm text-gray-500 mt-6">
+                      We'll get back to you within 24-48 hours.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -752,7 +681,8 @@ export default function ContactPage() {
       {/* Calendly Popup */}
       <CalendlyPopup 
         isOpen={isCalendlyOpen} 
-        onClose={() => setIsCalendlyOpen(false)} 
+        onClose={() => setIsCalendlyOpen(false)}
+        url="https://calendly.com/alllevelsathletics/fitnessconsultation?back=1&month=2025-09"
       />
     </div>
   )
