@@ -182,7 +182,7 @@ export default function ClientDashboard() {
   }
 
   const handleRefreshSubscription = async () => {
-    setRefreshingSubscription(true)
+      setRefreshingSubscription(true)
     try {
       console.log('🔄 Manual sync - fetching subscription from Stripe...')
       
@@ -230,11 +230,18 @@ export default function ClientDashboard() {
         console.log('📊 Dashboard - Programs found:', data.programs?.length || 0)
         setUserPrograms(data.programs || [])
       } else {
-        // If API fails, check localStorage as fallback
-        console.log('⚠️ API failed, checking localStorage for programs')
-        const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
-        console.log('📊 Dashboard - Local programs found:', localPrograms.length)
-        setUserPrograms(localPrograms)
+        // If API fails, check localStorage as fallback (only on client side)
+        if (typeof window !== 'undefined') {
+          console.log('⚠️ API failed, checking localStorage for programs')
+          try {
+            const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
+            console.log('📊 Dashboard - Local programs found:', localPrograms.length)
+            setUserPrograms(localPrograms)
+          } catch (error) {
+            console.error('Error reading localStorage:', error)
+            setUserPrograms([])
+          }
+        }
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
@@ -242,14 +249,16 @@ export default function ClientDashboard() {
         return
       }
       console.error('Error fetching user programs:', error)
-      // If API fails, check localStorage as fallback
-      console.log('API error, checking localStorage for programs')
-      try {
-        const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
-        setUserPrograms(localPrograms)
-      } catch (localError) {
-        console.error('Error reading localStorage:', localError)
-        setUserPrograms([])
+      // If API fails, check localStorage as fallback (only on client side)
+      if (typeof window !== 'undefined') {
+        console.log('API error, checking localStorage for programs')
+        try {
+          const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
+          setUserPrograms(localPrograms)
+        } catch (localError) {
+          console.error('Error reading localStorage:', localError)
+          setUserPrograms([])
+        }
       }
     }
   }
@@ -324,24 +333,26 @@ export default function ClientDashboard() {
           })
         }
       } else {
-        // If API failed, check localStorage for programs
-        try {
-          const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
-          if (localPrograms.length > 0) {
-            localPrograms.slice(0, 2).forEach((program: any) => {
-              activities.push({
-                id: `program-${program.id}`,
-                type: 'program',
-                title: `Started ${program.name}`,
-                description: `${program.progress}% complete`,
-                date: program.startDate || program.registeredAt,
-                icon: <BookOpen className="w-4 h-4 text-orange-400" />,
-                color: 'orange'
+        // If API failed, check localStorage for programs (only on client side)
+        if (typeof window !== 'undefined') {
+          try {
+            const localPrograms = JSON.parse(localStorage.getItem('userPrograms') || '[]')
+            if (localPrograms.length > 0) {
+              localPrograms.slice(0, 2).forEach((program: any) => {
+                activities.push({
+                  id: `program-${program.id}`,
+                  type: 'program',
+                  title: `Started ${program.name}`,
+                  description: `${program.progress}% complete`,
+                  date: program.startDate || program.registeredAt,
+                  icon: <BookOpen className="w-4 h-4 text-orange-400" />,
+                  color: 'orange'
+                })
               })
-            })
+            }
+          } catch (localError) {
+            console.error('Error reading localStorage for activities:', localError)
           }
-        } catch (localError) {
-          console.error('Error reading localStorage for activities:', localError)
         }
       }
 
@@ -421,7 +432,7 @@ export default function ClientDashboard() {
                 <Badge variant="secondary" className="bg-orange-500/20 text-orange-400 border-orange-500/30">
                   {user.user_metadata?.role || 'Client'}
                 </Badge>
-              </div>
+            </div>
               
               <div className="flex items-center space-x-3">
                 <Button
@@ -445,7 +456,7 @@ export default function ClientDashboard() {
           </div>
         </header>
 
-        {/* Main Content */}
+      {/* Main Content */}
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Dashboard Navigation */}
           <nav className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur-md border border-orange-500/30 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
@@ -508,8 +519,8 @@ export default function ClientDashboard() {
                   <BookOpen className="w-5 h-5 text-orange-400" />
                   My Programs
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
+            </CardHeader>
+            <CardContent>
                 <div className="text-center py-4">
                   <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Dumbbell className="w-6 h-6 text-orange-400" />
@@ -536,8 +547,8 @@ export default function ClientDashboard() {
                     </>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+            </CardContent>
+          </Card>
 
             {/* 1-on-1 Coaching Summary */}
             <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 cursor-pointer" onClick={() => router.push(hasCoachingSubscription ? '/dashboard/coaching' : '/services')}>
@@ -546,12 +557,12 @@ export default function ClientDashboard() {
                   <Users className="w-5 h-5 text-orange-400" />
                   1-on-1 Coaching
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
+            </CardHeader>
+            <CardContent>
                 <div className="text-center py-4">
                   <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Users className="w-6 h-6 text-orange-400" />
-                  </div>
+              </div>
                   <h3 className="text-lg font-semibold text-white mb-2">
                     {hasCoachingSubscription ? (subscriptionData?.subscription?.plan_name || 'Foundation') : 'No Active Plan'}
                   </h3>
@@ -583,8 +594,8 @@ export default function ClientDashboard() {
                     </Button>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+            </CardContent>
+          </Card>
 
             {/* Products Summary */}
             <Card className="bg-white/5 border-orange-500/30 hover:border-orange-400/50 transition-all duration-300 cursor-pointer" onClick={() => router.push('/dashboard/products')}>
@@ -593,12 +604,12 @@ export default function ClientDashboard() {
                   <ShoppingBag className="w-5 h-5 text-orange-400" />
                   Purchased Products
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
+            </CardHeader>
+            <CardContent>
                 <div className="text-center py-4">
                   <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Package className="w-6 h-6 text-orange-400" />
-                  </div>
+              </div>
                   <h3 className="text-lg font-semibold text-white mb-2">
                     {purchasedProductsCount > 0 ? `${purchasedProductsCount} Products` : 'No Products Yet'}
                   </h3>
@@ -609,19 +620,19 @@ export default function ClientDashboard() {
                     {purchasedProductsCount > 0 ? 'View Details' : 'Browse Products'}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+            </CardContent>
+          </Card>
+        </div>
 
 
-          {/* Recent Activity */}
+        {/* Recent Activity */}
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
               <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
               Recent Activity
             </h3>
             <div className="space-y-3">
-              {recentActivity.length > 0 ? (
+            {recentActivity.length > 0 ? (
                 recentActivity.map((activity) => (
                   <div key={activity.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-orange-500/20">
                     <div className={`w-8 h-8 ${activity.color === 'green' ? 'bg-green-500/20' : activity.color === 'yellow' ? 'bg-yellow-500/20' : activity.color === 'orange' ? 'bg-orange-500/20' : 'bg-blue-500/20'} rounded-full flex items-center justify-center`}>
@@ -634,17 +645,17 @@ export default function ClientDashboard() {
                     </div>
                   </div>
                 ))
-              ) : (
-                <div className="text-center py-8">
+            ) : (
+              <div className="text-center py-8">
                   <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-8 h-8 text-white/40" />
                   </div>
                   <p className="text-white/60">No recent activity</p>
                   <p className="text-sm text-white/40">Your activity will appear here</p>
                 </div>
-              )}
-            </div>
-          </div>
+        )}
+      </div>
+    </div>
 
         </main>
       </div>
