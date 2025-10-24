@@ -77,7 +77,9 @@ export default function ServicesPage() {
 
     if (hasActiveSubscription) {
       // Redirect to dashboard coaching page for existing subscribers
-      window.location.href = '/dashboard/coaching'
+      if (typeof window !== 'undefined') {
+        window.location.href = '/dashboard/coaching'
+      }
       return
     }
 
@@ -128,7 +130,9 @@ export default function ServicesPage() {
 
     if (hasActiveSubscription) {
       // Redirect to dashboard coaching page for existing subscribers
-      window.location.href = '/dashboard/coaching'
+      if (typeof window !== 'undefined') {
+        window.location.href = '/dashboard/coaching'
+      }
       return
     }
 
@@ -185,7 +189,9 @@ export default function ServicesPage() {
     
     try {
       // Store plan data in localStorage for success page
-      localStorage.setItem('planData', JSON.stringify(plan))
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('planData', JSON.stringify(plan))
+      }
       
       // Create checkout session for the plan
       const response = await fetch('/api/create-plan-checkout-session', {
@@ -208,7 +214,9 @@ export default function ServicesPage() {
       }
 
       // Redirect to Stripe checkout
-      window.location.href = sessionUrl
+      if (typeof window !== 'undefined') {
+        window.location.href = sessionUrl
+      }
       
     } catch (error) {
       console.error('Error creating plan checkout:', error)
@@ -245,15 +253,17 @@ export default function ServicesPage() {
     // Only run on client side
     if (typeof window === 'undefined') return
     
-    const urlParams = new URLSearchParams(window.location.search)
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
     const scrollTo = urlParams.get('scrollTo')
     
     if (scrollTo === 'products') {
       // Wait for the page to fully load, then scroll to products section
       setTimeout(() => {
-        const productsSection = document.getElementById('products')
-        if (productsSection) {
-          productsSection.scrollIntoView({ behavior: 'smooth' })
+        if (typeof document !== 'undefined') {
+          const productsSection = document.getElementById('products')
+          if (productsSection) {
+            productsSection.scrollIntoView({ behavior: 'smooth' })
+          }
         }
       }, 1000) // Wait 1 second for page to load
     }
@@ -314,7 +324,11 @@ export default function ServicesPage() {
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto border-2 border-orange-500/50 text-orange-400 font-semibold text-base px-4 sm:px-6 py-3 sm:py-4 rounded-full transition-all duration-300 ease-out hover:bg-orange-500/10 hover:border-orange-500/70 hover:text-orange-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                onClick={() => window.location.href = '/services#knot-roller'}
+                onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/services#knot-roller'
+                    }
+                  }}
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
@@ -1639,7 +1653,11 @@ export default function ServicesPage() {
                   </p>
                   <Button 
                     className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                    onClick={() => window.location.href = '/services#services'}
+                    onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/services#services'
+                    }
+                  }}
                   >
                     <span className="flex items-center gap-2">
                       <Award className="w-4 h-4" />
@@ -1663,7 +1681,11 @@ export default function ServicesPage() {
                   </p>
                   <Button 
                     className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                    onClick={() => window.location.href = '/programs#featured-programs'}
+                    onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/programs#featured-programs'
+                    }
+                  }}
                   >
                     <span className="flex items-center gap-2">
                       <Heart className="w-4 h-4" />
@@ -1687,7 +1709,11 @@ export default function ServicesPage() {
                   </p>
                   <Button 
                     className="w-full gradient-orange-yellow text-black font-bold text-sm sm:text-base hover:scale-105 transition-all"
-                    onClick={() => window.location.href = '/services#services'}
+                    onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/services#services'
+                    }
+                  }}
                   >
                     <span className="flex items-center gap-2">
                       <Users className="w-4 h-4" />

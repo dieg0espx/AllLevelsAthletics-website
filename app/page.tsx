@@ -530,7 +530,11 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/services#services'}
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/services#services'
+                    }
+                  }}
                 >
                   Start Foundation Program
                 </Button>
@@ -602,7 +606,11 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/services#services'}
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/services#services'
+                    }
+                  }}
                 >
                   Choose Growth Program
                 </Button>
@@ -665,7 +673,11 @@ export default function HomePage() {
                 </ul>
                 <Button 
                   className="w-full gradient-orange-yellow text-black font-bold text-base sm:text-lg py-4 sm:py-5 hover:scale-105 transition-all group-hover:shadow-2xl mt-auto"
-                  onClick={() => window.location.href = '/services#services'}
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/services#services'
+                    }
+                  }}
                 >
                   Go Elite Premium
                 </Button>
@@ -1022,14 +1034,22 @@ export default function HomePage() {
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <Button
                           className="bg-gradient-to-r from-orange-500 to-yellow-500 text-black hover:from-orange-600 hover:to-yellow-600 border-orange-500 shadow-lg text-sm sm:text-base py-2 sm:py-3"
-                          onClick={() => window.open('tel:+17605858832', '_self')}
+                          onClick={() => {
+                            if (typeof window !== 'undefined') {
+                              window.open('tel:+17605858832', '_self')
+                            }
+                          }}
                         >
                           <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                           Call Now
                         </Button>
                         <Button
                           className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-600 hover:to-orange-600 border-yellow-500 shadow-lg text-sm sm:text-base py-2 sm:py-3"
-                          onClick={() => window.open('mailto:AllLevelsAthletics@gmail.com?subject=Question about All Levels Athletics&body=Hi Daniel,%0D%0A%0D%0AI have a question about your training services.%0D%0A%0D%0A', '_self')}
+                          onClick={() => {
+                            if (typeof window !== 'undefined') {
+                              window.open('mailto:AllLevelsAthletics@gmail.com?subject=Question about All Levels Athletics&body=Hi Daniel,%0D%0A%0D%0AI have a question about your training services.%0D%0A%0D%0A', '_self')
+                            }
+                          }}
                         >
                           <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                           Email Us
