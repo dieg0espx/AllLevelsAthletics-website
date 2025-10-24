@@ -48,6 +48,14 @@ function SubscriptionSuccessContent() {
   const { user, userRole, isHydrated } = useSafeAuth()
   const { refreshSubscription, subscription, loading } = useSafeSubscription()
 
+  // All state declarations must come before any early returns to follow Rules of Hooks
+  const [isLoading, setIsLoading] = useState(true)
+  const [sessionData, setSessionData] = useState<any>(null)
+  const [hasRefreshed, setHasRefreshed] = useState(false)
+  const [autoRedirectCountdown, setAutoRedirectCountdown] = useState<number | null>(null)
+  const [eliteCoupon, setEliteCoupon] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+
   // Don't render until hydrated to prevent SSR issues
   if (!isHydrated) {
     return (
@@ -56,12 +64,6 @@ function SubscriptionSuccessContent() {
       </div>
     )
   }
-  const [isLoading, setIsLoading] = useState(true)
-  const [sessionData, setSessionData] = useState<any>(null)
-  const [hasRefreshed, setHasRefreshed] = useState(false)
-  const [autoRedirectCountdown, setAutoRedirectCountdown] = useState<number | null>(null)
-  const [eliteCoupon, setEliteCoupon] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
 
   const sessionId = searchParams.get('session_id')
 
