@@ -18,7 +18,9 @@ function DebugInfo({ sessionId, user, isHydrated, hasRefreshed, isLoading, loadi
     setMounted(true)
   }, [])
   
-  if (!mounted || process.env.NODE_ENV !== 'development') return null
+  // Only render in development and after mounting
+  if (!mounted) return null
+  if (process.env.NODE_ENV !== 'development') return null
   
   return (
     <Card className="bg-gray-800 border-gray-600 mb-6">
@@ -162,7 +164,11 @@ function SubscriptionSuccessContent() {
           <p className="text-gray-300 mb-6">{error}</p>
           <div className="space-y-4">
             <Button 
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.reload()
+                }
+              }}
               className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3"
             >
               Try Again
@@ -257,18 +263,20 @@ function SubscriptionSuccessContent() {
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-2xl mx-auto">
           
-          {/* Debug Info - Client-side only to prevent hydration mismatch */}
-          <DebugInfo 
-            sessionId={sessionId}
-            user={user}
-            isHydrated={isHydrated}
-            hasRefreshed={hasRefreshed}
-            isLoading={isLoading}
-            loading={loading}
-            error={error}
-            sessionData={sessionData}
-            subscription={subscription}
-          />
+          {/* Debug Info - Only in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <DebugInfo 
+              sessionId={sessionId}
+              user={user}
+              isHydrated={isHydrated}
+              hasRefreshed={hasRefreshed}
+              isLoading={isLoading}
+              loading={loading}
+              error={error}
+              sessionData={sessionData}
+              subscription={subscription}
+            />
+          )}
           {/* Success Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
