@@ -130,7 +130,8 @@ export async function POST(request: NextRequest) {
     if (process.env.NODE_ENV === 'production') {
       baseUrl = 'https://www.alllevelsathletics.com'
     } else {
-      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+      // For development, use the production domain so Stripe redirects work correctly
+      baseUrl = 'https://alllevelsathletics.com'
     }
     
     // Create URLs for subscription checkout

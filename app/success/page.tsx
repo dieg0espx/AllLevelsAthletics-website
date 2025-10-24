@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle, Package, Home, ShoppingBag, Mail, Truck, Clock, Star } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
+import { ErrorBoundary } from "@/components/error-boundary"
 
 function SuccessContent() {
   const searchParams = useSearchParams()
@@ -447,15 +448,17 @@ function SuccessContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-600/10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-lg text-muted-foreground">Loading...</p>
+    <ErrorBoundary>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gradient-to-br from-orange-500/10 via-yellow-500/5 to-orange-600/10 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-lg text-muted-foreground">Loading...</p>
+          </div>
         </div>
-      </div>
-    }>
-      <SuccessContent />
-    </Suspense>
+      }>
+        <SuccessContent />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
