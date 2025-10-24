@@ -10,6 +10,36 @@ import { CheckCircle, ArrowRight, Crown, Calendar, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { ErrorBoundary } from '@/components/error-boundary'
 
+// Client-side only debug component to prevent hydration mismatch
+function DebugInfo({ sessionId, user, isHydrated, hasRefreshed, isLoading, loading, error, sessionData, subscription }: any) {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  if (!mounted || process.env.NODE_ENV !== 'development') return null
+  
+  return (
+    <Card className="bg-gray-800 border-gray-600 mb-6">
+      <CardHeader>
+        <CardTitle className="text-sm text-gray-300">Debug Info</CardTitle>
+      </CardHeader>
+      <CardContent className="text-xs text-gray-400">
+        <div>Session ID: {sessionId || 'None'}</div>
+        <div>User ID: {user?.id || 'None'}</div>
+        <div>Is Hydrated: {isHydrated ? 'Yes' : 'No'}</div>
+        <div>Has Refreshed: {hasRefreshed ? 'Yes' : 'No'}</div>
+        <div>Is Loading: {isLoading ? 'Yes' : 'No'}</div>
+        <div>Loading State: {loading ? 'Yes' : 'No'}</div>
+        <div>Error: {error || 'None'}</div>
+        <div>Session Data: {sessionData ? 'Loaded' : 'Not loaded'}</div>
+        <div>Subscription: {subscription ? `${subscription.plan_name} (${subscription.status})` : 'None'}</div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function SubscriptionSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -227,25 +257,18 @@ function SubscriptionSuccessContent() {
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-2xl mx-auto">
           
-          {/* Debug Info - Remove in production */}
-          {process.env.NODE_ENV === 'development' && (
-            <Card className="bg-gray-800 border-gray-600 mb-6">
-              <CardHeader>
-                <CardTitle className="text-sm text-gray-300">Debug Info</CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs text-gray-400">
-                <div>Session ID: {sessionId || 'None'}</div>
-                <div>User ID: {user?.id || 'None'}</div>
-                <div>Is Hydrated: {isHydrated ? 'Yes' : 'No'}</div>
-                <div>Has Refreshed: {hasRefreshed ? 'Yes' : 'No'}</div>
-                <div>Is Loading: {isLoading ? 'Yes' : 'No'}</div>
-                <div>Loading State: {loading ? 'Yes' : 'No'}</div>
-                <div>Error: {error || 'None'}</div>
-                <div>Session Data: {sessionData ? 'Loaded' : 'Not loaded'}</div>
-                <div>Subscription: {subscription ? `${subscription.plan_name} (${subscription.status})` : 'None'}</div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Debug Info - Client-side only to prevent hydration mismatch */}
+          <DebugInfo 
+            sessionId={sessionId}
+            user={user}
+            isHydrated={isHydrated}
+            hasRefreshed={hasRefreshed}
+            isLoading={isLoading}
+            loading={loading}
+            error={error}
+            sessionData={sessionData}
+            subscription={subscription}
+          />
           {/* Success Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
