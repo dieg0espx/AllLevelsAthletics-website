@@ -78,27 +78,39 @@ export default function CheckoutPage() {
      
      setStep('payment')
      // Scroll to top of the page when transitioning to payment
-     window.scrollTo({ top: 0, behavior: 'smooth' })
+     if (typeof window !== 'undefined') {
+       if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+     }
    }
 
      const handleStepChange = (newStep: 'cart' | 'shipping' | 'payment' | 'confirmation') => {
     setStep(newStep)
     // Scroll to top of the page when changing steps
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    }
   }
 
   // Scroll to top when step changes
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [step])
 
   // Scroll to top when page loads
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [])
 
   // Fetch user profile data when user is available
@@ -222,7 +234,9 @@ export default function CheckoutPage() {
            localStorage.setItem('cartItems', JSON.stringify(responseData.metadata.items))
            localStorage.setItem('shippingInfo', JSON.stringify(responseData.metadata.shippingInfo))
            // Redirect to success page
-           window.location.href = responseData.redirectUrl
+           if (typeof window !== 'undefined') {
+             window.location.href = responseData.redirectUrl
+           }
          }
          return
        }
@@ -300,9 +314,11 @@ export default function CheckoutPage() {
                                         router.push('/services?scrollTo=products');
                                         // Force scroll to products section after navigation
                                         setTimeout(() => {
-                                          const productsSection = document.getElementById('products');
-                                          if (productsSection) {
-                                            productsSection.scrollIntoView({ behavior: 'smooth' });
+                                          if (typeof document !== 'undefined') {
+                                            const productsSection = document.getElementById('products');
+                                            if (productsSection) {
+                                              productsSection.scrollIntoView({ behavior: 'smooth' });
+                                            }
                                           }
                                         }, 1000);
                                       }}
@@ -344,9 +360,11 @@ export default function CheckoutPage() {
                                 router.push('/services?scrollTo=products');
                                 // Force scroll to products section after navigation
                                 setTimeout(() => {
-                                  const productsSection = document.getElementById('products');
-                                  if (productsSection) {
-                                    productsSection.scrollIntoView({ behavior: 'smooth' });
+                                  if (typeof document !== 'undefined') {
+                                    const productsSection = document.getElementById('products');
+                                    if (productsSection) {
+                                      productsSection.scrollIntoView({ behavior: 'smooth' });
+                                    }
                                   }
                                 }, 1000);
                               }}
