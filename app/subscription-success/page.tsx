@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { ErrorBoundary } from '@/components/error-boundary'
 
 // Client-side only debug component to prevent hydration mismatch
-function DebugInfo({ sessionId, user, isHydrated, hasRefreshed, isLoading, loading, error, sessionData, subscription }: any) {
+function DebugInfo({ sessionId, user, isHydrated, hasRefreshed, isLoading, loading, error, sessionData, subscription, authLoading }: any) {
   const [mounted, setMounted] = useState(false)
   
   useEffect(() => {
@@ -31,6 +31,7 @@ function DebugInfo({ sessionId, user, isHydrated, hasRefreshed, isLoading, loadi
         <div>Session ID: {sessionId || 'None'}</div>
         <div>User ID: {user?.id || 'None'}</div>
         <div>Is Hydrated: {isHydrated ? 'Yes' : 'No'}</div>
+        <div>Auth Loading: {authLoading ? 'Yes' : 'No'}</div>
         <div>Has Refreshed: {hasRefreshed ? 'Yes' : 'No'}</div>
         <div>Is Loading: {isLoading ? 'Yes' : 'No'}</div>
         <div>Loading State: {loading ? 'Yes' : 'No'}</div>
@@ -45,7 +46,7 @@ function DebugInfo({ sessionId, user, isHydrated, hasRefreshed, isLoading, loadi
 function SubscriptionSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, userRole, isHydrated } = useSafeAuth()
+  const { user, userRole, isHydrated, loading: authLoading } = useSafeAuth()
   const { refreshSubscription, subscription, loading } = useSafeSubscription()
 
   // All state declarations must come before any early returns to follow Rules of Hooks
@@ -56,8 +57,8 @@ function SubscriptionSuccessContent() {
   const [eliteCoupon, setEliteCoupon] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // Don't render until hydrated to prevent SSR issues
-  if (!isHydrated) {
+  // Don't render until hydrated and auth is loaded to prevent SSR issues
+  if (!isHydrated || authLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
@@ -121,9 +122,50 @@ function SubscriptionSuccessContent() {
             setIsLoading(false)
           })
         })
-    } else if (!sessionId || !user) {
-      console.log('⚠️ Missing sessionId or user, skipping data fetch')
+    } else if (!sessionId) {
+      console.log('⚠️ Missing sessionId, skipping data fetch')
       setIsLoading(false)
+    } else if (!user) {
+      console.log('⚠️ No authenticated user, but sessionId exists - proceeding with session data fetch')
+      // Still try to fetch session data even without user authentication
+      setHasRefreshed(true)
+      console.log('🔄 Starting session data fetch without user...')
+      
+      // First, try to get session data from Stripe
+      fetch(`/api/get-checkout-session?session_id=${sessionId}`)
+        .then(res => {
+          console.log('📡 Session fetch response:', res.status, res.statusText)
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`)
+          }
+          return res.json()
+        })
+        .then(data => {
+          console.log('📦 Session data received:', data)
+          if (data.error) {
+            // Handle specific error cases
+            if (data.code === 'SESSION_NOT_FOUND') {
+              console.log('⚠️ Session not found - may be expired or invalid')
+              setError('This checkout session has expired or is invalid. Please contact support if you completed a payment.')
+            } else if (data.code === 'STRIPE_CONFIG_ERROR') {
+              console.log('❌ Stripe configuration error')
+              setError('Payment system configuration error. Please contact support.')
+            } else {
+              throw new Error(data.error)
+            }
+          } else if (data.session) {
+            setSessionData(data.session)
+            console.log('✅ Session data set successfully')
+          }
+        })
+        .catch(err => {
+          console.error('❌ Error fetching session:', err)
+          setError(`Failed to load session data: ${err.message}`)
+        })
+        .finally(() => {
+          console.log('✅ Session data fetch completed')
+          setIsLoading(false)
+        })
     }
 
     // Fallback timeout to prevent infinite loading
@@ -133,7 +175,7 @@ function SubscriptionSuccessContent() {
     }, 10000) // 10 seconds timeout
 
     return () => clearTimeout(timeout)
-  }, [sessionId, user])
+  }, [sessionId, user, isHydrated, authLoading])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -271,6 +313,7 @@ function SubscriptionSuccessContent() {
               sessionId={sessionId}
               user={user}
               isHydrated={isHydrated}
+              authLoading={authLoading}
               hasRefreshed={hasRefreshed}
               isLoading={isLoading}
               loading={loading}
