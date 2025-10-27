@@ -56,7 +56,6 @@ function SubscriptionSuccessContent() {
   const [autoRedirectCountdown, setAutoRedirectCountdown] = useState<number | null>(null)
   const [eliteCoupon, setEliteCoupon] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null)
 
   // Don't render until hydrated to prevent SSR issues
   if (!isHydrated) {
@@ -69,6 +68,17 @@ function SubscriptionSuccessContent() {
 
   const sessionId = searchParams.get('session_id')
 
+  // Separate effect for timeout
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      console.log('⏰ Loading timeout reached, stopping loading')
+      setIsLoading(false)
+    }, 5000)
+    
+    return () => clearTimeout(timeout)
+  }, []) // Only run once on mount
+
+  // Separate effect for session data fetching
   useEffect(() => {
     console.log('🔍 Subscription Success Page Debug:')
     console.log('- sessionId:', sessionId)
@@ -77,77 +87,66 @@ function SubscriptionSuccessContent() {
     console.log('- hasRefreshed:', hasRefreshed)
     console.log('- authLoading:', authLoading)
     
-    // Set a timeout to prevent infinite loading (5 seconds)
-    const timeout = setTimeout(() => {
-      console.log('⏰ Loading timeout reached, stopping loading')
-      setIsLoading(false)
-    }, 5000)
-    
-    setLoadingTimeout(timeout)
-    
-    // Always try to fetch session data if we have a sessionId
-    if (sessionId && !hasRefreshed) {
-      setHasRefreshed(true)
-      console.log('🔄 Starting session data fetch...')
-      
-      // First, try to get session data from Stripe
-      fetch(`/api/get-checkout-session?session_id=${sessionId}`)
-        .then(res => {
-          console.log('📡 Session fetch response:', res.status, res.statusText)
-          if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`)
-          }
-          return res.json()
-        })
-        .then(data => {
-          console.log('📦 Session data received:', data)
-          if (data.error) {
-            // Handle specific error cases
-            if (data.code === 'SESSION_NOT_FOUND') {
-              console.log('⚠️ Session not found - may be expired or invalid')
-              setError('This checkout session has expired or is invalid. Please contact support if you completed a payment.')
-            } else if (data.code === 'STRIPE_CONFIG_ERROR') {
-              console.log('❌ Stripe configuration error')
-              setError('Payment system configuration error. Please contact support.')
-            } else {
-              throw new Error(data.error)
-            }
-          } else if (data.session) {
-            setSessionData(data.session)
-            console.log('✅ Session data set successfully')
-          }
-        })
-        .catch(err => {
-          console.error('❌ Error fetching session:', err)
-          setError(`Failed to load session data: ${err.message}`)
-        })
-        .finally(() => {
-          console.log('🔄 Refreshing subscription data...')
-          // Only refresh subscription if user is authenticated
-          if (user) {
-            refreshSubscription().catch(err => {
-              console.error('❌ Error refreshing subscription:', err)
-              setError(`Failed to refresh subscription: ${err.message}`)
-            }).finally(() => {
-              console.log('✅ Subscription refresh completed')
-              setIsLoading(false)
-            })
-          } else {
-            console.log('⚠️ No user authenticated, skipping subscription refresh')
-            setIsLoading(false)
-          }
-        })
-    } else if (!sessionId) {
-      console.log('⚠️ Missing sessionId, skipping data fetch')
-      setIsLoading(false)
-    }
-
-    return () => {
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout)
+    // Only run if we have sessionId and haven't fetched yet
+    if (!sessionId || hasRefreshed) {
+      if (!sessionId) {
+        console.log('⚠️ Missing sessionId, skipping data fetch')
+        setIsLoading(false)
       }
+      return
     }
-  }, [sessionId, user, isHydrated, authLoading])
+    
+    setHasRefreshed(true)
+    console.log('🔄 Starting session data fetch...')
+    
+    // First, try to get session data from Stripe
+    fetch(`/api/get-checkout-session?session_id=${sessionId}`)
+      .then(res => {
+        console.log('📡 Session fetch response:', res.status, res.statusText)
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
+      .then(data => {
+        console.log('📦 Session data received:', data)
+        if (data.error) {
+          // Handle specific error cases
+          if (data.code === 'SESSION_NOT_FOUND') {
+            console.log('⚠️ Session not found - may be expired or invalid')
+            setError('This checkout session has expired or is invalid. Please contact support if you completed a payment.')
+          } else if (data.code === 'STRIPE_CONFIG_ERROR') {
+            console.log('❌ Stripe configuration error')
+            setError('Payment system configuration error. Please contact support.')
+          } else {
+            throw new Error(data.error)
+          }
+        } else if (data.session) {
+          setSessionData(data.session)
+          console.log('✅ Session data set successfully')
+        }
+      })
+      .catch(err => {
+        console.error('❌ Error fetching session:', err)
+        setError(`Failed to load session data: ${err.message}`)
+      })
+      .finally(() => {
+        console.log('🔄 Refreshing subscription data...')
+        // Only refresh subscription if user is authenticated
+        if (user) {
+          refreshSubscription().catch(err => {
+            console.error('❌ Error refreshing subscription:', err)
+            setError(`Failed to refresh subscription: ${err.message}`)
+          }).finally(() => {
+            console.log('✅ Subscription refresh completed')
+            setIsLoading(false)
+          })
+        } else {
+          console.log('⚠️ No user authenticated, skipping subscription refresh')
+          setIsLoading(false)
+        }
+      })
+  }, [sessionId, hasRefreshed]) // Only depend on sessionId and hasRefreshed
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
