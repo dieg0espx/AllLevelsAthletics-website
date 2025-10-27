@@ -390,21 +390,31 @@ export default function AboutPage() {
               <div className="space-y-6 sm:space-y-8">
                 <div className="space-y-4 sm:space-y-6">
                   <p className="text-base sm:text-lg text-white/90 leading-relaxed">
-                    Daniel's journey into elite performance coaching began with his own transformation. After years of
-                    struggling with traditional training methods that left him frustrated and plateaued, he discovered the
-                    revolutionary power of tension-based training and myofascial release techniques.
+                    Daniel's journey into elite performance coaching began the same way many of his clients' do — with frustration. After years of grinding through traditional strength programs that built muscle but never solved the chronic tightness, plateaus, and pain holding him back, he discovered the missing piece: tension-based training and myofascial release.
                   </p>
 
                   <p className="text-base sm:text-lg text-white/90 leading-relaxed">
-                    What started as a personal breakthrough quickly evolved into a mission to help others. Daniel spent
-                    years studying under world-renowned coaches, mastering the science of human movement, and developing
-                    his unique methodology that combines cutting-edge training principles with personalized coaching.
+                    That single breakthrough changed everything. What began as his personal search for freedom of movement evolved into a mission to help others rebuild their bodies from the inside out.
                   </p>
 
                   <p className="text-base sm:text-lg text-white/90 leading-relaxed">
-                    Today, Daniel has helped over 500 athletes achieve their goals, from weekend warriors to elite
-                    competitors. His innovative approach to online coaching has revolutionized how people think about
-                    remote training, proving that distance is no barrier to exceptional results.
+                    Daniel immersed himself in the science of human performance — studying under world-class coaches, diving deep into biomechanics, mobility systems, and strength conditioning — until he developed a proven, repeatable methodology that helps athletes move better, perform stronger, and stay pain-free.
+                  </p>
+
+                  <p className="text-base sm:text-lg text-white/90 leading-relaxed">
+                    Over the past decade, Daniel has helped more than 500 athletes and active adults transform how they train — from weekend warriors regaining confidence after injury to elite competitors unlocking new levels of performance, to active adults getting back to the passions they love!
+                  </p>
+
+                  <p className="text-base sm:text-lg text-white/90 leading-relaxed">
+                    Through All Levels Athletics, Daniel is redefining what online coaching can be — merging cutting-edge training systems with personal connection and accountability that deliver real-world results.
+                  </p>
+
+                  <p className="text-base sm:text-lg text-white/90 leading-relaxed">
+                    His philosophy is simple: train intelligently, move freely, and unlock the body's true potential.
+                  </p>
+
+                  <p className="text-base sm:text-lg text-white/90 leading-relaxed font-semibold">
+                    Ready to experience the system that's changing how athletes train, recover, and perform?
                   </p>
                 </div>
 
