@@ -94,12 +94,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Get base URL from environment or fallback to localhost
-    // Force main domain for production
     if (process.env.NODE_ENV === 'production') {
       baseUrl = 'https://www.alllevelsathletics.com'
     } else {
-      // For development, use the production domain so Stripe redirects work correctly
-      baseUrl = 'https://alllevelsathletics.com'
+      // For development, use localhost or the configured development URL
+      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     }
     
     console.log('=== URL DEBUGGING ===')
