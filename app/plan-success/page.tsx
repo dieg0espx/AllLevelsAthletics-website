@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Trophy, Home, User, Mail, Calendar, Star, Award } from "lucide-react"
 import Link from "next/link"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth } from "@/contexts/safe-auth-context"
 
 function PlanSuccessContent() {
   const searchParams = useSearchParams()
@@ -15,11 +15,11 @@ function PlanSuccessContent() {
   const [orderSaved, setOrderSaved] = useState(false)
   const [orderSaveAttempted, setOrderSaveAttempted] = useState(false)
   const [planData, setPlanData] = useState<any>({})
-  const { user, userRole } = useAuth()
+  const { user, userRole, isHydrated } = useSafeAuth()
 
   useEffect(() => {
-    // Simulate loading for better UX
-    const timer = setTimeout(() => setIsLoading(false), 2000)
+    // Only run after hydration is complete
+    if (!isHydrated) return
     
     // Load plan data from localStorage
     const storedPlanData = JSON.parse(localStorage.getItem('planData') || '{}')
@@ -30,8 +30,9 @@ function PlanSuccessContent() {
       savePlanPurchaseToAccount()
     }
     
-    return () => clearTimeout(timer)
-  }, [sessionId, user])
+    // Set loading to false after data is loaded
+    setIsLoading(false)
+  }, [sessionId, user, isHydrated])
 
   const savePlanPurchaseToAccount = async () => {
     // Prevent duplicate calls
@@ -107,6 +108,14 @@ function PlanSuccessContent() {
     } catch (error) {
       console.error('❌ Error saving plan purchase:', error)
     }
+  }
+
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    )
   }
 
   if (isLoading) {
