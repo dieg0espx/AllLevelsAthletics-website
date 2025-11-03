@@ -12,10 +12,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // If email credentials are missing, no-op to avoid production 500s
+    // Check if email credentials are configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('⚠️ Email creds missing - skipping confirmation email send.');
-      return NextResponse.json({ success: true, skipped: true })
+      console.error('❌ EMAIL CREDENTIALS MISSING - Cannot send confirmation email')
+      console.error('Required environment variables:')
+      console.error('  - EMAIL_USER: Your SMTP email address')
+      console.error('  - EMAIL_PASS: Your SMTP password or app password')
+      console.error('  - EMAIL_HOST: SMTP host (default: smtp.gmail.com)')
+      console.error('  - EMAIL_PORT: SMTP port (default: 587)')
+      console.error('  - EMAIL_SECURE: Use TLS (default: false for port 587)')
+      console.error('📧 Email would have been sent to:', email)
+      console.error('📧 Plan:', planName)
+      console.error('📧 Coupon Code:', couponCode || 'none')
+      
+      // Return error instead of silently skipping, so webhook knows email failed
+      return NextResponse.json(
+        { 
+          error: 'Email credentials not configured',
+          skipped: true,
+          message: 'Please configure EMAIL_USER and EMAIL_PASS environment variables in Vercel'
+        },
+        { status: 500 }
+      )
     }
 
     // Create transporter
