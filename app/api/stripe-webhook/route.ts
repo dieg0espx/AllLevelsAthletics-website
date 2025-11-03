@@ -64,7 +64,26 @@ export async function POST(request: NextRequest) {
         break
 
       case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
+        // Skip if already handled by checkout.session.completed
+        // checkout.session.completed already calls handleSubscriptionCreated
+        // This prevents duplicate coupon creation and emails
+        console.log('⚠️ customer.subscription.created event received - checking if already processed')
+        const subscription = event.data.object as Stripe.Subscription
+        const subscriptionId = subscription.id
+        
+        // Check if subscription already exists in database (was already processed)
+        const { data: existingSubscription } = await supabaseAdmin
+          .from('user_subscriptions')
+          .select('id')
+          .eq('stripe_subscription_id', subscriptionId)
+          .single()
+        
+        if (existingSubscription) {
+          console.log('✅ Subscription already processed - skipping duplicate handling')
+        } else {
+          console.log('📝 Subscription not yet processed - handling now')
+          await handleSubscriptionCreated(subscription)
+        }
         break
 
       case 'customer.subscription.updated':
@@ -483,24 +502,39 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         const customerEmail = typeof customer !== 'string' && customer.email ? customer.email : null
         
         if (customerEmail && userId) {
-          console.log('🎁 Creating Elite MF Roller coupon for Elite subscriber')
+          // Check if a coupon already exists for this subscription/user to prevent duplicates
+          const { data: existingCoupons } = await supabaseAdmin
+            .from('elite_coupons')
+            .select('coupon_code, id')
+            .eq('user_id', userId)
+            .eq('customer_email', customerEmail)
+            .eq('is_used', false)
+            .order('created_at', { ascending: false })
+            .limit(1)
           
-          const couponResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/create-elite-coupon`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: userId,
-              customerEmail: customerEmail,
-              planName: planName
-            })
-          })
-          
-          if (couponResponse.ok) {
-            const couponData = await couponResponse.json()
-            eliteCouponCode = couponData.coupon.code
-            console.log('✅ Elite coupon created successfully:', eliteCouponCode)
+          if (existingCoupons && existingCoupons.length > 0) {
+            eliteCouponCode = existingCoupons[0].coupon_code
+            console.log('✅ Using existing Elite coupon:', eliteCouponCode, '(preventing duplicate)')
           } else {
-            console.error('❌ Failed to create Elite coupon')
+            console.log('🎁 Creating Elite MF Roller coupon for Elite subscriber')
+            
+            const couponResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/create-elite-coupon`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userId,
+                customerEmail: customerEmail,
+                planName: planName
+              })
+            })
+            
+            if (couponResponse.ok) {
+              const couponData = await couponResponse.json()
+              eliteCouponCode = couponData.coupon.code
+              console.log('✅ Elite coupon created successfully:', eliteCouponCode)
+            } else {
+              console.error('❌ Failed to create Elite coupon')
+            }
           }
         } else {
           console.log('⚠️ No customer email or user ID found, skipping Elite coupon creation')
