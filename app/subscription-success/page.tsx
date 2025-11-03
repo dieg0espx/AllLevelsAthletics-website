@@ -21,19 +21,11 @@ function SubscriptionSuccessContent() {
   // Get sessionId immediately - must be called before any early returns
   const sessionId = searchParams.get('session_id')
 
+  // ALL useEffect hooks must be called before any early returns
   // Simple hydration check
   useEffect(() => {
     setIsHydrated(true)
   }, [])
-
-  // Don't render until hydrated to prevent SSR issues
-  if (!isHydrated) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-      </div>
-    )
-  }
 
   // Separate effect for timeout
   useEffect(() => {
@@ -47,6 +39,9 @@ function SubscriptionSuccessContent() {
 
   // Separate effect for session data fetching
   useEffect(() => {
+    // Only run after hydration
+    if (!isHydrated) return
+    
     console.log('🔍 Subscription Success Page Debug:')
     console.log('- sessionId:', sessionId)
     console.log('- isHydrated:', isHydrated)
@@ -99,7 +94,16 @@ function SubscriptionSuccessContent() {
         console.log('🔄 Session data fetch completed')
         setIsLoading(false)
       })
-  }, [sessionId, hasRefreshed]) // Only depend on sessionId and hasRefreshed
+  }, [sessionId, hasRefreshed, isHydrated]) // Include isHydrated in dependencies
+
+  // Don't render until hydrated to prevent SSR issues
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    )
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
