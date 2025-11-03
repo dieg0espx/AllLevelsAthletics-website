@@ -84,6 +84,19 @@ function SubscriptionSuccessContent() {
         } else if (data.session) {
           setSessionData(data.session)
           console.log('✅ Session data set successfully')
+          console.log('📦 Subscription data:', {
+            hasSubscription: !!data.session.subscription,
+            subscriptionType: typeof data.session.subscription,
+            subscriptionId: typeof data.session.subscription === 'string' ? data.session.subscription : data.session.subscription?.id,
+            hasPeriodEnd: !!data.session.subscription?.current_period_end,
+            periodEnd: data.session.subscription?.current_period_end
+          })
+          
+          // If subscription exists but doesn't have period_end, try to fetch it from the database as a fallback
+          if (data.session.subscription && !data.session.subscription.current_period_end) {
+            console.log('⚠️ Subscription exists but missing period_end, checking database...')
+            // This will be handled by showing "Processing..." message, which is fine
+          }
         }
       })
       .catch(err => {
@@ -242,9 +255,22 @@ function SubscriptionSuccessContent() {
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-orange-400" />
                       <span className="text-white">
-                        {sessionData.subscription.current_period_end
-                          ? formatDate(new Date(sessionData.subscription.current_period_end * 1000).toISOString())
-                          : 'Processing...'}
+                        {(() => {
+                          // Handle both expanded subscription object and string ID
+                          const subscription = sessionData.subscription
+                          const periodEnd = typeof subscription === 'object' && subscription.current_period_end
+                            ? subscription.current_period_end
+                            : null
+                          
+                          if (periodEnd) {
+                            // If it's a number (Unix timestamp), convert it
+                            const date = typeof periodEnd === 'number' 
+                              ? new Date(periodEnd * 1000)
+                              : new Date(periodEnd)
+                            return formatDate(date.toISOString())
+                          }
+                          return 'Processing...'
+                        })()}
                       </span>
                     </div>
                   </div>

@@ -459,9 +459,16 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         })
         
         if (emailResponse.ok) {
-          console.log('✅ Subscription confirmation email sent successfully')
+          const emailData = await emailResponse.json()
+          if (emailData.skipped) {
+            console.warn('⚠️ Email sending skipped:', emailData.message || 'Email credentials not configured')
+          } else {
+            console.log('✅ Subscription confirmation email sent successfully')
+          }
         } else {
+          const errorData = await emailResponse.json().catch(() => ({}))
           console.error('❌ Failed to send subscription confirmation email')
+          console.error('Error details:', errorData.error || errorData.message || 'Unknown error')
         }
       } else {
         console.log('⚠️ No customer email found, skipping confirmation email')
