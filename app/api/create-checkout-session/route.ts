@@ -145,50 +145,71 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // If Elite customer is trying to get free MF roller, handle it specially
-    if (isEliteCustomer && validEliteCoupon && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
-      console.log('🎁 Elite customer with valid coupon getting free MF roller - bypassing Stripe!')
-      
-      // Mark the coupon as used
-      try {
-        await supabaseAdmin
-          .from('elite_coupons')
-          .update({
-            is_used: true,
-            used_at: new Date().toISOString()
-          })
-          .eq('id', validEliteCoupon.id)
-        
-        console.log('✅ Elite coupon marked as used')
-      } catch (error) {
-        console.error('❌ Error marking coupon as used:', error)
-      }
-      
-      // Create a special success response that doesn't go through Stripe
-      return NextResponse.json({
-        success: true,
-        bypassStripe: true,
-        message: 'Free MF roller for Elite customer - no payment required',
-        redirectUrl: `${baseUrl}/success?session_id=elite-free-roller-${Date.now()}`,
-        metadata: {
-          isEliteCustomer: true,
-          hasFreeMFRoller: true,
-          couponUsed: validEliteCoupon.coupon_code,
-          items: items,
-          shippingInfo: shippingInfo,
-          userId: userId
-        }
-      })
-    }
+    // If Elite customer has a valid coupon for MF roller, create a Stripe coupon and allow promotion codes
+    let eliteStripeCouponId: string | undefined = undefined
     
-    // If Elite customer but no valid coupon, show error
-    if (isEliteCustomer && !validEliteCoupon && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
-      console.log('❌ Elite customer but no valid coupon found')
-      return NextResponse.json({
-        success: false,
-        error: 'No valid Elite coupon found. Please check your email for your coupon code or contact support.',
-        code: 'NO_ELITE_COUPON'
-      }, { status: 400 })
+    if (isEliteCustomer && validEliteCoupon && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
+      console.log('🎁 Elite customer with valid coupon for MF roller - creating Stripe promotion code')
+      
+      try {
+        // Create a Stripe coupon for 100% discount (free MF roller)
+        const stripeCouponId = `elite-mf-${validEliteCoupon.coupon_code.toLowerCase()}`
+        
+        // Try to retrieve existing coupon, or create new one
+        let stripeCoupon: Stripe.Coupon
+        try {
+          stripeCoupon = await stripe.coupons.retrieve(stripeCouponId)
+          console.log('✅ Using existing Stripe coupon:', stripeCouponId)
+        } catch (error) {
+          // Coupon doesn't exist, create it
+          stripeCoupon = await stripe.coupons.create({
+            id: stripeCouponId,
+            percent_off: 100,
+            duration: 'once',
+            name: `Elite MF Roller - ${validEliteCoupon.coupon_code}`,
+            metadata: {
+              elite_coupon_code: validEliteCoupon.coupon_code,
+              elite_coupon_id: validEliteCoupon.id.toString(),
+              user_id: userId?.toString() || '',
+            }
+          })
+          console.log('✅ Created Stripe coupon:', stripeCouponId)
+        }
+        
+        // Create a promotion code that matches the Elite coupon code
+        try {
+          // Check if promotion code already exists
+          const existingPromoCodes = await stripe.promotionCodes.list({
+            code: validEliteCoupon.coupon_code,
+            active: true,
+            limit: 1
+          })
+          
+          if (existingPromoCodes.data.length > 0) {
+            eliteStripeCouponId = existingPromoCodes.data[0].id
+            console.log('✅ Using existing Stripe promotion code:', eliteStripeCouponId)
+          } else {
+            // Create new promotion code
+            const promoCode = await stripe.promotionCodes.create({
+              coupon: stripeCoupon.id,
+              code: validEliteCoupon.coupon_code,
+              metadata: {
+                elite_coupon_code: validEliteCoupon.coupon_code,
+                elite_coupon_id: validEliteCoupon.id.toString(),
+                user_id: userId?.toString() || '',
+              }
+            })
+            eliteStripeCouponId = promoCode.id
+            console.log('✅ Created Stripe promotion code:', eliteStripeCouponId, 'with code:', validEliteCoupon.coupon_code)
+          }
+        } catch (promoError) {
+          console.error('❌ Error creating promotion code:', promoError)
+          // Continue anyway - user can still enter code manually
+        }
+      } catch (error) {
+        console.error('❌ Error creating Stripe coupon:', error)
+        // Continue with normal checkout - user can still use promotion code manually
+      }
     }
 
     // Create line items from cart items
@@ -303,7 +324,7 @@ export async function POST(request: NextRequest) {
     console.log('=== END URL DEBUGGING ===')
 
     // Create Stripe checkout session
-    const sessionData = {
+    const sessionData: any = {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
@@ -342,6 +363,18 @@ export async function POST(request: NextRequest) {
           },
         },
       ],
+      // Allow promotion codes to be entered in Stripe checkout
+      allow_promotion_codes: true,
+    }
+    
+    // If we have a pre-created promotion code for Elite customer, add it to metadata for reference
+    if (eliteStripeCouponId) {
+      sessionData.metadata.elite_promotion_code_id = eliteStripeCouponId
+      if (validEliteCoupon) {
+        sessionData.metadata.elite_coupon_code = validEliteCoupon.coupon_code
+        sessionData.metadata.elite_coupon_id = validEliteCoupon.id.toString()
+      }
+      console.log('✅ Added Elite promotion code to checkout session metadata')
     }
 
     console.log('Creating Stripe session with data:', JSON.stringify(sessionData, null, 2))
