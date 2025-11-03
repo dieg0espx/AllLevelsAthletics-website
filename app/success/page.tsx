@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, Suspense } from "react"
+import { useEffect, useState, Suspense, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,32 +20,8 @@ function SuccessContent() {
   const [totalAmount, setTotalAmount] = useState(0)
   const { user, userRole, isHydrated } = useSafeAuth()
 
-  useEffect(() => {
-    // Only run after hydration is complete
-    if (!isHydrated) return
-    
-    // Load cart items and shipping info into state (only on client side)
-    const storedCartItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('cartItems') || '[]') : []
-    const storedShippingInfo = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('shippingInfo') || '{}') : {}
-    const calculatedTotal = storedCartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
-    
-    // Check if this is an Elite customer free roller order
-    const isEliteFreeRoller = sessionId && sessionId.includes('elite-free-roller')
-    
-    setCartItems(storedCartItems)
-    setShippingInfo(storedShippingInfo)
-    setTotalAmount(calculatedTotal)
-    
-    // Save order to user account if we have session ID and user
-    if (sessionId && user) {
-      saveOrderToAccount()
-    }
-    
-    // Set loading to false after data is loaded
-    setIsLoading(false)
-  }, [sessionId, user, isHydrated])
-
-  const saveOrderToAccount = async () => {
+  // Define saveOrderToAccount using useCallback to prevent infinite loops
+  const saveOrderToAccount = useCallback(async () => {
     // Prevent duplicate calls
     if (orderSaveAttempted) {
       console.log('🔄 Order save already attempted, skipping...')
@@ -147,7 +123,37 @@ function SuccessContent() {
         })
       }
     }
-  }
+  }, [sessionId, user, orderSaveAttempted])
+
+  useEffect(() => {
+    // Only run after hydration is complete
+    if (!isHydrated) return
+    
+    try {
+      // Load cart items and shipping info into state (only on client side)
+      const storedCartItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('cartItems') || '[]') : []
+      const storedShippingInfo = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('shippingInfo') || '{}') : {}
+      const calculatedTotal = storedCartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
+      
+      // Check if this is an Elite customer free roller order
+      const isEliteFreeRoller = sessionId && sessionId.includes('elite-free-roller')
+      
+      setCartItems(storedCartItems)
+      setShippingInfo(storedShippingInfo)
+      setTotalAmount(calculatedTotal)
+      
+      // Save order to user account if we have session ID and user
+      if (sessionId && user) {
+        saveOrderToAccount()
+      }
+    } catch (error) {
+      console.error('❌ Error loading order data:', error)
+      // Continue anyway - we'll try to fetch from session if possible
+    }
+    
+    // Set loading to false after data is loaded
+    setIsLoading(false)
+  }, [sessionId, user, isHydrated, saveOrderToAccount])
 
   if (!isHydrated) {
     return (
