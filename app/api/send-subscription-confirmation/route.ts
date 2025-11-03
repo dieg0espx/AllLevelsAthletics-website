@@ -12,15 +12,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Support both SMTP_ and EMAIL_ prefixes (prefer SMTP_)
+    const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER
+    const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS
+    const smtpHost = process.env.SMTP_HOST || process.env.EMAIL_HOST || 'smtp.gmail.com'
+    const smtpPort = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587')
+    const smtpSecure = (process.env.SMTP_SECURE || process.env.EMAIL_SECURE) === 'true'
+    const smtpFrom = process.env.SMTP_FROM || smtpUser || 'noreply@alllevelsathletics.com'
+
     // Check if email credentials are configured
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!smtpUser || !smtpPass) {
       console.error('❌ EMAIL CREDENTIALS MISSING - Cannot send confirmation email')
       console.error('Required environment variables:')
-      console.error('  - EMAIL_USER: Your SMTP email address')
-      console.error('  - EMAIL_PASS: Your SMTP password or app password')
-      console.error('  - EMAIL_HOST: SMTP host (default: smtp.gmail.com)')
-      console.error('  - EMAIL_PORT: SMTP port (default: 587)')
-      console.error('  - EMAIL_SECURE: Use TLS (default: false for port 587)')
+      console.error('  - SMTP_USER or EMAIL_USER: Your SMTP email address')
+      console.error('  - SMTP_PASS or EMAIL_PASS: Your SMTP password or app password')
+      console.error('  - SMTP_HOST or EMAIL_HOST: SMTP host (default: smtp.gmail.com)')
+      console.error('  - SMTP_PORT or EMAIL_PORT: SMTP port (default: 587)')
+      console.error('  - SMTP_SECURE or EMAIL_SECURE: Use TLS (default: false for port 587)')
       console.error('📧 Email would have been sent to:', email)
       console.error('📧 Plan:', planName)
       console.error('📧 Coupon Code:', couponCode || 'none')
@@ -30,20 +38,28 @@ export async function POST(request: NextRequest) {
         { 
           error: 'Email credentials not configured',
           skipped: true,
-          message: 'Please configure EMAIL_USER and EMAIL_PASS environment variables in Vercel'
+          message: 'Please configure SMTP_USER and SMTP_PASS (or EMAIL_USER and EMAIL_PASS) environment variables in Vercel'
         },
         { status: 500 }
       )
     }
 
+    console.log('📧 Using SMTP configuration:', {
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
+      user: smtpUser,
+      from: smtpFrom
+    })
+
     // Create transporter
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-      port: Number(process.env.EMAIL_PORT) || 587,
-      secure: process.env.EMAIL_SECURE === 'true',
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     })
 
@@ -130,7 +146,7 @@ export async function POST(request: NextRequest) {
     `
 
     const info = await transporter.sendMail({
-      from: `"All Levels Athletics" <${process.env.EMAIL_USER}>`,
+      from: `"All Levels Athletics" <${smtpFrom}>`,
       to: email,
       subject: `Welcome to All Levels Athletics - ${planName} Plan Activated`,
       html: emailHtml,

@@ -14,12 +14,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Support both SMTP_ and EMAIL_ prefixes (prefer SMTP_)
+    const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER
+    const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS
+    const smtpHost = process.env.SMTP_HOST || process.env.EMAIL_HOST || 'smtp.gmail.com'
+    const smtpPort = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587')
+    const smtpSecure = (process.env.SMTP_SECURE || process.env.EMAIL_SECURE) === 'true'
+    const smtpFrom = process.env.SMTP_FROM || smtpUser || 'noreply@alllevelsathletics.com'
+
+    if (!smtpUser || !smtpPass) {
+      console.error('❌ EMAIL CREDENTIALS MISSING - Cannot send contact form email')
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
+      )
+    }
+
     // Create transporter
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
 
@@ -94,8 +112,8 @@ export async function POST(request: NextRequest) {
     `;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: 'aletxa.pascual@gmail.com',           // Main recipient    // You get a copy
+      from: smtpFrom,
+      to: process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com',           // Main recipient    // You get a copy
       subject: 'Contact Form Submission',
       html: emailTemplate,
       replyTo: email
