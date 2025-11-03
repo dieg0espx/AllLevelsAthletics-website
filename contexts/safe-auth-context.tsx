@@ -74,6 +74,15 @@ export function SafeAuthProvider({ children }: { children: ReactNode }) {
     let lastEventTime = 0
     let lastUserId: string | null = null
 
+    // Set a maximum loading time of 5 seconds as fallback
+    const loadingTimeout = setTimeout(() => {
+      if (mounted) {
+        console.log('⚠️ Auth context loading timeout - forcing load complete')
+        setLoading(false)
+        isInitialLoad = false
+      }
+    }, 5000)
+
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -90,6 +99,7 @@ export function SafeAuthProvider({ children }: { children: ReactNode }) {
         console.error('Error getting initial session:', error)
       } finally {
         if (mounted) {
+          clearTimeout(loadingTimeout)
           setLoading(false)
           isInitialLoad = false
         }
@@ -134,6 +144,7 @@ export function SafeAuthProvider({ children }: { children: ReactNode }) {
         }
         
         if (mounted) {
+          clearTimeout(loadingTimeout)
           setLoading(false)
         }
       }
@@ -141,6 +152,7 @@ export function SafeAuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       mounted = false
+      clearTimeout(loadingTimeout)
       subscription.unsubscribe()
     }
   }, [isHydrated])
