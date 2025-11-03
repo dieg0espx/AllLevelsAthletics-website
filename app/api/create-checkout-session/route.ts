@@ -150,65 +150,73 @@ export async function POST(request: NextRequest) {
     
     if (isEliteCustomer && validEliteCoupon && items.length === 1 && (items[0].id === 'knot-roller' || items[0].name?.includes('MFRoller'))) {
       console.log('🎁 Elite customer with valid coupon for MF roller - creating Stripe promotion code')
+      console.log('📦 Valid Elite Coupon:', validEliteCoupon)
       
-      try {
-        // Create a Stripe coupon for 100% discount (free MF roller)
-        const stripeCouponId = `elite-mf-${validEliteCoupon.coupon_code.toLowerCase()}`
-        
-        // Try to retrieve existing coupon, or create new one
-        let stripeCoupon: Stripe.Coupon
+      // Check if coupon_code exists before using it
+      if (!validEliteCoupon.coupon_code) {
+        console.error('❌ Elite coupon exists but coupon_code is missing:', validEliteCoupon)
+        // Continue with normal checkout - user can still use promotion code manually
+      } else {
         try {
-          stripeCoupon = await stripe.coupons.retrieve(stripeCouponId)
-          console.log('✅ Using existing Stripe coupon:', stripeCouponId)
-        } catch (error) {
-          // Coupon doesn't exist, create it
-          stripeCoupon = await stripe.coupons.create({
-            id: stripeCouponId,
-            percent_off: 100,
-            duration: 'once',
-            name: `Elite MF Roller - ${validEliteCoupon.coupon_code}`,
-            metadata: {
-              elite_coupon_code: validEliteCoupon.coupon_code,
-              elite_coupon_id: validEliteCoupon.id.toString(),
-              user_id: userId?.toString() || '',
-            }
-          })
-          console.log('✅ Created Stripe coupon:', stripeCouponId)
-        }
-        
-        // Create a promotion code that matches the Elite coupon code
-        try {
-          // Check if promotion code already exists
-          const existingPromoCodes = await stripe.promotionCodes.list({
-            code: validEliteCoupon.coupon_code,
-            active: true,
-            limit: 1
-          })
+          // Create a Stripe coupon for 100% discount (free MF roller)
+          const couponCode = validEliteCoupon.coupon_code || ''
+          const stripeCouponId = `elite-mf-${couponCode.toLowerCase()}`
           
-          if (existingPromoCodes.data.length > 0) {
-            eliteStripeCouponId = existingPromoCodes.data[0].id
-            console.log('✅ Using existing Stripe promotion code:', eliteStripeCouponId)
-          } else {
-            // Create new promotion code
-            const promoCode = await stripe.promotionCodes.create({
-              coupon: stripeCoupon.id,
-              code: validEliteCoupon.coupon_code,
+          // Try to retrieve existing coupon, or create new one
+          let stripeCoupon: Stripe.Coupon
+          try {
+            stripeCoupon = await stripe.coupons.retrieve(stripeCouponId)
+            console.log('✅ Using existing Stripe coupon:', stripeCouponId)
+          } catch (error) {
+            // Coupon doesn't exist, create it
+            stripeCoupon = await stripe.coupons.create({
+              id: stripeCouponId,
+              percent_off: 100,
+              duration: 'once',
+              name: `Elite MF Roller - ${couponCode}`,
               metadata: {
-                elite_coupon_code: validEliteCoupon.coupon_code,
-                elite_coupon_id: validEliteCoupon.id.toString(),
+                elite_coupon_code: couponCode,
+                elite_coupon_id: validEliteCoupon.id?.toString() || '',
                 user_id: userId?.toString() || '',
               }
             })
-            eliteStripeCouponId = promoCode.id
-            console.log('✅ Created Stripe promotion code:', eliteStripeCouponId, 'with code:', validEliteCoupon.coupon_code)
+            console.log('✅ Created Stripe coupon:', stripeCouponId)
           }
-        } catch (promoError) {
-          console.error('❌ Error creating promotion code:', promoError)
-          // Continue anyway - user can still enter code manually
+          
+          // Create a promotion code that matches the Elite coupon code
+          try {
+            // Check if promotion code already exists
+            const existingPromoCodes = await stripe.promotionCodes.list({
+              code: couponCode,
+              active: true,
+              limit: 1
+            })
+            
+            if (existingPromoCodes.data.length > 0) {
+              eliteStripeCouponId = existingPromoCodes.data[0].id
+              console.log('✅ Using existing Stripe promotion code:', eliteStripeCouponId)
+            } else {
+              // Create new promotion code
+              const promoCode = await stripe.promotionCodes.create({
+                coupon: stripeCoupon.id,
+                code: couponCode,
+                metadata: {
+                  elite_coupon_code: couponCode,
+                  elite_coupon_id: validEliteCoupon.id?.toString() || '',
+                  user_id: userId?.toString() || '',
+                }
+              })
+              eliteStripeCouponId = promoCode.id
+              console.log('✅ Created Stripe promotion code:', eliteStripeCouponId, 'with code:', couponCode)
+            }
+          } catch (promoError) {
+            console.error('❌ Error creating promotion code:', promoError)
+            // Continue anyway - user can still enter code manually
+          }
+        } catch (error) {
+          console.error('❌ Error creating Stripe coupon:', error)
+          // Continue with normal checkout - user can still use promotion code manually
         }
-      } catch (error) {
-        console.error('❌ Error creating Stripe coupon:', error)
-        // Continue with normal checkout - user can still use promotion code manually
       }
     }
 
