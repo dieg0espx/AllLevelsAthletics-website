@@ -50,6 +50,7 @@ export default function CheckoutPage() {
   const [useProfileInfo, setUseProfileInfo] = useState(false)
   const [profileData, setProfileData] = useState<any>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [step, setStep] = useState<'cart' | 'shipping' | 'payment' | 'confirmation'>('cart')
 
   const formatPrice = (price: number) => {
@@ -172,6 +173,7 @@ export default function CheckoutPage() {
 
      const handleCheckout = async () => {
      setIsProcessing(true)
+     setError(null) // Clear any previous errors
      
      try {
        // Check if Stripe is properly configured
@@ -206,6 +208,9 @@ export default function CheckoutPage() {
        }
 
        // Create checkout session with all cart items
+       console.log('🛒 Creating checkout session with items:', state.items)
+       console.log('🛒 Shipping info:', shippingInfo)
+       
        const response = await fetch('/api/create-checkout-session', {
          method: 'POST',
          headers: {
@@ -218,15 +223,18 @@ export default function CheckoutPage() {
         }),
        })
 
+       console.log('📡 Checkout session response status:', response.status)
+
        if (!response.ok) {
          const errorData = await response.json().catch(() => ({}))
-         console.error('Server error response:', errorData)
+         console.error('❌ Server error response:', errorData)
          throw new Error(errorData.error || errorData.message || `HTTP error! status: ${response.status}`)
        }
 
        const responseData = await response.json()
+       console.log('✅ Checkout session created:', responseData)
 
-       // Check if this is a bypass response for Elite customers
+       // Check if this is a bypass response for Elite customers (shouldn't happen anymore, but keeping for safety)
        if (responseData.bypassStripe) {
          console.log('🎁 Elite customer free MF roller - bypassing Stripe!')
          // Store the special session data (only on client side)
@@ -244,25 +252,32 @@ export default function CheckoutPage() {
        const { sessionId } = responseData
 
        if (!sessionId) {
+         console.error('❌ No session ID in response:', responseData)
          throw new Error('No session ID received from server')
        }
+
+       console.log('✅ Session ID received:', sessionId)
+       console.log('🔄 Redirecting to Stripe checkout...')
 
        // Redirect to Stripe checkout
        const stripe = await stripePromise
        if (stripe) {
+         console.log('✅ Stripe loaded, redirecting...')
          const { error } = await stripe.redirectToCheckout({ sessionId })
          if (error) {
-           console.error('Stripe redirect error:', error)
+           console.error('❌ Stripe redirect error:', error)
            throw new Error(`Stripe error: ${error.message}`)
          }
+         console.log('✅ Stripe redirect initiated')
        } else {
-         console.error('Stripe failed to load')
-         throw new Error('Stripe failed to load')
+         console.error('❌ Stripe failed to load')
+         throw new Error('Stripe failed to load. Please refresh the page and try again.')
        }
     } catch (error) {
       console.error('Checkout error:', error)
       const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.'
       console.error('Checkout failed:', errorMessage)
+      setError(errorMessage) // Display error to user
      } finally {
        setIsProcessing(false)
      }
@@ -766,10 +781,19 @@ export default function CheckoutPage() {
                        </div>
                      </div>
                     
+                    {error && (
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
+                        <p className="text-red-400 font-semibold mb-1">Error</p>
+                        <p className="text-red-300 text-sm">{error}</p>
+                      </div>
+                    )}
                     <div className="flex flex-col sm:flex-row gap-4">
                       <Button
                         variant="outline"
-                        onClick={() => handleStepChange('shipping')}
+                        onClick={() => {
+                          setError(null)
+                          handleStepChange('shipping')
+                        }}
                         className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white py-3 px-6 transition-all duration-200"
                       >
                         <ArrowLeft className="w-4 h-4 mr-2" />
