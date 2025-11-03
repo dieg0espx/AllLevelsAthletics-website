@@ -44,13 +44,39 @@ export async function GET(request: NextRequest) {
       status: session.payment_status,
       mode: session.mode,
       customer: session.customer,
-      subscription: session.subscription
+      subscription: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
     })
 
-    return NextResponse.json({ 
+    // If subscription is just a string ID, fetch the full subscription details
+    let expandedSubscription = null
+    if (typeof session.subscription === 'string') {
+      console.log('📝 Subscription is a string ID, fetching details...')
+      try {
+        expandedSubscription = await stripe.subscriptions.retrieve(session.subscription)
+        console.log('✅ Subscription details fetched:', {
+          id: expandedSubscription.id,
+          status: expandedSubscription.status,
+          current_period_end: expandedSubscription.current_period_end
+        })
+      } catch (error) {
+        console.error('❌ Error fetching subscription:', error)
+      }
+    } else if (session.subscription && typeof session.subscription === 'object') {
+      expandedSubscription = session.subscription
+    }
+
+    // Create response with expanded subscription if available
+    const response: any = { 
       session: session,
       success: true 
-    })
+    }
+
+    // If we fetched subscription separately, add it to the response
+    if (expandedSubscription) {
+      response.session.subscription = expandedSubscription
+    }
+
+    return NextResponse.json(response)
 
   } catch (error) {
     console.error('❌ Error retrieving checkout session:', error)
