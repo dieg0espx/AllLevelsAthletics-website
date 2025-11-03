@@ -52,6 +52,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [step, setStep] = useState<'cart' | 'shipping' | 'payment' | 'confirmation'>('cart')
+  const [authLoadingTimeout, setAuthLoadingTimeout] = useState(false)
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -283,8 +284,26 @@ export default function CheckoutPage() {
      }
    }
 
-           // Show loading state while checking authentication
+  // Add timeout for auth loading (in case it gets stuck)
+  useEffect(() => {
+    console.log('🔐 Auth state:', { loading, user: user?.id || 'no user' })
+    
     if (loading) {
+      const timeout = setTimeout(() => {
+        console.warn('⚠️ Auth loading timeout after 5 seconds - proceeding anyway')
+        setAuthLoadingTimeout(true)
+      }, 5000) // 5 second timeout
+      
+      return () => clearTimeout(timeout)
+    } else {
+      // If not loading, clear timeout flag
+      setAuthLoadingTimeout(false)
+    }
+  }, [loading, user])
+
+           // Show loading state while checking authentication (with timeout)
+    // Only show loading if auth is loading AND user doesn't exist yet AND timeout hasn't occurred
+    if (loading && !user && !authLoadingTimeout) {
       return (
         <div className="min-h-screen gradient-bg-variant-a py-12 mt-16">
           <div className="max-w-2xl mx-auto px-4 text-center">
@@ -297,6 +316,11 @@ export default function CheckoutPage() {
          </div>
        </div>
      )
+   }
+   
+   // Log when we're proceeding past the loading screen
+   if (loading && user) {
+     console.log('✅ User exists but auth still loading - proceeding with checkout')
    }
 
                        // Check if user is authenticated
