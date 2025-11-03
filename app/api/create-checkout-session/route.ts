@@ -364,6 +364,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       // Allow promotion codes to be entered in Stripe checkout
+      // This enables the "Add promotion code" link in Stripe Checkout
       allow_promotion_codes: true,
     }
     
@@ -375,9 +376,11 @@ export async function POST(request: NextRequest) {
         sessionData.metadata.elite_coupon_id = validEliteCoupon.id.toString()
       }
       console.log('✅ Added Elite promotion code to checkout session metadata')
+      console.log('🎟️ Elite customer can use coupon code:', validEliteCoupon?.coupon_code, 'in Stripe checkout')
     }
 
     console.log('Creating Stripe session with data:', JSON.stringify(sessionData, null, 2))
+    console.log('✅ Promotion codes enabled:', sessionData.allow_promotion_codes)
 
     console.log('Attempting to create Stripe session...')
     console.log('Final session data being sent to Stripe:')
