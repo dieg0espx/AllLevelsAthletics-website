@@ -33,12 +33,32 @@ export default function ClientDashboard() {
     // Only run on client side to prevent hydration mismatches
     if (typeof window === 'undefined') return
     
-    // Wait for auth to finish loading before checking user
+    // Set a maximum auth loading time of 5 seconds as fallback
+    // If auth is stuck loading, we'll proceed anyway
+    let authLoadingTimeout: NodeJS.Timeout | null = null
     if (authLoading) {
-      return // Still loading auth, don't do anything
+      authLoadingTimeout = setTimeout(() => {
+        console.log('⚠️ Auth loading timeout - proceeding anyway')
+        // Continue with the flow even if authLoading is still true
+        // The user might exist but authLoading is stuck
+        if (user) {
+          // User exists, proceed with data fetching
+        } else {
+          // No user after timeout, redirect
+          router.push('/')
+          return
+        }
+      }, 5000)
     }
     
-    if (user === null) {
+    // Wait for auth to finish loading before checking user
+    // But only wait if authLoading is true AND user is null
+    // If user exists but authLoading is still true, proceed
+    if (authLoading && !user) {
+      return // Still loading auth and no user yet, wait
+    }
+    
+    if (user === null && !authLoading) {
       // User is explicitly not authenticated, redirect
       router.push('/')
       return
@@ -69,7 +89,14 @@ export default function ClientDashboard() {
         setIsLoading(false)
       })
       
-      return () => clearTimeout(fallbackTimer)
+      return () => {
+        clearTimeout(fallbackTimer)
+        if (authLoadingTimeout) clearTimeout(authLoadingTimeout)
+      }
+    }
+    
+    return () => {
+      if (authLoadingTimeout) clearTimeout(authLoadingTimeout)
     }
   }, [user, authLoading, router])
 
@@ -405,7 +432,9 @@ export default function ClientDashboard() {
     )
   }
 
-  if (authLoading || isLoading) {
+  // Only show loading if auth is loading AND user doesn't exist
+  // If user exists but authLoading is still true, show the dashboard
+  if ((authLoading && !user) || isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">

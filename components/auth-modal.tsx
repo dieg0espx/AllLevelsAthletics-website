@@ -39,7 +39,11 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
 
   // Auto-redirect if user is already authenticated
   useEffect(() => {
-    if (!loading && user && isOpen) {
+    // Add timeout to prevent stuck loading state
+    let loadingTimeout: NodeJS.Timeout | null = null
+    
+    if (user && isOpen) {
+      // User exists, close modal and redirect
       console.log('🔐 User already authenticated, redirecting...', { 
         user: user.id, 
         role: user.user_metadata?.role,
@@ -48,6 +52,7 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
       
       // Close modal first
       onClose()
+      setIsLoading(false)
       
       // Determine redirect destination
       const userRole = user.user_metadata?.role || 'client'
@@ -66,6 +71,16 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
       
       // Redirect immediately
       router.push(redirectPath)
+    } else if (loading) {
+      // If loading is stuck for more than 5 seconds, reset it
+      loadingTimeout = setTimeout(() => {
+        console.log('⚠️ Auth loading timeout in modal - resetting loading state')
+        setIsLoading(false)
+      }, 5000)
+    }
+    
+    return () => {
+      if (loadingTimeout) clearTimeout(loadingTimeout)
     }
   }, [user, loading, isOpen, redirectTo, onClose, router])
 
@@ -192,10 +207,8 @@ export function AuthModal({ isOpen, onClose, redirectTo }: AuthModalProps) {
             console.log('➡️ Redirecting client to: /dashboard')
           }
           
-          // Reset loading state after redirect to prevent stuck state
-          setTimeout(() => {
-            setIsLoading(false)
-          }, 100)
+          // Reset loading state immediately to prevent stuck state
+          setIsLoading(false)
           
           // Immediate redirect without delay to prevent stuck state
           console.log('🚀 Executing redirect to:', redirectPath)
