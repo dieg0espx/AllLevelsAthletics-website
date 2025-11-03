@@ -200,6 +200,84 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   if (session.mode === 'subscription' && session.subscription) {
     const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
     await handleSubscriptionCreated(subscription)
+    return
+  }
+  
+  // Handle payment mode checkout (for products like MF Roller)
+  if (session.mode === 'payment' && session.payment_status === 'paid') {
+    console.log('💰 Payment checkout completed successfully')
+    
+    // Check if an Elite coupon was used
+    const { elite_coupon_code, elite_coupon_id } = session.metadata || {}
+    
+    if (elite_coupon_code && elite_coupon_id) {
+      console.log('🎁 Elite coupon detected in checkout:', elite_coupon_code)
+      
+      try {
+        // Mark the Elite coupon as used
+        const { error: updateError } = await supabaseAdmin
+          .from('elite_coupons')
+          .update({
+            is_used: true,
+            used_at: new Date().toISOString(),
+            used_in_session_id: session.id
+          })
+          .eq('id', parseInt(elite_coupon_id))
+          .eq('coupon_code', elite_coupon_code)
+        
+        if (updateError) {
+          console.error('❌ Error marking Elite coupon as used:', updateError)
+        } else {
+          console.log('✅ Elite coupon marked as used:', elite_coupon_code)
+        }
+      } catch (error) {
+        console.error('❌ Error updating Elite coupon:', error)
+      }
+    }
+    
+    // Check if a promotion code was used in the checkout
+    if (session.total_details?.amount_discount && session.total_details.amount_discount > 0) {
+      console.log('🎟️ Promotion code was applied - discount amount:', session.total_details.amount_discount)
+      
+      // Try to get the promotion code from the checkout session
+      try {
+        // Retrieve the checkout session with expanded promotion code
+        const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+          expand: ['total_details.breakdown.discounts']
+        })
+        
+        if (fullSession.total_details?.breakdown?.discounts?.[0]?.discount?.coupon) {
+          const couponId = fullSession.total_details.breakdown.discounts[0].discount.coupon
+          const coupon = typeof couponId === 'string' 
+            ? await stripe.coupons.retrieve(couponId)
+            : couponId
+          
+          // Check if this is an Elite coupon via metadata
+          if (coupon.metadata?.elite_coupon_code && coupon.metadata?.elite_coupon_id) {
+            console.log('🎁 Elite coupon promotion code was used:', coupon.metadata.elite_coupon_code)
+            
+            // Mark the Elite coupon as used
+            const { error: updateError } = await supabaseAdmin
+              .from('elite_coupons')
+              .update({
+                is_used: true,
+                used_at: new Date().toISOString(),
+                used_in_session_id: session.id
+              })
+              .eq('id', parseInt(coupon.metadata.elite_coupon_id))
+              .eq('coupon_code', coupon.metadata.elite_coupon_code)
+            
+            if (updateError) {
+              console.error('❌ Error marking Elite coupon as used:', updateError)
+            } else {
+              console.log('✅ Elite coupon marked as used:', coupon.metadata.elite_coupon_code)
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error checking promotion code:', error)
+      }
+    }
   }
 }
 
