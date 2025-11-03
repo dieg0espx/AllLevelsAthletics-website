@@ -12,6 +12,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // If email credentials are missing, no-op to avoid production 500s
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('⚠️ Email creds missing - skipping confirmation email send.');
+      return NextResponse.json({ success: true, skipped: true })
+    }
+
     // Create transporter
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST || 'smtp.gmail.com',

@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
     // Check if user already has a Stripe customer ID in their profile
     const { data: userProfile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
-      .select('stripe_customer_id, full_name, email')
+      .select('stripe_customer_id, full_name')
       .eq('user_id', userId)
       .single()
 
