@@ -18,6 +18,7 @@ function SuccessContent() {
   const [cartItems, setCartItems] = useState<any[]>([])
   const [shippingInfo, setShippingInfo] = useState<any>({})
   const [totalAmount, setTotalAmount] = useState(0)
+  const [isEliteFreeRoller, setIsEliteFreeRoller] = useState(false)
   const { user, userRole, isHydrated } = useSafeAuth()
 
   // Define saveOrderToAccount using useCallback to prevent infinite loops
@@ -136,7 +137,8 @@ function SuccessContent() {
       const calculatedTotal = storedCartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
       
       // Check if this is an Elite customer free roller order
-      const isEliteFreeRoller = sessionId && sessionId.includes('elite-free-roller')
+      const isEliteFree = sessionId && sessionId.includes('elite-free-roller')
+      setIsEliteFreeRoller(!!isEliteFree)
       
       setCartItems(storedCartItems)
       setShippingInfo(storedShippingInfo)

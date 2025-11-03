@@ -152,14 +152,15 @@ export async function POST(request: NextRequest) {
       console.log('🎁 Elite customer with valid coupon for MF roller - creating Stripe promotion code')
       console.log('📦 Valid Elite Coupon:', validEliteCoupon)
       
-      // Check if coupon_code exists before using it
-      if (!validEliteCoupon.coupon_code) {
-        console.error('❌ Elite coupon exists but coupon_code is missing:', validEliteCoupon)
+      // The API returns coupon with 'code' field, not 'coupon_code'
+      const couponCode = validEliteCoupon.code || validEliteCoupon.coupon_code || ''
+      
+      if (!couponCode) {
+        console.error('❌ Elite coupon exists but code is missing:', validEliteCoupon)
         // Continue with normal checkout - user can still use promotion code manually
       } else {
         try {
           // Create a Stripe coupon for 100% discount (free MF roller)
-          const couponCode = validEliteCoupon.coupon_code || ''
           const stripeCouponId = `elite-mf-${couponCode.toLowerCase()}`
           
           // Try to retrieve existing coupon, or create new one
@@ -380,11 +381,13 @@ export async function POST(request: NextRequest) {
     if (eliteStripeCouponId) {
       sessionData.metadata.elite_promotion_code_id = eliteStripeCouponId
       if (validEliteCoupon) {
-        sessionData.metadata.elite_coupon_code = validEliteCoupon.coupon_code
-        sessionData.metadata.elite_coupon_id = validEliteCoupon.id.toString()
+        const couponCode = validEliteCoupon.code || validEliteCoupon.coupon_code || ''
+        sessionData.metadata.elite_coupon_code = couponCode
+        sessionData.metadata.elite_coupon_id = validEliteCoupon.id?.toString() || ''
       }
       console.log('✅ Added Elite promotion code to checkout session metadata')
-      console.log('🎟️ Elite customer can use coupon code:', validEliteCoupon?.coupon_code, 'in Stripe checkout')
+      const couponCode = validEliteCoupon?.code || validEliteCoupon?.coupon_code || ''
+      console.log('🎟️ Elite customer can use coupon code:', couponCode, 'in Stripe checkout')
     }
 
     console.log('Creating Stripe session with data:', JSON.stringify(sessionData, null, 2))
