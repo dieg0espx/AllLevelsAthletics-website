@@ -291,31 +291,74 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
     console.log('📝 Saving subscription data:', JSON.stringify(subscriptionData, null, 2))
 
-    const { error } = await supabaseAdmin
+    // First, check if a subscription already exists for this customer or subscription ID
+    const { data: existingSubscription, error: checkError } = await supabaseAdmin
       .from('user_subscriptions')
-      .upsert(subscriptionData, { 
-        onConflict: 'stripe_subscription_id',
-        ignoreDuplicates: false 
-      })
+      .select('stripe_subscription_id, stripe_customer_id')
+      .or(`stripe_subscription_id.eq.${subscription.id},stripe_customer_id.eq.${customerId}`)
+      .maybeSingle()
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('❌ Error checking existing subscription:', checkError)
+      throw checkError
+    }
+
+    let error: any = null
+    
+    if (existingSubscription) {
+      // Update existing subscription
+      console.log('📝 Updating existing subscription:', existingSubscription.stripe_subscription_id)
+      const { error: updateError } = await supabaseAdmin
+        .from('user_subscriptions')
+        .update(subscriptionData)
+        .or(`stripe_subscription_id.eq.${subscription.id},stripe_customer_id.eq.${customerId}`)
+      
+      error = updateError
+    } else {
+      // Insert new subscription
+      console.log('📝 Inserting new subscription')
+      const { error: insertError } = await supabaseAdmin
+        .from('user_subscriptions')
+        .insert(subscriptionData)
+      
+      error = insertError
+    }
 
     if (error) {
       console.error('❌ Error saving subscription:', error)
       console.error('❌ Error code:', error.code)
       console.error('❌ Error message:', error.message)
       console.error('❌ Error details:', JSON.stringify(error, null, 2))
-      throw error
+      
+      // If it's a duplicate key error on stripe_customer_id, try to update instead
+      if (error.code === '23505' && error.message.includes('stripe_customer_id')) {
+        console.log('🔄 Duplicate customer ID detected, attempting update instead')
+        const { error: updateError } = await supabaseAdmin
+          .from('user_subscriptions')
+          .update(subscriptionData)
+          .eq('stripe_customer_id', customerId)
+        
+        if (updateError) {
+          console.error('❌ Error updating subscription:', updateError)
+          throw updateError
+        } else {
+          console.log('✅ Subscription updated successfully after duplicate key error')
+        }
+      } else {
+        throw error
+      }
+    } else {
+      console.log('✅ Subscription saved successfully')
     }
 
-    console.log('✅ Subscription saved successfully')
-
     // Check if user profile exists, if not create it
-    const { data: existingProfile, error: checkError } = await supabaseAdmin
+    const { data: existingProfile, error: profileCheckError } = await supabaseAdmin
       .from('user_profiles')
       .select('id, role')
       .eq('user_id', userId)
       .single()
 
-    if (checkError && checkError.code === 'PGRST116') {
+    if (profileCheckError && profileCheckError.code === 'PGRST116') {
       // Profile doesn't exist, create it
       const { error: createError } = await supabaseAdmin
         .from('user_profiles')
@@ -334,8 +377,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       } else {
         console.log('✅ Created new user profile with role: client')
       }
-    } else if (checkError) {
-      console.error('❌ Error checking user profile:', checkError)
+    } else if (profileCheckError) {
+      console.error('❌ Error checking user profile:', profileCheckError)
     } else {
       // Profile exists, update it
       const { error: profileError } = await supabaseAdmin

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, ArrowRight, Crown, Calendar, Clock } from 'lucide-react'
@@ -9,15 +9,17 @@ import Link from 'next/link'
 import { ErrorBoundary } from '@/components/error-boundary'
 
 function SubscriptionSuccessContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   
-  // All state declarations must come before any early returns to follow Rules of Hooks
+  // All state declarations and hook calls must come before any early returns to follow Rules of Hooks
   const [isLoading, setIsLoading] = useState(true)
   const [sessionData, setSessionData] = useState<any>(null)
   const [hasRefreshed, setHasRefreshed] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isHydrated, setIsHydrated] = useState(false)
+  
+  // Get sessionId immediately - must be called before any early returns
+  const sessionId = searchParams.get('session_id')
 
   // Simple hydration check
   useEffect(() => {
@@ -32,8 +34,6 @@ function SubscriptionSuccessContent() {
       </div>
     )
   }
-
-  const sessionId = searchParams.get('session_id')
 
   // Separate effect for timeout
   useEffect(() => {
