@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { sendEmail } from '@/lib/resend'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
@@ -68,17 +68,6 @@ export async function POST(request: NextRequest) {
       minute: '2-digit',
       hour12: true,
       timeZone: 'America/Los_Angeles'
-    })
-
-    // Setup email transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
     })
 
     const checkInTypeName = checkIn.check_in_type.replace('_', ' ')
@@ -155,9 +144,9 @@ export async function POST(request: NextRequest) {
           </div>
           <div class="content">
             <p>Hi ${profile.full_name || user.email?.split('@')[0] || 'there'},</p>
-            
+
             <p>Great news! Your one-on-one coaching appointment has been successfully scheduled.</p>
-            
+
             <div class="appointment-details">
               <h2 style="margin-top: 0; color: #f97316;">Appointment Details</h2>
               <div class="detail-row">
@@ -176,25 +165,25 @@ export async function POST(request: NextRequest) {
               </div>
               ` : ''}
             </div>
-            
+
             <p><strong>What to expect:</strong></p>
             <ul>
               <li>You'll receive a reminder 24 hours before your session</li>
               <li>Please be ready 5 minutes before the scheduled time</li>
               <li>Have any questions or concerns ready to discuss</li>
             </ul>
-            
+
             <center>
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard/coaching" class="button">
                 View in Dashboard
               </a>
             </center>
-            
+
             <p>If you need to reschedule or cancel, please do so at least 24 hours in advance through your dashboard.</p>
-            
+
             <p>See you soon!</p>
             <p><strong>All Levels Athletics Team</strong></p>
-            
+
             <div class="footer">
               <p>All Levels Athletics - One-on-One Coaching</p>
               <p>This is an automated confirmation email. Please do not reply to this email.</p>
@@ -265,9 +254,9 @@ export async function POST(request: NextRequest) {
           </div>
           <div class="content">
             <p>Hi Coach,</p>
-            
+
             <p>A new coaching appointment has been scheduled in the system.</p>
-            
+
             <div class="appointment-details">
               <h2 style="margin-top: 0; color: #3b82f6;">Appointment Details</h2>
               <div class="detail-row">
@@ -292,9 +281,9 @@ export async function POST(request: NextRequest) {
               </div>
               ` : ''}
             </div>
-            
+
             <p>The client has received a confirmation email with all the details.</p>
-            
+
             <div class="footer">
               <p>All Levels Athletics - Coaching Management System</p>
               <p>This is an automated notification email.</p>
@@ -306,34 +295,22 @@ export async function POST(request: NextRequest) {
     `
 
     // Send email to client
-    const clientMailOptions = {
-      from: {
-        name: 'All Levels Athletics',
-        address: process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@alllevelsathletics.com'
-      },
+    console.log('Sending confirmation email to client:', user.email)
+    await sendEmail({
       to: user.email,
       subject: 'Coaching Appointment Confirmed - All Levels Athletics',
       html: clientEmailHtml,
-    }
-
-    // Send email to admin/coach
-    const adminMailOptions = {
-      from: {
-        name: 'All Levels Athletics',
-        address: process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@alllevelsathletics.com'
-      },
-      to: process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com',
-      subject: `New Coaching Appointment - ${dateString} at ${timeString}`,
-      html: adminEmailHtml,
-    }
-
-    // Send both emails
-    console.log('Sending confirmation email to client:', user.email)
-    await transporter.sendMail(clientMailOptions)
+    })
     console.log('Client email sent successfully')
 
-    console.log('Sending notification email to admin:', process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com')
-    await transporter.sendMail(adminMailOptions)
+    // Send email to admin/coach
+    const adminTo = process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com'
+    console.log('Sending notification email to admin:', adminTo)
+    await sendEmail({
+      to: adminTo,
+      subject: `New Coaching Appointment - ${dateString} at ${timeString}`,
+      html: adminEmailHtml,
+    })
     console.log('Admin email sent successfully')
 
     return NextResponse.json({
@@ -352,4 +329,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

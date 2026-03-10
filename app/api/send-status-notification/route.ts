@@ -1,28 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { sendEmail } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('📧 Sending status notification email...')
-    
+    console.log('Sending status notification email...')
+
     const body = await request.json()
-    const { 
-      orderId, 
-      orderNumber, 
-      customerEmail, 
-      customerName, 
-      status, 
-      trackingNumber, 
+    const {
+      orderId,
+      orderNumber,
+      customerEmail,
+      customerName,
+      status,
+      trackingNumber,
       estimatedDelivery,
-      productName 
+      productName
     } = body
-    
-    console.log('📧 Email request:', { orderId, orderNumber, customerEmail, status })
+
+    console.log('Email request:', { orderId, orderNumber, customerEmail, status })
 
     if (!customerEmail || !status || !orderNumber) {
       return NextResponse.json(
         { error: 'Customer email, status, and order number are required' },
         { status: 400 }
+      )
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured')
+      return NextResponse.json(
+        { error: 'Email service configuration error' },
+        { status: 500 }
       )
     }
 
@@ -36,47 +44,21 @@ export async function POST(request: NextRequest) {
       productName
     })
 
-    console.log('📧 Email content generated')
+    console.log('Email content generated')
 
-    // Create Nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
-
-    // Verify transporter configuration
-    try {
-      await transporter.verify()
-      console.log('📧 SMTP server is ready to take our messages')
-    } catch (error) {
-      console.error('📧 SMTP verification failed:', error)
-      return NextResponse.json(
-        { error: 'Email service configuration error' },
-        { status: 500 }
-      )
-    }
-
-    // Send email
-    const mailOptions = {
-      from: `"All Levels Athletics" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+    const result = await sendEmail({
       to: customerEmail,
       subject: `Order ${orderNumber} Status Update - ${getStatusTitle(status)}`,
       html: emailContent.html,
       text: emailContent.text,
-    }
+    })
 
-    const info = await transporter.sendMail(mailOptions)
-    console.log('📧 Email sent successfully:', info.messageId)
+    console.log('Email sent successfully:', result?.id)
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Status notification email sent successfully',
-      messageId: info.messageId
+      messageId: result?.id
     })
 
   } catch (error) {
@@ -98,13 +80,13 @@ function getStatusTitle(status: string): string {
   return statusTitles[status as keyof typeof statusTitles] || 'Order Update'
 }
 
-function generateEmailContent({ 
-  orderNumber, 
-  customerName, 
-  status, 
-  trackingNumber, 
-  estimatedDelivery, 
-  productName 
+function generateEmailContent({
+  orderNumber,
+  customerName,
+  status,
+  trackingNumber,
+  estimatedDelivery,
+  productName
 }: {
   orderNumber: string
   customerName: string
@@ -150,11 +132,11 @@ function generateEmailContent({
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background: #f97316; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-        .status-badge { 
-          display: inline-block; 
-          padding: 8px 16px; 
-          border-radius: 20px; 
-          font-weight: bold; 
+        .status-badge {
+          display: inline-block;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-weight: bold;
           text-transform: uppercase;
           margin: 10px 0;
         }
@@ -172,16 +154,16 @@ function generateEmailContent({
           <h1>All Levels Athletics</h1>
           <h2>Order Status Update</h2>
         </div>
-        
+
         <div class="content">
           <p>Hello ${customerName},</p>
-          
+
           <p>We have an update regarding your order <strong>${orderNumber}</strong>:</p>
-          
+
           <div class="status-badge ${status}">${statusInfo.title}</div>
-          
+
           <p>${statusInfo.message}</p>
-          
+
           <div class="order-details">
             <h3>Order Details:</h3>
             <p><strong>Order Number:</strong> ${orderNumber}</p>
@@ -189,13 +171,13 @@ function generateEmailContent({
             ${trackingNumber ? `<p><strong>Tracking Number:</strong> ${trackingNumber}</p>` : ''}
             ${estimatedDelivery ? `<p><strong>Estimated Delivery:</strong> ${estimatedDelivery}</p>` : ''}
           </div>
-          
+
           <p>${statusInfo.nextStep}</p>
-          
+
           <p>If you have any questions about your order, please don't hesitate to contact our support team.</p>
-          
+
           <p>Thank you for choosing All Levels Athletics!</p>
-          
+
           <div class="footer">
             <p>All Levels Athletics<br>
             <a href="mailto:support@alllevelsathletics.com">support@alllevelsathletics.com</a></p>

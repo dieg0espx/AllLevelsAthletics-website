@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { sendEmail } from '@/lib/resend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,32 +14,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Support both SMTP_ and EMAIL_ prefixes (prefer SMTP_)
-    const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER
-    const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS
-    const smtpHost = process.env.SMTP_HOST || process.env.EMAIL_HOST || 'smtp.gmail.com'
-    const smtpPort = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587')
-    const smtpSecure = (process.env.SMTP_SECURE || process.env.EMAIL_SECURE) === 'true'
-    const smtpFrom = process.env.SMTP_FROM || smtpUser || 'noreply@alllevelsathletics.com'
-
-    if (!smtpUser || !smtpPass) {
-      console.error('❌ EMAIL CREDENTIALS MISSING - Cannot send contact form email')
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured')
       return NextResponse.json(
         { error: 'Email service not configured' },
         { status: 500 }
       )
     }
-
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpSecure,
-      auth: {
-        user: smtpUser,
-        pass: smtpPass,
-      },
-    });
 
     // Simple email template with black, white, and grey colors only
     const emailTemplate = `
@@ -111,15 +92,11 @@ export async function POST(request: NextRequest) {
       </html>
     `;
 
-    const mailOptions = {
-      from: smtpFrom,
-      to: process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com',           // Main recipient    // You get a copy
+    await sendEmail({
+      to: process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com',
       subject: 'Contact Form Submission',
       html: emailTemplate,
-      replyTo: email
-    };
-
-    await transporter.sendMail(mailOptions);
+    });
 
     return NextResponse.json(
       { message: 'Email sent successfully' },

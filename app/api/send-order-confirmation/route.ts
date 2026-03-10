@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { sendEmail } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   console.log('===== EMAIL API STARTED =====')
-  
+
   try {
     const body = await request.json()
-    const { 
-      orderId, 
-      orderNumber, 
-      customerEmail, 
-      customerName, 
-      items, 
-      totalAmount, 
+    const {
+      orderId,
+      orderNumber,
+      customerEmail,
+      customerName,
+      items,
+      totalAmount,
       shippingAddress,
-      orderDate 
+      orderDate
     } = body
 
     console.log('Email API received data:', {
@@ -27,22 +27,6 @@ export async function POST(request: NextRequest) {
     })
 
     console.log('Sending order confirmation emails...')
-
-    // Create email transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
-
-    // Verify SMTP connection
-    console.log('Verifying SMTP connection...')
-    await transporter.verify()
-    console.log('SMTP connection verified successfully')
 
     // Generate customer email content
     const customerEmailContent = generateCustomerEmailContent({
@@ -66,46 +50,40 @@ export async function POST(request: NextRequest) {
     })
 
     // Send customer confirmation email
-    const customerMailOptions = {
-      from: `"All Levels Athletics" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+    console.log('Sending customer email to:', customerEmail)
+    const customerResult = await sendEmail({
       to: customerEmail,
       subject: `Order Confirmation - ${orderNumber}`,
       html: customerEmailContent.html,
       text: customerEmailContent.text,
-    }
-
-    console.log('Sending customer email to:', customerEmail)
-    const customerInfo = await transporter.sendMail(customerMailOptions)
-    console.log('Customer email sent successfully! Message ID:', customerInfo.messageId)
+    })
+    console.log('Customer email sent successfully! ID:', customerResult?.id)
 
     // Send admin notification email
-    const adminMailOptions = {
-      from: `"All Levels Athletics" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-      to: process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com',
+    const adminTo = process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com'
+    console.log('Sending admin email to:', adminTo)
+    const adminResult = await sendEmail({
+      to: adminTo,
       subject: `New Order Received - ${orderNumber}`,
       html: adminEmailContent.html,
       text: adminEmailContent.text,
-    }
-
-    console.log('Sending admin email to:', process.env.CONTACT_EMAIL || 'aletxa.pascual@gmail.com')
-    const adminInfo = await transporter.sendMail(adminMailOptions)
-    console.log('Admin email sent successfully! Message ID:', adminInfo.messageId)
+    })
+    console.log('Admin email sent successfully! ID:', adminResult?.id)
 
     console.log('===== EMAIL API COMPLETED SUCCESSFULLY =====')
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Order confirmation emails sent successfully',
-      customerEmailId: customerInfo.messageId,
-      adminEmailId: adminInfo.messageId
+      customerEmailId: customerResult?.id,
+      adminEmailId: adminResult?.id
     })
 
   } catch (error) {
     console.error('===== EMAIL API ERROR =====')
     console.error('Error sending order confirmation emails:', error)
     console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to send order confirmation emails',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -157,12 +135,12 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
           <h1 style="color: white; margin: 0; font-size: 28px;">All Levels Athletics</h1>
           <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Order Confirmation</p>
         </div>
-        
+
         <div class="content">
           <h2 style="color: #ff6b35; margin-top: 0;">Thank you for your order, ${customerName}!</h2>
-          
+
           <p>Your order has been received and is being processed. Here are the details:</p>
-          
+
           <div class="order-info">
             <h3 style="margin-top: 0; color: #ff6b35;">Order Information</h3>
             <div class="field">
@@ -178,7 +156,7 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
               <div class="value">Processing</div>
             </div>
           </div>
-          
+
           <h3 style="color: #ff6b35;">Order Items</h3>
           <table class="items-table">
             <thead>
@@ -199,7 +177,7 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
               </tr>
             </tfoot>
           </table>
-          
+
           <div class="shipping-info">
             <h3 style="margin-top: 0; color: #ff6b35;">Shipping Address</h3>
             <div class="field">
@@ -219,19 +197,19 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
               <div class="value">${shippingAddress.country}</div>
             </div>
           </div>
-          
+
           <div class="next-steps">
             <h3 style="margin-top: 0; color: #ff6b35;">What's Next?</h3>
             <ul>
               <li>We'll process your order within 1-2 business days</li>
               <li>You'll receive a shipping confirmation with tracking information</li>
-              
+
             </ul>
           </div>
-          
+
           <p>Need help? Contact us at <a href="mailto:AllLevelsAthletics@gmail.com" style="color: #ff6b35;">AllLevelsAthletics@gmail.com</a></p>
         </div>
-        
+
         <div class="footer">
           <p>Thank you for choosing All Levels Athletics!<br>
           <strong>The All Levels Athletics Team</strong></p>
@@ -243,32 +221,32 @@ function generateCustomerEmailContent({ orderNumber, customerName, items, totalA
 
   const text = `
     All Levels Athletics - Order Confirmation
-    
+
     Thank you for your order, ${customerName}!
-    
+
     Order Information:
     - Order Number: ${orderNumber}
     - Order Date: ${new Date(orderDate).toLocaleDateString()}
     - Status: Processing
-    
+
     Order Items:
     ${items.map((item: any) => `- ${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n')}
-    
+
     Total Amount: $${totalAmount.toFixed(2)}
-    
+
     Shipping Address:
     ${shippingAddress.firstName} ${shippingAddress.lastName}
     ${shippingAddress.address}
     ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}
     ${shippingAddress.country}
-    
+
     What's Next?
     - We'll process your order within 1-2 business days
     - You'll receive a shipping confirmation with tracking information
     - Your order will be delivered within 5-7 business days
-    
+
     Need help? Contact us at AllLevelsAthletics@gmail.com
-    
+
     Thank you for choosing All Levels Athletics!
     The All Levels Athletics Team
   `
@@ -321,10 +299,10 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
           <h1 style="color: white; margin: 0; font-size: 28px;">All Levels Athletics</h1>
           <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">New Order Notification</p>
         </div>
-        
+
         <div class="content">
           <h2 style="color: #ff6b35; margin-top: 0;">New Order Received!</h2>
-          
+
           <div class="order-info">
             <h3 style="margin-top: 0; color: #ff6b35;">Order Information</h3>
             <div class="field">
@@ -340,7 +318,7 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
               <div class="value">Processing</div>
             </div>
           </div>
-          
+
           <div class="customer-info">
             <h3 style="margin-top: 0; color: #ff6b35;">Customer Information</h3>
             <div class="field">
@@ -352,7 +330,7 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
               <div class="value"><a href="mailto:${customerEmail}" style="color: #ff6b35;">${customerEmail}</a></div>
             </div>
           </div>
-          
+
           <h3 style="color: #ff6b35;">Order Items</h3>
           <table class="items-table">
             <thead>
@@ -373,7 +351,7 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
               </tr>
             </tfoot>
           </table>
-          
+
           <div class="shipping-info">
             <h3 style="margin-top: 0; color: #ff6b35;">Shipping Address</h3>
             <div class="field">
@@ -393,14 +371,14 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
               <div class="value">${shippingAddress.country}</div>
             </div>
           </div>
-          
+
           <div class="action-required">
             <h3 style="margin-top: 0; color: #ff6b35;">Action Required</h3>
             <p>Please process this order and update the status in the admin dashboard.</p>
             <p><a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/admin" class="admin-button">View in Admin Dashboard</a></p>
           </div>
         </div>
-        
+
         <div class="footer">
           <p>This is an automated notification from All Levels Athletics<br>
           <strong>Order Management System</strong></p>
@@ -412,31 +390,31 @@ function generateAdminEmailContent({ orderNumber, customerName, customerEmail, i
 
   const text = `
     All Levels Athletics - New Order Notification
-    
+
     New Order Received!
-    
+
     Order Information:
     - Order Number: ${orderNumber}
     - Order Date: ${new Date(orderDate).toLocaleDateString()}
     - Status: Processing
-    
+
     Customer Information:
     - Name: ${customerName}
     - Email: ${customerEmail}
-    
+
     Order Items:
     ${items.map((item: any) => `- ${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n')}
-    
+
     Total Amount: $${totalAmount.toFixed(2)}
-    
+
     Shipping Address:
     ${shippingAddress.firstName} ${shippingAddress.lastName}
     ${shippingAddress.address}
     ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}
     ${shippingAddress.country}
-    
+
     Action Required: Please process this order and update the status in the admin dashboard.
-    
+
     This is an automated notification from All Levels Athletics Order Management System.
   `
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { sendEmail } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,61 +12,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Support both SMTP_ and EMAIL_ prefixes (prefer SMTP_)
-    const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER
-    const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS
-    const smtpHost = process.env.SMTP_HOST || process.env.EMAIL_HOST || 'smtp.gmail.com'
-    const smtpPort = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587')
-    const smtpSecure = (process.env.SMTP_SECURE || process.env.EMAIL_SECURE) === 'true'
-    const smtpFrom = process.env.SMTP_FROM || smtpUser || 'noreply@alllevelsathletics.com'
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured')
+      console.error('Email would have been sent to:', email)
+      console.error('Plan:', planName)
+      console.error('Coupon Code:', couponCode || 'none')
 
-    // Check if email credentials are configured
-    if (!smtpUser || !smtpPass) {
-      console.error('❌ EMAIL CREDENTIALS MISSING - Cannot send confirmation email')
-      console.error('Required environment variables:')
-      console.error('  - SMTP_USER or EMAIL_USER: Your SMTP email address')
-      console.error('  - SMTP_PASS or EMAIL_PASS: Your SMTP password or app password')
-      console.error('  - SMTP_HOST or EMAIL_HOST: SMTP host (default: smtp.gmail.com)')
-      console.error('  - SMTP_PORT or EMAIL_PORT: SMTP port (default: 587)')
-      console.error('  - SMTP_SECURE or EMAIL_SECURE: Use TLS (default: false for port 587)')
-      console.error('📧 Email would have been sent to:', email)
-      console.error('📧 Plan:', planName)
-      console.error('📧 Coupon Code:', couponCode || 'none')
-      
-      // Return error instead of silently skipping, so webhook knows email failed
       return NextResponse.json(
-        { 
+        {
           error: 'Email credentials not configured',
           skipped: true,
-          message: 'Please configure SMTP_USER and SMTP_PASS (or EMAIL_USER and EMAIL_PASS) environment variables in Vercel'
+          message: 'Please configure RESEND_API_KEY environment variable'
         },
         { status: 500 }
       )
     }
 
-    console.log('📧 Using SMTP configuration:', {
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpSecure,
-      user: smtpUser,
-      from: smtpFrom
-    })
-
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpSecure,
-      auth: {
-        user: smtpUser,
-        pass: smtpPass,
-      },
-    })
-
-    const trialInfo = trialEnd 
+    const trialInfo = trialEnd
       ? `<p style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 20px 0; border-radius: 4px;">
-           <strong>🎉 Free Trial Active!</strong><br>
-           Your 7-day free trial ends on <strong>${new Date(trialEnd).toLocaleDateString()}</strong>. 
+           <strong>Free Trial Active!</strong><br>
+           Your 7-day free trial ends on <strong>${new Date(trialEnd).toLocaleDateString()}</strong>.
            You'll be charged automatically unless you cancel before then.
          </p>`
       : ''
@@ -89,32 +54,32 @@ export async function POST(request: NextRequest) {
                 Elite Online Personal Training
             </div>
         </div>
-        
+
         <div style="font-size: 18px; color: #333; margin-bottom: 20px;">
             <strong>Welcome to All Levels Athletics!</strong>
         </div>
-        
+
         <p>Hi there,</p>
-        
+
         <p>Thank you for subscribing to the <strong>${planName} Plan</strong>! We're excited to have you join our community and can't wait to help you achieve your fitness goals.</p>
-        
+
         ${trialInfo}
-        
+
         <div style="background-color: #f97316; color: #000000; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: center;">
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">Your Subscription Details</h3>
             <p style="margin: 5px 0;"><strong>Plan:</strong> ${planName}</p>
             <p style="margin: 5px 0;"><strong>Billing:</strong> $${planPrice}/${billingPeriod}</p>
         </div>
-        
+
         ${couponCode && planName === 'Elite' ? `
         <div style="background-color: #f97316; color: #000000; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: center;">
-            <h3 style="margin: 0 0 15px 0; font-size: 20px;">🎁 FREE MF Roller Coupon!</h3>
+            <h3 style="margin: 0 0 15px 0; font-size: 20px;">FREE MF Roller Coupon!</h3>
             <p style="margin: 10px 0; font-size: 18px; font-weight: bold;">Coupon Code: <span style="background-color: #000000; color: #f97316; padding: 8px 12px; border-radius: 4px; font-family: monospace;">${couponCode}</span></p>
             <p style="margin: 10px 0; font-size: 14px;">Use this code to get your FREE MFRoller (100% discount) - valid for 30 days!</p>
             <p style="margin: 10px 0; font-size: 12px;">This coupon is tied to your email and can only be used once.</p>
         </div>
         ` : ''}
-        
+
         <p><strong>What happens next?</strong></p>
         <ul style="padding-left: 20px;">
             <li>Access your personalized dashboard immediately</li>
@@ -123,21 +88,21 @@ export async function POST(request: NextRequest) {
             <li>Schedule your first check-in with Daniel</li>
             ${couponCode && planName === 'Elite' ? '<li>Use your FREE MF Roller coupon code above!</li>' : ''}
         </ul>
-        
+
         <div style="text-align: center; margin: 30px 0;">
             <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://alllevelsathletics.com'}/dashboard" style="display: inline-block; background-color: #f97316; color: #000000; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
                 Go to Dashboard
             </a>
         </div>
-        
+
         <div style="margin-top: 20px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
             <strong>Need help?</strong><br>
             Email: <a href="mailto:AllLevelsAthletics@gmail.com" style="color: #f97316; text-decoration: none;">AllLevelsAthletics@gmail.com</a><br>
             Phone: <a href="tel:760-585-8832" style="color: #f97316; text-decoration: none;">760-585-8832</a>
         </div>
-        
+
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #666; font-size: 14px;">
-            <p>© 2024 All Levels Athletics. All rights reserved.</p>
+            <p>&copy; 2024 All Levels Athletics. All rights reserved.</p>
             <p>Transform your fitness with elite online personal training.</p>
         </div>
     </div>
@@ -145,28 +110,24 @@ export async function POST(request: NextRequest) {
 </html>
     `
 
-    const info = await transporter.sendMail({
-      from: `"All Levels Athletics" <${smtpFrom}>`,
+    const result = await sendEmail({
       to: email,
       subject: `Welcome to All Levels Athletics - ${planName} Plan Activated`,
       html: emailHtml,
     })
 
-    console.log('✅ Subscription confirmation email sent:', info.messageId)
+    console.log('Subscription confirmation email sent:', result?.id)
 
-    return NextResponse.json({ 
-      success: true, 
-      messageId: info.messageId 
+    return NextResponse.json({
+      success: true,
+      messageId: result?.id
     })
 
   } catch (error) {
-    console.error('❌ Error sending subscription confirmation email:', error)
+    console.error('Error sending subscription confirmation email:', error)
     return NextResponse.json(
       { error: 'Failed to send confirmation email' },
       { status: 500 }
     )
   }
 }
-
-
-
