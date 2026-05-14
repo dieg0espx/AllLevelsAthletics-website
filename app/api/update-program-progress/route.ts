@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, programId, progress, watchedVideos } = body
+    const { programId, progress, watchedVideos } = body
 
-    if (!userId || !programId || progress === undefined) {
+    if (!programId || progress === undefined) {
       return NextResponse.json(
-        { error: 'User ID, program ID, and progress are required' },
+        { error: 'Program ID and progress are required' },
         { status: 400 }
       )
     }

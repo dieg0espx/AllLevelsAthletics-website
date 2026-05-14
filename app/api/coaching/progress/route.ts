@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
     const checkInId = searchParams.get('checkInId')
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
 
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
@@ -64,12 +64,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, checkInId, metricName, metricValue, metricUnit, notes } = body
-    
-    if (!userId || !metricName) {
-      return NextResponse.json({ error: 'User ID and metric name are required' }, { status: 400 })
+    const { checkInId, metricName, metricValue, metricUnit, notes } = body
+
+    if (!metricName) {
+      return NextResponse.json({ error: 'Metric name is required' }, { status: 400 })
     }
 
     if (!supabaseAdmin) {
@@ -117,10 +121,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
     const { progressId, metricName, metricValue, metricUnit, notes } = body
-    
+
     if (!progressId) {
       return NextResponse.json({ error: 'Progress ID is required' }, { status: 400 })
     }
@@ -128,18 +136,19 @@ export async function PUT(request: NextRequest) {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
-    
+
     const updateData: any = {}
     if (metricName) updateData.metric_name = metricName
     if (metricValue !== undefined) updateData.metric_value = metricValue
     if (metricUnit) updateData.metric_unit = metricUnit
     if (notes) updateData.notes = notes
 
-    // Update progress entry
+    // Update progress entry (scoped to the authenticated user)
     const { data: progress, error } = await supabaseAdmin
       .from('coaching_progress')
       .update(updateData)
       .eq('id', progressId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -156,10 +165,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const { searchParams } = new URL(request.url)
     const progressId = searchParams.get('progressId')
-    
+
     if (!progressId) {
       return NextResponse.json({ error: 'Progress ID is required' }, { status: 400 })
     }
@@ -167,12 +180,13 @@ export async function DELETE(request: NextRequest) {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
-    
-    // Delete progress entry
-    const { error } = await supabase
+
+    // Delete progress entry (scoped to the authenticated user)
+    const { error } = await supabaseAdmin
       .from('coaching_progress')
       .delete()
       .eq('id', progressId)
+      .eq('user_id', userId)
 
     if (error) {
       console.error('Error deleting progress entry:', error)

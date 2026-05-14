@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
-    
     console.log('=== CHECKING SUBSCRIPTION ===')
     console.log('User ID:', userId)
     

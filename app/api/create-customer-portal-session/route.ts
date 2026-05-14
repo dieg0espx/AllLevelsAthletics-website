@@ -1,27 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 })
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
-    const { userId } = await request.json()
-    
     console.log('=== CUSTOMER PORTAL SESSION CREATION ===')
     console.log('User ID:', userId)
-    console.log('Stripe Secret Key exists:', !!process.env.STRIPE_SECRET_KEY)
-    console.log('Supabase Admin exists:', !!supabaseAdmin)
-
-    if (!userId) {
-      console.error('❌ No user ID provided')
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
 
     // Get user's Stripe customer ID from profile first
     const { data: userProfile, error: profileError } = await supabaseAdmin

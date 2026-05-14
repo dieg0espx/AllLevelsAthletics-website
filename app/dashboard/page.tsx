@@ -170,10 +170,10 @@ export default function ClientDashboard() {
             // Try to sync from Stripe automatically
             setTimeout(async () => {
               try {
-                const syncResponse = await fetch('/api/sync-subscription-status', {
+                const syncResponse = await authedFetch('/api/sync-subscription-status', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ userId: user.id })
+                  body: JSON.stringify({})
                 })
                 
                 const syncData = await syncResponse.json()
@@ -215,10 +215,10 @@ export default function ClientDashboard() {
       console.log('🔄 Manual sync - fetching subscription from Stripe...')
       
       // First, try to sync from Stripe
-      const syncResponse = await fetch('/api/sync-subscription-status', {
+      const syncResponse = await authedFetch('/api/sync-subscription-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.id })
+        body: JSON.stringify({})
       })
       
       const syncData = await syncResponse.json()

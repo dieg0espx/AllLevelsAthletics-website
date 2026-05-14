@@ -1,24 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 })
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
-    const { userId } = await request.json()
-    
     console.log('=== DOWNGRADE TO FOUNDATION ===')
     console.log('User ID:', userId)
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
 
     // Get user's current subscription
     console.log('🔍 Fetching active subscription for user:', userId)
