@@ -22,7 +22,7 @@ export async function sendOrderConfirmationEmail(data: EmailData) {
     const adminEmailContent = generateAdminEmailContent(data)
 
     // Send customer confirmation email
-    console.log('Sending customer email to:', data.customerEmail)
+    console.log('Sending customer order confirmation email')
     const customerResult = await sendEmail({
       to: data.customerEmail,
       subject: `Order Confirmation - ${data.orderNumber}`,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { maskId } from '@/lib/safe-log'
 
 export async function POST(request: NextRequest) {
   // Force immediate logging
@@ -37,18 +38,10 @@ export async function POST(request: NextRequest) {
     console.log('🔄 Save order API called')
     
     const requestBody = await request.json()
-    console.log('📥 Request body received:', requestBody)
-    
     const { sessionId, items, shippingInfo, userId, totalAmount } = requestBody
 
-    console.log('🔍 Validating order data:')
-    console.log('- sessionId:', sessionId)
-    console.log('- items count:', items?.length)
-    console.log('- shippingInfo:', shippingInfo)
-    console.log('- userId:', userId)
-    console.log('- totalAmount:', totalAmount)
-    console.log('- userId type:', typeof userId)
-    console.log('- userId length:', userId?.toString().length)
+    console.log('🔍 Validating order data: items=%d userId=%s amount=%s',
+      items?.length ?? 0, maskId(userId), totalAmount)
 
     if (!sessionId || !items || !shippingInfo || !userId) {
       console.log('❌ Missing required fields')
@@ -180,11 +173,7 @@ export async function POST(request: NextRequest) {
     try {
       const orderNumber = `ORD-${orderData.id.toString().padStart(6, '0')}`
       
-      console.log('===== STARTING EMAIL SENDING PROCESS =====')
-      console.log('Order Number:', orderNumber)
-      console.log('Customer Email:', shippingInfo.email)
-      console.log('Customer Name:', `${shippingInfo.firstName} ${shippingInfo.lastName}`)
-      console.log('Total Amount:', totalAmount)
+      console.log('Sending order confirmation email for order', orderNumber)
       
       // Import and call the email function directly instead of using fetch
       const { sendOrderConfirmationEmail } = await import('./send-order-confirmation-helper')

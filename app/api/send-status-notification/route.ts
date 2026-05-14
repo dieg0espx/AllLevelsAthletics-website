@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       productName
     } = body
 
-    console.log('Email request:', { orderId, orderNumber, customerEmail, status })
+    console.log('Status notification request for order', orderNumber, 'status:', status)
 
     if (!customerEmail || !status || !orderNumber) {
       return NextResponse.json(
