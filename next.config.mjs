@@ -1,9 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
+    // TODO: configure ESLint (no .eslintrc present) and flip to false.
     ignoreDuringBuilds: true,
   },
   typescript: {
+    // TODO: re-enable after sweeping ~100 pre-existing strict-null/Stripe-API-version errors.
+    // The audit-flagged TS bug (lib/auth.ts:141) is fixed; remaining errors are pre-existing.
     ignoreBuildErrors: true,
   },
   images: {

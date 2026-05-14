@@ -29,6 +29,7 @@ import {
   Star,
   Filter
 } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 interface CoachingClient {
   id: string
@@ -142,14 +143,14 @@ export function CoachingManagementSection({
   const fetchCoachingData = async () => {
     try {
       // Fetch coaching clients
-      const clientsResponse = await fetch('/api/admin/coaching-clients')
+      const clientsResponse = await authedFetch('/api/admin/coaching-clients')
       if (clientsResponse.ok) {
         const clientsData = await clientsResponse.json()
         setClients(clientsData.clients || [])
       }
 
       // Fetch coaching sessions
-      const sessionsResponse = await fetch('/api/admin/coaching-sessions')
+      const sessionsResponse = await authedFetch('/api/admin/coaching-sessions')
       if (sessionsResponse.ok) {
         const sessionsData = await sessionsResponse.json()
         setSessions(sessionsData.sessions || [])
@@ -235,7 +236,7 @@ export function CoachingManagementSection({
 
   const handleUpdateSession = async (sessionId: string, updates: Partial<CoachingSession>) => {
     try {
-      const response = await fetch('/api/admin/coaching-sessions', {
+      const response = await authedFetch('/api/admin/coaching-sessions', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, ...updates })
@@ -414,7 +415,7 @@ export function CoachingManagementSection({
     if (!selectedCheckIn) return
 
     try {
-      const response = await fetch('/api/admin/check-ins', {
+      const response = await authedFetch('/api/admin/check-ins', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -516,7 +517,7 @@ export function CoachingManagementSection({
     if (!sessionToCancel) return
 
     try {
-      const response = await fetch('/api/admin/check-ins', {
+      const response = await authedFetch('/api/admin/check-ins', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const requestedUserId = auth.user.id
+
   try {
-    const { searchParams } = new URL(request.url)
-    const requestedUserId = searchParams.get('userId')
-    
-    if (!requestedUserId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
-    
     console.log('🔍 Querying subscription for user:', requestedUserId)
 
     // Check if supabaseAdmin is available
@@ -89,13 +84,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, subscriptionData } = body
-    
-    if (!userId || !subscriptionData) {
+    const { subscriptionData } = body
+
+    if (!subscriptionData) {
       return NextResponse.json(
-        { error: 'User ID and subscription data are required' },
+        { error: 'Subscription data is required' },
         { status: 400 }
       )
     }

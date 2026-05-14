@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
 
+  try {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
@@ -53,12 +51,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, scheduledDate, checkInType = 'regular', notes } = body
-    
-    if (!userId || !scheduledDate) {
-      return NextResponse.json({ error: 'User ID and scheduled date are required' }, { status: 400 })
+    const { scheduledDate, checkInType = 'regular', notes } = body
+
+    if (!scheduledDate) {
+      return NextResponse.json({ error: 'Scheduled date is required' }, { status: 400 })
     }
 
     if (!supabaseAdmin) {
@@ -94,10 +96,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
     const { checkInId, status, feedback, goalsAchieved, nextGoals, progressMetrics, notes } = body
-    
+
     if (!checkInId) {
       return NextResponse.json({ error: 'Check-in ID is required' }, { status: 400 })
     }
@@ -105,7 +111,7 @@ export async function PUT(request: NextRequest) {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
-    
+
     const updateData: any = {}
     if (status) updateData.status = status
     if (feedback) updateData.feedback = feedback
@@ -113,16 +119,17 @@ export async function PUT(request: NextRequest) {
     if (nextGoals) updateData.next_goals = nextGoals
     if (progressMetrics) updateData.progress_metrics = progressMetrics
     if (notes !== undefined) updateData.notes = notes
-    
+
     if (status === 'completed') {
       updateData.completed_date = new Date().toISOString()
     }
 
-    // Update check-in
+    // Update check-in (scoped to the authenticated user)
     const { data: checkIn, error } = await supabaseAdmin
       .from('coaching_check_ins')
       .update(updateData)
       .eq('id', checkInId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -139,10 +146,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const { searchParams } = new URL(request.url)
     const checkInId = searchParams.get('checkInId')
-    
+
     if (!checkInId) {
       return NextResponse.json({ error: 'Check-in ID is required' }, { status: 400 })
     }
@@ -150,12 +161,13 @@ export async function DELETE(request: NextRequest) {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
-    
-    // Delete check-in
+
+    // Delete check-in (scoped to the authenticated user)
     const { error } = await supabaseAdmin
       .from('coaching_check_ins')
       .delete()
       .eq('id', checkInId)
+      .eq('user_id', userId)
 
     if (error) {
       console.error('Error deleting check-in:', error)

@@ -131,14 +131,14 @@ export const authService = {
   async getCurrentUser() {
     try {
       const { data: { user }, error } = await supabase.auth.getUser()
-      
+
       if (error) {
         return { user: null, error }
       }
 
       return { user, error: null }
     } catch (error) {
-      return { user, error }
+      return { user: null, error }
     }
   },
 

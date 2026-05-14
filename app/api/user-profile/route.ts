@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
 
+  try {
     // Use service role client to bypass RLS for API operations
     const client = supabaseAdmin || supabase
     const { data: profile, error } = await client
@@ -68,15 +63,19 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, profileData } = body
-    
-    console.log('🔄 Profile update request:', { userId, profileData })
-    
-    if (!userId || !profileData) {
+    const { profileData } = body
+
+    console.log('🔄 Profile update request for user:', userId)
+
+    if (!profileData) {
       return NextResponse.json(
-        { error: 'User ID and profile data are required' },
+        { error: 'Profile data is required' },
         { status: 400 }
       )
     }

@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
+import {
   ArrowLeft,
   BookOpen,
   Dumbbell,
@@ -16,6 +16,7 @@ import {
   Play,
   Calendar
 } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 export default function ProgramsPage() {
   const router = useRouter()
@@ -28,7 +29,7 @@ export default function ProgramsPage() {
     if (!user?.id) return
 
     try {
-      const response = await fetch(`/api/user-programs?userId=${user.id}`)
+      const response = await authedFetch(`/api/user-programs`)
       if (response.ok) {
         const data = await response.json()
         setUserPrograms(data.programs || [])

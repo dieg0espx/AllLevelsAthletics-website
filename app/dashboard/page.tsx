@@ -17,6 +17,7 @@ import {
   User,
   CheckCircle
 } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 export default function ClientDashboard() {
   const router = useRouter()
@@ -106,11 +107,11 @@ export default function ClientDashboard() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
       
-      const response = await fetch(`/api/user-orders?userId=${user.id}`, {
+      const response = await authedFetch(`/api/user-orders`, {
         signal: controller.signal
       })
       clearTimeout(timeoutId)
-      
+
       if (response.ok) {
         const data = await response.json()
         setPurchasedProductsCount(data.orders?.length || 0)
@@ -138,11 +139,11 @@ export default function ClientDashboard() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
       
-      const response = await fetch(`/api/user-subscription?userId=${user.id}`, {
+      const response = await authedFetch(`/api/user-subscription`, {
         signal: controller.signal
       })
       clearTimeout(timeoutId)
-      
+
       console.log('📡 Subscription API response status:', response.status, response.ok)
       
       if (response.ok) {
@@ -246,11 +247,11 @@ export default function ClientDashboard() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
       
-      const response = await fetch(`/api/user-programs?userId=${user.id}`, {
+      const response = await authedFetch(`/api/user-programs`, {
         signal: controller.signal
       })
       clearTimeout(timeoutId)
-      
+
       if (response.ok) {
         const data = await response.json()
         console.log('📊 Dashboard - API response:', data)
@@ -299,9 +300,9 @@ export default function ClientDashboard() {
       
       // Fetch all data in parallel with timeout
       const [ordersResponse, subscriptionResponse, programsResponse] = await Promise.allSettled([
-        fetch(`/api/user-orders?userId=${user.id}`, { signal: controller.signal }),
-        fetch(`/api/user-subscription?userId=${user.id}`, { signal: controller.signal }),
-        fetch(`/api/user-programs?userId=${user.id}`, { signal: controller.signal })
+        authedFetch(`/api/user-orders`, { signal: controller.signal }),
+        authedFetch(`/api/user-subscription`, { signal: controller.signal }),
+        authedFetch(`/api/user-programs`, { signal: controller.signal })
       ])
       
       clearTimeout(timeoutId)

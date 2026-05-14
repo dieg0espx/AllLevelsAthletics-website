@@ -26,6 +26,7 @@ import {
   Star
 } from "lucide-react"
 import { courseVideos, CourseVideo } from "@/lib/course-videos"
+import { authedFetch } from "@/lib/api-client"
 
 export default function TensionReleaseProgramPage() {
   const router = useRouter()
@@ -87,7 +88,7 @@ export default function TensionReleaseProgramPage() {
     if (!user?.id) return
     
     try {
-      const response = await fetch(`/api/user-programs?userId=${user.id}`)
+      const response = await authedFetch(`/api/user-programs`)
       
       if (response.ok) {
         const data = await response.json()

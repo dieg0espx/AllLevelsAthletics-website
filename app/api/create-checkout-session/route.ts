@@ -433,24 +433,8 @@ export async function POST(request: NextRequest) {
         console.error('URL validation failed. Base URL:', baseUrl)
         console.error('Success URL:', successUrl)
         console.error('Cancel URL:', cancelUrl)
-        console.error('Environment variables:')
-        console.error('- NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL)
-        console.error('- SITE_URL:', process.env.SITE_URL)
-        console.error('- NODE_ENV:', process.env.NODE_ENV)
         return NextResponse.json(
-          { 
-            error: 'Invalid checkout URLs. Please check your site configuration.',
-            details: {
-              baseUrl,
-              successUrl,
-              cancelUrl,
-              envVars: {
-                NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-                SITE_URL: process.env.SITE_URL,
-                NODE_ENV: process.env.NODE_ENV
-              }
-            }
-          },
+          { error: 'Invalid checkout URLs. Please check your site configuration.' },
           { status: 400 }
         )
       }

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Percent, ShoppingCart, Users, Save, RefreshCw } from "lucide-react"
 import { useSafeAuth } from "@/contexts/safe-auth-context"
+import { authedFetch } from "@/lib/api-client"
 
 interface DiscountManagementSectionProps {
   onRefresh?: () => void
@@ -26,7 +27,7 @@ export function DiscountManagementSection({ onRefresh }: DiscountManagementSecti
     setLoading(true)
     setMessage(null)
     try {
-      const response = await fetch('/api/admin/discounts')
+      const response = await authedFetch('/api/admin/discounts')
       const data = await response.json()
       
       if (response.ok) {
@@ -71,15 +72,14 @@ export function DiscountManagementSection({ onRefresh }: DiscountManagementSecti
     setMessage(null)
 
     try {
-      const response = await fetch('/api/admin/discounts', {
+      const response = await authedFetch('/api/admin/discounts', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           discountType,
-          percentage,
-          userId: user.id
+          percentage
         })
       })
 

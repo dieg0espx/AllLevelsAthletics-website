@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { authedFetch } from "@/lib/api-client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -111,7 +112,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch(`/api/user-profile?userId=${userId}`)
+      const response = await authedFetch(`/api/user-profile`)
       if (response.ok) {
         const data = await response.json()
         if (data.profile && data.profile.created_at) {
@@ -126,7 +127,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
   const fetchCheckIns = async () => {
     try {
       console.log('Fetching check-ins for userId:', userId) // Debug log
-      const response = await fetch(`/api/coaching/check-ins?userId=${userId}`)
+      const response = await authedFetch(`/api/coaching/check-ins`)
       console.log('Check-ins API response status:', response.status) // Debug log
       
       if (response.ok) {
@@ -209,8 +210,8 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       console.log('Deleting all check-ins for userId:', userId)
       
       // Delete each check-in individually
-      const deletePromises = checkIns.map(checkIn => 
-        fetch(`/api/coaching/check-ins?checkInId=${checkIn.id}`, {
+      const deletePromises = checkIns.map(checkIn =>
+        authedFetch(`/api/coaching/check-ins?checkInId=${checkIn.id}`, {
           method: 'DELETE'
         })
       )
@@ -239,14 +240,14 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
     if (!checkInToCancel) return
 
     try {
-      const response = await fetch('/api/coaching/check-ins', {
+      const response = await authedFetch('/api/coaching/check-ins', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          checkInId: checkInToCancel, 
-          status: 'cancelled' 
+        body: JSON.stringify({
+          checkInId: checkInToCancel,
+          status: 'cancelled'
         })
       })
 
@@ -330,13 +331,12 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
       const sanDiegoDateTimeString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00-07:00`
       const utcDate = new Date(sanDiegoDateTimeString)
       
-      const response = await fetch('/api/coaching/check-ins', {
+      const response = await authedFetch('/api/coaching/check-ins', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
           scheduledDate: utcDate.toISOString(),
-          checkInType: 'regular', // Default to regular since we removed the selection
+          checkInType: 'regular',
           notes: newCheckIn.notes
         })
       })
@@ -449,7 +449,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
     setIsUpdatingNotes(true)
 
     try {
-      const response = await fetch('/api/coaching/check-ins', {
+      const response = await authedFetch('/api/coaching/check-ins', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

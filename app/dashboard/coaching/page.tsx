@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ProgressPanel } from "@/components/ProgressPanel"
-import { 
+import {
   ArrowLeft,
   Users,
   Crown,
@@ -21,6 +21,7 @@ import {
   Calendar,
   TrendingUp
 } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 export default function CoachingPage() {
   const router = useRouter()
@@ -185,7 +186,7 @@ export default function CoachingPage() {
 
     try {
       setSubscriptionLoading(true)
-      const response = await fetch(`/api/user-subscription?userId=${user.id}`)
+      const response = await authedFetch(`/api/user-subscription`)
       
       if (response.ok) {
         const data = await response.json()

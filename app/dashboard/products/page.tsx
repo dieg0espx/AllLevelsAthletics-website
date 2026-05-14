@@ -67,7 +67,7 @@ export default function ProductsPage() {
       
       console.log('🔐 Using token for API call')
       
-      const response = await fetch(`/api/user-orders?userId=${user.id}`, {
+      const response = await fetch(`/api/user-orders`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

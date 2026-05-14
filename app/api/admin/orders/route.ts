@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireAdmin } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
-    console.log('🔄 Admin: Fetching all orders...')
-    
+
     // Fetch all orders with their items
     const { data: orders, error: ordersError } = await supabaseAdmin
       .from('orders')
@@ -69,9 +72,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
-    console.log('🔄 Admin: Updating order...')
-    
+
     const body = await request.json()
     const { orderId, status, trackingNumber, carrier, comment } = body
     

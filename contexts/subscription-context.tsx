@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from './auth-context'
 import { supabase } from '@/lib/supabase'
+import { authedFetch } from '@/lib/api-client'
 
 interface Subscription {
   id: string
@@ -70,7 +71,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setError(null)
 
-      const response = await fetch(`/api/user-subscription?userId=${user.id}`)
+      const response = await authedFetch(`/api/user-subscription`)
       
       const data = await response.json()
 

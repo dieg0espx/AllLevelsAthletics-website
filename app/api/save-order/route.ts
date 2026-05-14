@@ -247,13 +247,7 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : 'No stack trace',
-        errorName: error instanceof Error ? error.name : 'Unknown error type',
-        fullError: JSON.stringify(error, null, 2)
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
