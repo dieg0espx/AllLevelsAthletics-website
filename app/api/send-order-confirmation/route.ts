@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Send customer confirmation email
-    console.log('Sending customer email to:', customerEmail)
+    console.log('Sending customer order confirmation email')
     const customerResult = await sendEmail({
       to: customerEmail,
       subject: `Order Confirmation - ${orderNumber}`,

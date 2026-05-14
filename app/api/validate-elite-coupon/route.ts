@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('🔍 Validating Elite coupon:', couponCode, 'for email:', customerEmail)
+    console.log('🔍 Validating Elite coupon:', couponCode)
 
     // Check if coupon exists and is valid
     const { data: coupon, error: couponError } = await supabaseAdmin

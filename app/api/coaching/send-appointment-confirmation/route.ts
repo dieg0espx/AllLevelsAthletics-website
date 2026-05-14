@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
     `
 
     // Send email to client
-    console.log('Sending confirmation email to client:', user.email)
+    console.log('Sending coaching appointment confirmation email to client')
     await sendEmail({
       to: user.email,
       subject: 'Coaching Appointment Confirmed - All Levels Athletics',

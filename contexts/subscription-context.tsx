@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useAuth } from './auth-context'
+import { useSafeAuth as useAuth } from './safe-auth-context'
 import { supabase } from '@/lib/supabase'
 import { authedFetch } from '@/lib/api-client'
 

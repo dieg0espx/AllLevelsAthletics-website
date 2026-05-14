@@ -560,7 +560,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
           ? (subscription.items.data[0].price.unit_amount / 100).toString()
           : '0'
         
-        console.log('📧 Sending subscription confirmation email to:', customerEmail)
+        console.log('📧 Sending subscription confirmation email')
         
         const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/send-subscription-confirmation`, {
           method: 'POST',

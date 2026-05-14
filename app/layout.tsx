@@ -5,7 +5,6 @@ import "./globals.css"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { SafeAuthProvider } from "@/contexts/safe-auth-context"
-import { AuthProvider } from "@/contexts/auth-context"
 import { SafeSubscriptionProvider } from "@/contexts/safe-subscription-context"
 import { CartProvider } from "@/contexts/cart-context"
 import { DiscountProvider } from "@/contexts/discount-context"
@@ -94,11 +93,8 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-    yahoo: 'your-yahoo-verification-code',
-  },
+  // verification: add real codes when you set up Search Console / Yandex / etc.
+  // Render-time placeholders produce invalid <meta> tags, so we omit them.
   category: 'fitness',
   classification: 'fitness and health',
   generator: "Next.js",
@@ -264,25 +260,23 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <SafeAuthProvider>
-          <AuthProvider>
-            <SafeSubscriptionProvider>
-              <SafeContextWrapper>
-                <CartProvider>
-                  <DiscountProvider>
-                    <HydrationWrapper>
-                      {/* Temporarily disable AdminRedirect to fix redirect loop */}
-                      {/* <AdminRedirect> */}
-                        <Navigation />
-                        <DiscountBanner />
-                        <main>{children}</main>
-                        <Footer />
-                      {/* </AdminRedirect> */}
-                    </HydrationWrapper>
-                  </DiscountProvider>
-                </CartProvider>
-              </SafeContextWrapper>
-            </SafeSubscriptionProvider>
-          </AuthProvider>
+          <SafeSubscriptionProvider>
+            <SafeContextWrapper>
+              <CartProvider>
+                <DiscountProvider>
+                  <HydrationWrapper>
+                    {/* Temporarily disable AdminRedirect to fix redirect loop */}
+                    {/* <AdminRedirect> */}
+                      <Navigation />
+                      <DiscountBanner />
+                      <main>{children}</main>
+                      <Footer />
+                    {/* </AdminRedirect> */}
+                  </HydrationWrapper>
+                </DiscountProvider>
+              </CartProvider>
+            </SafeContextWrapper>
+          </SafeSubscriptionProvider>
         </SafeAuthProvider>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </body>

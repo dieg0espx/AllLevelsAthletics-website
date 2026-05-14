@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { useAuth } from '@/contexts/auth-context'
+import { useSafeAuth as useAuth } from '@/contexts/safe-auth-context'
 import { useSafeSubscription } from '@/contexts/safe-subscription-context'
 import { authedFetch } from '@/lib/api-client'
 import { Button } from '@/components/ui/button'

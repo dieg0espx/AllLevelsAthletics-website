@@ -76,13 +76,6 @@ export async function GET(request: NextRequest) {
 
     console.log('📊 User programs data:', userPrograms?.length || 0, 'enrollments found')
     
-    // Debug: Show programs by user
-    if (userPrograms && userPrograms.length > 0) {
-      console.log('📚 Programs by user:')
-      userPrograms.forEach((program: any) => {
-        console.log(`  User ${program.user_id}: ${program.program_name} - ${program.progress}% progress`)
-      })
-    }
 
     // Get all user subscriptions to show one-on-one coaching enrollments
     const { data: userSubscriptions, error: subscriptionsError } = await supabaseAdmin
@@ -96,28 +89,6 @@ export async function GET(request: NextRequest) {
 
     console.log('💳 User subscriptions data:', userSubscriptions?.length || 0, 'subscriptions found')
     
-    // Debug: Show subscriptions by user
-    if (userSubscriptions && userSubscriptions.length > 0) {
-      console.log('💳 Subscriptions by user:')
-      userSubscriptions.forEach((sub: any) => {
-        console.log(`  User ${sub.user_id}: ${sub.plan_name} - ${sub.status}`)
-      })
-    }
-    
-    // Debug: Show all orders with their user_ids
-    if (orders && orders.length > 0) {
-      console.log('📋 All orders by user_id:')
-      const ordersByUser: { [userId: string]: any[] } = {}
-      orders.forEach((order: any) => {
-        if (!ordersByUser[order.user_id]) {
-          ordersByUser[order.user_id] = []
-        }
-        ordersByUser[order.user_id].push(order)
-      })
-      Object.entries(ordersByUser).forEach(([userId, userOrders]) => {
-        console.log(`  User ${userId}: ${userOrders.length} orders`)
-      })
-    }
 
     // Create a map of user_id to email and name from shipping addresses in orders
     const userEmails: { [key: string]: string } = {}
@@ -167,31 +138,21 @@ export async function GET(request: NextRequest) {
       
       // Skip profiles without a valid email (shouldn't happen but safety check)
       if (!realEmail) {
-        console.log(`⚠️ Skipping profile ${profile.user_id} - no valid email found`)
         return
       }
-      
+
       // If we already have this email, skip it (first one wins)
       if (clientsByEmail[realEmail]) {
-        console.log(`⚠️ Duplicate email detected: ${realEmail} - Skipping profile ${profile.user_id} (already have ${clientsByEmail[realEmail].user_id})`)
         return
       }
-      
+
       const userOrders = orders ? orders.filter((order: any) => order.user_id === profile.user_id) : []
-      
-      const realName = authUser?.user_metadata?.full_name || 
-                      profile.full_name || 
-                      userNames[profile.user_id] || 
-                      authUser?.email?.split('@')[0] || 
+
+      const realName = authUser?.user_metadata?.full_name ||
+                      profile.full_name ||
+                      userNames[profile.user_id] ||
+                      authUser?.email?.split('@')[0] ||
                       'Unknown'
-      
-      console.log(`👤 Processing client: ${realName} (${profile.user_id}) - Email: ${realEmail}`)
-      
-      // Debug: Check if we're accidentally counting order items
-      if (userOrders.length > 0) {
-        const totalOrderItems = userOrders.reduce((sum, order) => sum + (order.order_items?.length || 0), 0)
-        console.log(`   📊 Order items total: ${totalOrderItems} (should be different from order count: ${userOrders.length})`)
-      }
 
       // Create client entry (no merging - one email = one client)
       const totalSpent = userOrders.reduce((sum: number, order: any) => sum + order.total_amount, 0)
@@ -238,14 +199,6 @@ export async function GET(request: NextRequest) {
         s.user_id === client.user_id && (s.status === 'active' || s.status === 'trialing')
       ) : null
       
-      console.log(`👤 Client ${client.email} (${client.user_id}): ${clientPrograms.length} program(s), ${clientSubscription ? 'HAS subscription' : 'NO subscription'}`)
-      if (clientPrograms.length > 0) {
-        console.log(`   📚 Programs:`, clientPrograms.map((p: any) => `${p.program_name} (${p.progress}%)`).join(', '))
-      }
-      if (clientSubscription) {
-        console.log(`   💳 Subscription: ${clientSubscription.plan_name} (${clientSubscription.status})`)
-      }
-      
       return {
         ...client,
         programs: clientPrograms.map((p: any) => ({
@@ -264,9 +217,6 @@ export async function GET(request: NextRequest) {
     })
 
     console.log('✅ Admin: Fetched clients:', clients.length)
-    console.log('📊 Client order counts:', clients.map(c => `${c.email}: ${c.totalOrders} orders`))
-    console.log('📚 Client program enrollments:', clients.map(c => `${c.email}: ${c.programs?.length || 0} programs`))
-    console.log('💳 Client subscriptions:', clients.map(c => `${c.email}: ${c.subscription ? c.subscription.plan_name : 'None'}`))
 
     return NextResponse.json({ 
       clients: clients,

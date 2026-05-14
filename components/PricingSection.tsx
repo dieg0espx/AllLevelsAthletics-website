@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { CheckIcon, StarIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline"
-import { useAuth } from "@/contexts/auth-context"
+import { useSafeAuth as useAuth } from "@/contexts/safe-auth-context"
 import { useSafeSubscription } from "@/contexts/safe-subscription-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
