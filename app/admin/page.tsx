@@ -17,6 +17,7 @@ import { ClientsSection } from "@/components/admin/ClientsSection"
 import { OrdersSection } from "@/components/admin/OrdersSection"
 import { CoachingManagementSection } from "@/components/admin/CoachingManagementSection"
 import { DiscountManagementSection } from "@/components/admin/DiscountManagementSection"
+import { authedFetch } from "@/lib/api-client"
 
 interface Client {
   id: string
@@ -117,7 +118,7 @@ export default function AdminPage() {
   const fetchClients = async () => {
     setClientsLoading(true)
     try {
-      const response = await fetch('/api/admin/clients')
+      const response = await authedFetch('/api/admin/clients')
       if (response.ok) {
         const data = await response.json()
         setClients(data.clients || [])
@@ -136,7 +137,7 @@ export default function AdminPage() {
   const fetchOrders = async () => {
     setOrdersLoading(true)
     try {
-      const response = await fetch('/api/admin/orders')
+      const response = await authedFetch('/api/admin/orders')
       if (response.ok) {
         const data = await response.json()
         setOrders(data.orders || [])
@@ -155,7 +156,7 @@ export default function AdminPage() {
   const fetchCheckIns = async () => {
     setCheckInsLoading(true)
     try {
-      const response = await fetch('/api/admin/check-ins')
+      const response = await authedFetch('/api/admin/check-ins')
       if (response.ok) {
         const data = await response.json()
         setCheckIns(data.checkIns || [])
@@ -187,7 +188,7 @@ export default function AdminPage() {
 
   const handleSaveClient = async (updatedClient: Client) => {
     try {
-      const response = await fetch('/api/admin/clients', {
+      const response = await authedFetch('/api/admin/clients', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedClient)
@@ -209,7 +210,7 @@ export default function AdminPage() {
   // Order management handlers
   const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
     try {
-      const response = await fetch('/api/admin/orders', {
+      const response = await authedFetch('/api/admin/orders', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId, ...updates })

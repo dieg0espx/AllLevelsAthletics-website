@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireAdmin } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
@@ -71,6 +75,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
     const body = await request.json()
     const { checkInId, notes, status } = body

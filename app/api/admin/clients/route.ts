@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireAdmin } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
-    
+
     // Fetch all user profiles
     const { data: profiles, error: profilesError } = await supabaseAdmin
       .from('user_profiles')

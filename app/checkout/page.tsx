@@ -15,6 +15,7 @@ import Image from "next/image"
 import { loadStripe } from "@stripe/stripe-js"
 import { AuthModal } from "@/components/auth-modal"
 import { usePathname, useRouter } from "next/navigation"
+import { authedFetch } from "@/lib/api-client"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
 
@@ -124,7 +125,7 @@ export default function CheckoutPage() {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch(`/api/user-profile?userId=${user?.id}`)
+      const response = await authedFetch(`/api/user-profile`)
       const data = await response.json()
       
       if (response.ok && data.profile) {

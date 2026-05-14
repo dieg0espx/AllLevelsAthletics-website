@@ -1,23 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
-    console.log('🔄 Fetching user orders...')
-    
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
-    console.log('👤 Requested user ID:', userId)
-    
-    if (!userId) {
-      console.error('❌ No user ID provided')
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
-    
+    console.log('🔄 Fetching user orders for:', userId)
+
     // Use service role client to bypass RLS for API operations
     const client = supabaseAdmin || supabase
     console.log('🔍 Querying orders for user:', userId)

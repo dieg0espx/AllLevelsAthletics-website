@@ -9,14 +9,18 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireAdmin } from '@/lib/api-auth'
 
 /**
  * GET /api/admin/discounts
- * 
+ *
  * Fetches discount details with metadata for admin dashboard
  * Returns more detailed information than public endpoint
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
     const { data: discounts, error } = await supabaseAdmin
       .from('discounts')
@@ -93,18 +97,12 @@ export async function GET(request: NextRequest) {
  * @returns { success: boolean, discount: object }
  */
 export async function PUT(request: NextRequest) {
-  try {
-    const { discountType, percentage, userId } = await request.json()
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
 
-    // Validate admin role
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId)
-    
-    if (userError || !userData || userData.user?.user_metadata?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Unauthorized: Admin access required' },
-        { status: 403 }
-      )
-    }
+  try {
+    const { discountType, percentage } = await request.json()
 
     // Validate input
     if (!discountType || !['coaching', 'products'].includes(discountType)) {

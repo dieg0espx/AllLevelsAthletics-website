@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import type { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { useHydration } from '@/hooks/use-hydration'
+import { authedFetch } from '@/lib/api-client'
 
 interface SafeAuthContextType {
   user: User | null
@@ -44,7 +45,7 @@ export function SafeAuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Fallback to API call only if needed
-      const response = await fetch(`/api/user-profile?userId=${userId}`, {
+      const response = await authedFetch(`/api/user-profile`, {
         cache: 'no-store' // Prevent caching issues
       })
       

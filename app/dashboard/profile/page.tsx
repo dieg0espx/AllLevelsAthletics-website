@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
+import {
   ArrowLeft,
   User,
   MapPin,
@@ -20,6 +20,7 @@ import {
   Lock,
   Phone
 } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -87,7 +88,7 @@ export default function ProfilePage() {
     try {
       console.log('🔄 Fetching profile data for user:', user?.id)
       
-      const response = await fetch(`/api/user-profile?userId=${user?.id}`)
+      const response = await authedFetch(`/api/user-profile`)
       const data = await response.json()
       
       if (response.ok) {
@@ -185,7 +186,6 @@ export default function ProfilePage() {
       const fullPhoneNumber = profileData.phoneCountryCode + " " + profileData.phone
       
       const requestData = {
-        userId: user?.id,
         profileData: {
           first_name: profileData.firstName,
           last_name: profileData.lastName,
@@ -199,10 +199,10 @@ export default function ProfilePage() {
           date_of_birth: profileData.dateOfBirth
         }
       }
-      
+
       console.log('📤 Sending profile data:', JSON.stringify(requestData, null, 2))
-      
-      const response = await fetch('/api/user-profile', {
+
+      const response = await authedFetch('/api/user-profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

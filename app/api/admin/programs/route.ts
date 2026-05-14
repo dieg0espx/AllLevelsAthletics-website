@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireAdmin } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
-    console.log('🔄 Admin: Fetching programs...')
     
     // Fetch all programs from the database
     const { data: programs, error: programsError } = await supabaseAdmin
@@ -100,6 +103,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
     const body = await request.json()
     const { name, description, price, duration, category, level, isActive } = body
@@ -168,6 +174,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
     const body = await request.json()
     const { programId, ...updates } = body
@@ -241,6 +250,9 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (auth.error) return auth.error
+
   try {
     const body = await request.json()
     const { programId } = body

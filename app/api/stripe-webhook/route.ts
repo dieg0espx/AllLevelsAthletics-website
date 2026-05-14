@@ -30,22 +30,22 @@ function toISOStringFromTimestamp(timestamp: number | null | undefined): string 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
-    const signature = request.headers.get('stripe-signature')!
+    const signature = request.headers.get('stripe-signature')
 
     console.log('🔔 WEBHOOK RECEIVED - Raw body length:', body.length)
     console.log('🔔 WEBHOOK RECEIVED - Signature:', signature ? 'Present' : 'Missing')
 
     let event: Stripe.Event
 
+    if (!signature) {
+      return NextResponse.json(
+        { error: 'Missing stripe-signature header' },
+        { status: 400 }
+      )
+    }
+
     try {
-      // Handle manual triggers (for testing)
-      if (signature === 'manual_trigger') {
-        console.log('Manual webhook trigger detected')
-        const eventData = JSON.parse(body)
-        event = eventData as Stripe.Event
-      } else {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-      }
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err) {
       console.error('❌ Webhook signature verification failed:', err)
       return NextResponse.json(

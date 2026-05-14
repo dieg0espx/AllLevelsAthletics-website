@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useSafeAuth } from './safe-auth-context'
 import { useHydration } from '@/hooks/use-hydration'
+import { authedFetch } from '@/lib/api-client'
 
 interface Subscription {
   id: string
@@ -75,7 +76,7 @@ export function SafeSubscriptionProvider({ children }: { children: ReactNode }) 
       setLoading(true)
       setError(null)
 
-      const response = await fetch(`/api/user-subscription?userId=${user.id}`)
+      const response = await authedFetch(`/api/user-subscription`)
       
       const data = await response.json()
 
