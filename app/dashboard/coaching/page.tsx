@@ -153,10 +153,10 @@ export default function CoachingPage() {
       // Also sync subscription data from Stripe
       setTimeout(async () => {
         try {
-          const response = await fetch('/api/sync-subscription-after-upgrade', {
+          const response = await authedFetch('/api/sync-subscription-after-upgrade', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user?.id })
+            body: JSON.stringify({})
           })
           
           if (response.ok) {
@@ -221,11 +221,10 @@ export default function CoachingPage() {
     if (!user?.id) return
     
     try {
-      const response = await fetch('/api/coaching/schedule', {
+      const response = await authedFetch('/api/coaching/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
           planType: currentPlan.name
         })
       })
@@ -245,12 +244,11 @@ export default function CoachingPage() {
     try {
       setUpgrading(planId)
       
-      const response = await fetch('/api/upgrade-subscription', {
+      const response = await authedFetch('/api/upgrade-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          newPlanId: planId,
-          userId: user.id
+          newPlanId: planId
         })
       })
 

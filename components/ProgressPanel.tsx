@@ -157,7 +157,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
   const fetchProgress = async () => {
     try {
       console.log('Fetching progress for userId:', userId) // Debug log
-      const response = await fetch(`/api/coaching/progress?userId=${userId}`)
+      const response = await authedFetch(`/api/coaching/progress`)
       console.log('Progress API response status:', response.status) // Debug log
       
       if (response.ok) {
@@ -177,7 +177,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
 
   const fetchMetricTemplates = async () => {
     try {
-      const response = await fetch(`/api/coaching/metric-templates?userId=${userId}`)
+      const response = await authedFetch(`/api/coaching/metric-templates`)
       if (response.ok) {
         const data = await response.json()
         setMetricTemplates(data.templates || [])
@@ -189,7 +189,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
 
   const fetchMetricHistory = async (metricName: string) => {
     try {
-      const response = await fetch(`/api/coaching/metric-history?userId=${userId}&metricName=${encodeURIComponent(metricName)}`)
+      const response = await authedFetch(`/api/coaching/metric-history?metricName=${encodeURIComponent(metricName)}`)
       if (response.ok) {
         const data = await response.json()
         setMetricHistory(data.history || [])
@@ -268,7 +268,7 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
     setIsLoadingHours(true)
     try {
       const dateString = selectedDate.toISOString().split('T')[0]
-      const response = await fetch(`/api/coaching/schedule?date=${dateString}`)
+      const response = await authedFetch(`/api/coaching/schedule?date=${dateString}`)
       
       if (response.ok) {
         const data = await response.json()
@@ -407,11 +407,10 @@ export function ProgressPanel({ userId, currentPlan }: ProgressPanelProps) {
     try {
       console.log('Adding progress:', newProgress) // Debug log
       
-      const response = await fetch('/api/coaching/progress', {
+      const response = await authedFetch('/api/coaching/progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
           metricName: newProgress.metric_name,
           metricValue: newProgress.metric_value ? parseFloat(newProgress.metric_value) : null,
           metricUnit: newProgress.metric_unit,

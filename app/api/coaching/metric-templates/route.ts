@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
 
+  try {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
@@ -34,12 +32,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, metricName, defaultUnit } = body
-    
-    if (!userId || !metricName) {
-      return NextResponse.json({ error: 'User ID and metric name are required' }, { status: 400 })
+    const { metricName, defaultUnit } = body
+
+    if (!metricName) {
+      return NextResponse.json({ error: 'Metric name is required' }, { status: 400 })
     }
 
     if (!supabaseAdmin) {
@@ -70,10 +72,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const { searchParams } = new URL(request.url)
     const templateId = searchParams.get('templateId')
-    
+
     if (!templateId) {
       return NextResponse.json({ error: 'Template ID is required' }, { status: 400 })
     }
@@ -81,12 +87,13 @@ export async function DELETE(request: NextRequest) {
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Service role not configured' }, { status: 500 })
     }
-    
-    // Delete metric template
+
+    // Delete metric template (scoped to the authenticated user)
     const { error } = await supabaseAdmin
       .from('metric_templates')
       .delete()
       .eq('id', templateId)
+      .eq('user_id', userId)
 
     if (error) {
       console.error('Error deleting metric template:', error)

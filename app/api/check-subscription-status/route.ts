@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { requireUser } from '@/lib/api-auth'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
@@ -12,16 +13,13 @@ const supabaseAdmin = createClient(
 )
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    
     console.log('=== CHECKING SUBSCRIPTION STATUS ===')
     console.log('User ID:', userId)
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
 
     // Get user's subscription from database
     const { data: subscription, error: subError } = await supabaseAdmin

@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { useSafeSubscription } from "@/contexts/safe-subscription-context"
 import { AuthModal } from "@/components/auth-modal"
 import { loadStripe } from "@stripe/stripe-js"
+import { authedFetch } from "@/lib/api-client"
 
 // Custom hook for billing period management
 const useBillingPeriod = () => {
@@ -172,14 +173,12 @@ const PlanCard = ({
     if (hasActiveSubscription) {
       // Redirect to customer portal for existing subscribers
       try {
-        const response = await fetch('/api/create-customer-portal-session', {
+        const response = await authedFetch('/api/create-customer-portal-session', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            userId: user.id,
-          }),
+          body: JSON.stringify({}),
         })
 
         const data = await response.json()

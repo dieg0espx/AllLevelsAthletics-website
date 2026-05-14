@@ -608,7 +608,7 @@ export function CoachingManagementSection({
     setIsLoadingHours(true)
     try {
       const dateString = date.toISOString().split('T')[0]
-      const response = await fetch(`/api/coaching/schedule?date=${dateString}`)
+      const response = await authedFetch(`/api/coaching/schedule?date=${dateString}`)
       
       if (response.ok) {
         const data = await response.json()

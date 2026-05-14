@@ -21,6 +21,7 @@ import {
   Mail,
   Camera
 } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 interface CoachingSession {
   id: string
@@ -78,11 +79,11 @@ export function OneOnOneCoachingSection({
       setCoachingData(prev => ({ ...prev, isLoading: true }))
       
       // Fetch coaching sessions
-      const sessionsResponse = await fetch(`/api/coaching/check-ins?userId=${userId}`)
+      const sessionsResponse = await authedFetch(`/api/coaching/check-ins`)
       const sessionsData = await sessionsResponse.json()
-      
+
       // Fetch progress metrics
-      const progressResponse = await fetch(`/api/coaching/progress?userId=${userId}`)
+      const progressResponse = await authedFetch(`/api/coaching/progress`)
       const progressData = await progressResponse.json()
 
       setCoachingData({

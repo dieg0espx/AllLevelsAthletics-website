@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { useSafeSubscription } from '@/contexts/safe-subscription-context'
+import { authedFetch } from '@/lib/api-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -87,14 +88,12 @@ export function SubscriptionManagement({ onUpgrade }: SubscriptionManagementProp
 
     setPortalLoading(true)
     try {
-      const response = await fetch('/api/create-customer-portal-session', {
+      const response = await authedFetch('/api/create-customer-portal-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId: user.id,
-        }),
+        body: JSON.stringify({}),
       })
 
       const data = await response.json()

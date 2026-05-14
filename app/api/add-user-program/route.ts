@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
-  try {
-    const { userId, programId, programName, programType } = await request.json()
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
 
-    if (!userId || !programId || !programName) {
+  try {
+    const { programId, programName, programType } = await request.json()
+
+    if (!programId || !programName) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }

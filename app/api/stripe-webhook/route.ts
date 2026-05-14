@@ -515,25 +515,30 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
           if (existingCoupons && existingCoupons.length > 0) {
             eliteCouponCode = existingCoupons[0].coupon_code
             console.log('✅ Using existing Elite coupon:', eliteCouponCode, '(preventing duplicate)')
-          } else {
+          } else if (planName === 'Elite') {
             console.log('🎁 Creating Elite MF Roller coupon for Elite subscriber')
-            
-            const couponResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/create-elite-coupon`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: userId,
-                customerEmail: customerEmail,
-                planName: planName
+
+            const couponCode = `ELITE-MF-${Date.now().toString(36).toUpperCase()}`
+            const { data: insertedCoupon, error: couponInsertError } = await supabaseAdmin
+              .from('elite_coupons')
+              .insert({
+                user_id: userId,
+                customer_email: customerEmail,
+                coupon_code: couponCode,
+                discount_percentage: 100,
+                product_restriction: 'knot-roller',
+                is_used: false,
+                created_at: new Date().toISOString(),
+                expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
               })
-            })
-            
-            if (couponResponse.ok) {
-              const couponData = await couponResponse.json()
-              eliteCouponCode = couponData.coupon.code
-              console.log('✅ Elite coupon created successfully:', eliteCouponCode)
+              .select()
+              .single()
+
+            if (couponInsertError) {
+              console.error('❌ Failed to create Elite coupon:', couponInsertError)
             } else {
-              console.error('❌ Failed to create Elite coupon')
+              eliteCouponCode = insertedCoupon.coupon_code
+              console.log('✅ Elite coupon created successfully:', eliteCouponCode)
             }
           }
         } else {

@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Target, Users, Award, Zap, Heart, Clock } from "lucide-react"
+import { authedFetch } from "@/lib/api-client"
 
 interface ProgramConfirmationDialogProps {
   isOpen: boolean
@@ -25,13 +26,12 @@ export default function ProgramConfirmationDialog({ isOpen, onClose, onConfirm }
       console.log('🚀 Starting program registration for user:', user?.id)
       
       // Call the program registration API
-      const response = await fetch('/api/add-user-program', {
+      const response = await authedFetch('/api/add-user-program', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user?.id,
           programId: 'tension-release-program',
           programName: 'Comprehensive Tension Release & Performance Enhancement',
           programType: 'free' // Changed from 'premium' to 'free'

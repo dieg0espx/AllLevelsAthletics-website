@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
     const metricName = searchParams.get('metricName')
-    
-    if (!userId || !metricName) {
-      return NextResponse.json({ error: 'User ID and metric name are required' }, { status: 400 })
+
+    if (!metricName) {
+      return NextResponse.json({ error: 'Metric name is required' }, { status: 400 })
     }
 
     if (!supabaseAdmin) {

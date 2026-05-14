@@ -139,13 +139,12 @@ export default function TensionReleaseProgramPage() {
     if (!user?.id) return
     
     try {
-      const response = await fetch('/api/add-user-program', {
+      const response = await authedFetch('/api/add-user-program', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
           programId: 'tension-release-program',
           programName: 'Comprehensive Tension Release & Performance Enhancement',
           programType: 'premium'
@@ -166,13 +165,12 @@ export default function TensionReleaseProgramPage() {
     if (!user?.id) return
     
     try {
-      const response = await fetch('/api/update-program-progress', {
+      const response = await authedFetch('/api/update-program-progress', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
           programId: 'tension-release-program',
           progress: progress,
           watchedVideos: watchedVideos

@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { requireUser } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+  const userId = auth.user.id
+
   try {
     const body = await request.json()
-    const { userId, planType } = body
-    
+    const { planType } = body
+
     console.log('Schedule check-ins POST request:', { userId, planType })
-    
+
     // For now, just return success - this can be expanded later
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Check-ins scheduled successfully',
       userId,
@@ -22,6 +27,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUser(request)
+  if (auth.error) return auth.error
+
   try {
     const { searchParams } = new URL(request.url)
     const date = searchParams.get('date')
