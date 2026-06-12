@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
+import { PoweredByComCreate } from "@/components/PoweredByComCreate"
 
 export function Footer() {
   return (
@@ -120,6 +121,9 @@ export function Footer() {
                   Instagram: @AllLevelsAthletics
                 </Badge>
               </div>
+            </div>
+            <div className="mt-6 flex justify-center text-muted-foreground">
+              <PoweredByComCreate theme="dark" align="center" />
             </div>
           </div>
         </div>
